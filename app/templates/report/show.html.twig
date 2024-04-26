@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Show report
+{% endblock %}
+
+{% block body %}
+    <h1>View report {% if id is defined %}#{{ id }}{% endif %}</h1>
+    {% if report is defined and report|length %}
+    <dl>
+        <dt>Title</dt>
+        <dd>{{ report.title }}</dd>
+        <dt>Description</dt>
+        <dd>{{ report.content }}</dd>
+        <dt>Status</dt>
+        <dd>{{ report.status }}</dd>
+    </dl>
+    {% else %}
+    <p>Report not found.</p>
+    {% endif %}
+{% endblock %}

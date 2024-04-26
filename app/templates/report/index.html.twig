@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title  %}
+    Report list
+{% endblock %}
+
+{% block body %}
+    <h1>Report list</h1>
+    {% if reports is defined and reports|length %}
+        <table>
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td>{{ report.id }}</td>
+                    <td>{{ report.title }}</td>
+                    <td>{{ report.content }}</td>
+                    <td>{{ report.status }}</td>
+                    <td>&nbsp;</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+    <p>
+        List is empty.
+    </p>
+{% endif %}
+{% endblock %}
