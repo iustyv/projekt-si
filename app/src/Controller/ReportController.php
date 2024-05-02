@@ -5,6 +5,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Report;
 use App\Repository\ReportRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,14 +20,14 @@ class ReportController extends AbstractController
     /**
      * Index action.
      *
-     * @param ReportRepository $repository Report repository
+     * @param ReportRepository $reportRepository Report repository
      *
      * @return Response HTTP Response
      */
     #[Route(name: 'report_index', methods: 'GET')]
-    public function index(ReportRepository $repository): Response
+    public function index(ReportRepository $reportRepository): Response
     {
-        $reports = $repository->findAll();
+        $reports = $reportRepository->queryAll();
 
         return $this->render('report/index.html.twig', ['reports' => $reports]);
     }
@@ -34,16 +35,13 @@ class ReportController extends AbstractController
     /**
      * Show action.
      *
-     * @param ReportRepository $repository Report repository
-     * @param int              $id         Id
+     * @param Report $report Report entity
      *
      * @return Response HTTP Response
      */
-    #[Route('/{id}', name: 'report_show', requirements: ['id' => '[1-9][0-9]*'], methods: 'GET')]
-    public function show(ReportRepository $repository, int $id): Response
+    #[Route('/{id}', name: 'report_show', requirements: ['id' => '[1-9]\d*'], methods: 'GET')]
+    public function show(Report $report): Response
     {
-        $report = $repository->findOneById($id);
-
-        return $this->render('report/show.html.twig', ['report' => $report, 'id' => $id]);
+        return $this->render('report/show.html.twig', ['report' => $report]);
     }
 }

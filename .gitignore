@@ -1,8 +1,7 @@
 .idea
 var
 vendor
-.php_cs.cache
-.phpunit.result.cache
+*.cache
 .env
 .env.test
 notes
