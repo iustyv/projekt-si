@@ -17,6 +17,11 @@
         <dt>{{ 'label.updated_at'|trans }}</dt>
         <dd>{{ report.updatedAt }}</dd>
     </dl>
+    <p>
+        <a href="{{ url('task_index') }}" title="{{ 'action.back_to_list'|trans }}">
+            {{ 'action.back_to_list'|trans }}
+        </a>
+    </p>
     {% else %}
     <p>{{ 'message.report_not_found'|trans }}</p>
     {% endif %}
