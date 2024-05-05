@@ -26,8 +26,8 @@
                 <tr>
                     <td>{{ report.id }}</td>
                     <td>{{ report.title }}</td>
-                    <td>{{ report.createdAt|date('Y/m/d') }}</td>
-                    <td>{{ report.updatedAt|date('Y/m/d') }}</td>
+                    <td>{{ report.createdAt|format_date('long') }}</td>
+                    <td>{{ report.updatedAt|format_date('long') }}</td>
                     <td>
                         <a href="{{ url('report_show', {id: report.id}) }}" title="{{ 'action.view'|trans }}">
                             {{ 'action.view'|trans }}

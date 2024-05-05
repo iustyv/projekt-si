@@ -13,9 +13,9 @@
         <dt>{{ 'label.title'|trans }}</dt>
         <dd>{{ report.title }}</dd>
         <dt>{{ 'label.created_at'|trans }}</dt>
-        <dd>{{ report.createdAt|date('Y/m/d') }}</dd>
+        <dd>{{ report.createdAt|format_date('long') }}</dd>
         <dt>{{ 'label.updated_at'|trans }}</dt>
-        <dd>{{ report.updatedAt|date('Y/m/d') }}</dd>
+        <dd>{{ report.updatedAt|format_date('long') }}</dd>
     </dl>
     <p>
         <a href="{{ url('report_index') }}" title="{{ 'action.back_to_list'|trans }}">
