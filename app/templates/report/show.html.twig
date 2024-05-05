@@ -13,12 +13,12 @@
         <dt>{{ 'label.title'|trans }}</dt>
         <dd>{{ report.title }}</dd>
         <dt>C{{ 'label.created_at'|trans }}</dt>
-        <dd>{{ report.createdAt }}</dd>
+        <dd>{{ report.createdAt|date('Y/m/d') }}</dd>
         <dt>{{ 'label.updated_at'|trans }}</dt>
-        <dd>{{ report.updatedAt }}</dd>
+        <dd>{{ report.updatedAt|date('Y/m/d') }}</dd>
     </dl>
     <p>
-        <a href="{{ url('task_index') }}" title="{{ 'action.back_to_list'|trans }}">
+        <a href="{{ url('report_index') }}" title="{{ 'action.back_to_list'|trans }}">
             {{ 'action.back_to_list'|trans }}
         </a>
     </p>
