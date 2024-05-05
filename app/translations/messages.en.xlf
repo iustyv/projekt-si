@@ -42,6 +42,14 @@
         <source>title.report_view</source>
         <target>Report view #%id%</target>
       </trans-unit>
+      <trans-unit id="action.view">
+        <source>action.view</source>
+        <target>View</target>
+      </trans-unit>
+      <trans-unit id="action.back_to_list">
+        <source>action.back_to_list</source>
+        <target>Back to list</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
