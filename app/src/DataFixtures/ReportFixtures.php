@@ -17,7 +17,7 @@ class ReportFixtures extends AbstractBaseFixtures
      */
     protected function loadData(): void
     {
-        for ($i = 0; $i < 10; ++$i) {
+        for ($i = 0; $i < 100; ++$i) {
             $report = new Report();
             $report->setTitle($this->faker->sentence);
             $report->setCreatedAt(

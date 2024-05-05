@@ -82,7 +82,7 @@ class Report
      *
      * @return \DateTimeImmutable|null Updated at
      */
-    public function getUpdateAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
     }
