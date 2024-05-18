@@ -48,7 +48,7 @@ class ReportController extends AbstractController
      * @return Response HTTP Response
      */
     #[Route('/{id}', name: 'report_show', requirements: ['id' => '[1-9]\d*'], methods: 'GET')]
-    public function show(Report $report): Response
+    public function show(Report $report = null): Response
     {
         return $this->render('report/show.html.twig', ['report' => $report]);
     }
