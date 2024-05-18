@@ -7,6 +7,8 @@ namespace App\Controller;
 
 use App\Entity\Report;
 use App\Repository\ReportRepository;
+use App\Service\CommentServiceInterface;
+use App\Service\ReportServiceInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,6 +22,13 @@ use Symfony\Component\Routing\Attribute\Route;
 class ReportController extends AbstractController
 {
     /**
+     * Constructor.
+     */
+    public function __construct(private readonly ReportServiceInterface $reportService, private readonly CommentServiceInterface $commentService)
+    {
+    }
+
+    /**
      * Index action.
      *
      * @param ReportRepository   $reportRepository Report repository
@@ -29,13 +38,9 @@ class ReportController extends AbstractController
      * @return Response HTTP Response
      */
     #[Route(name: 'report_index', methods: 'GET')]
-    public function index(ReportRepository $reportRepository, PaginatorInterface $paginator, #[MapQueryParameter] int $page = 1): Response
+    public function index(#[MapQueryParameter] int $page = 1): Response
     {
-        $pagination = $paginator->paginate(
-            $reportRepository->queryAll(),
-            $page,
-            ReportRepository::PAGINATOR_ITEMS_PER_PAGE
-        );
+        $pagination = $this->reportService->getPaginatedList($page);
 
         return $this->render('report/index.html.twig', ['pagination' => $pagination]);
     }
