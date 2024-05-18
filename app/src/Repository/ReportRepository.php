@@ -8,6 +8,8 @@ namespace App\Repository;
 use App\Entity\Category;
 use App\Entity\Report;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -66,6 +68,13 @@ class ReportRepository extends ServiceEntityRepository
             ->andWhere('report.category = :category')
             ->setParameter('category', $category)
             ->orderBy('report.updatedAt', 'DESC');
+    }
+
+    public function save(Report $report): void
+    {
+        assert($this->_em instanceof EntityManager);
+        $this->_em->persist($report);
+        $this->_em->flush();
     }
 
     /**

@@ -5,6 +5,7 @@
 
 namespace App\Service;
 
+use App\Entity\Report;
 use App\Repository\ReportRepository;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -49,5 +50,19 @@ class ReportService implements ReportServiceInterface
             $page ?? 1,
             self::PAGINATOR_ITEMS_PER_PAGE
         );
+    }
+
+    /**
+     * Save entity.
+     *
+     * @param Report $report Report entity
+     */
+    public function save(Report $report): void
+    {
+        if (null == $report->getId()) {
+            $report->setCreatedAt(new \DateTimeImmutable());
+        }
+        $report->setUpdatedAt(new \DateTimeImmutable());
+        $this->reportRepository->save($report);
     }
 }

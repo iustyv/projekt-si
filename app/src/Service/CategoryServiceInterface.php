@@ -31,4 +31,11 @@ interface CategoryServiceInterface
      * @return PaginationInterface
      */
     public function getPaginatedListOfReports(Category $category, ?int $page = 1): PaginationInterface;
+
+    /**
+     * Save entity.
+     *
+     * @param Category $category Category entity
+     */
+    public function save(Category $category): void;
 }

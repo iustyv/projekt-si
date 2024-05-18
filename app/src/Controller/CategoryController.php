@@ -6,8 +6,10 @@
 namespace App\Controller;
 
 use App\Entity\Category;
+use App\Form\Type\CategoryType;
 use App\Service\CategoryServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
@@ -56,5 +58,28 @@ class CategoryController extends AbstractController
         $reports = $this->categoryService->getPaginatedListOfReports($category, $page);
 
         return $this->render('category/show.html.twig', ['category' => $category, 'reports' => $reports]);
+    }
+
+    /**
+     * Create action.
+     *
+     * @param Request $request HTTP request
+     *
+     * @return Response HTTP response
+     */
+    #[Route('/create', name: 'category_create', methods: 'GET|POST')]
+    public function create(Request $request): Response
+    {
+        $category = new Category();
+        $form = $this->createForm(CategoryType::class, $category);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->categoryService->save($category);
+
+            return $this->redirectToRoute('category_index');
+        }
+
+        return $this->render('category/create.html.twig', ['form' => $form->createView()]);
     }
 }
