@@ -1,10 +1,18 @@
 <?php
+/**
+ * Category entity.
+ */
 
 namespace App\Entity;
 
 use App\Repository\CategoryRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Class Category.
+ *
+ * @psalm-suppress MissingConstructor
+ */
 #[ORM\Table(name: 'categories')]
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ORM\UniqueConstraint(name: 'uq_categories_title', columns: ['title'])]
@@ -13,8 +21,6 @@ class Category
 {
     /**
      * Primary key.
-     *
-     * @var int|null
      */
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -23,32 +29,24 @@ class Category
 
     /**
      * Created at.
-     *
-     * @var \DateTimeImmutable|null
      */
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
     /**
      * Updated at.
-     *
-     * @var \DateTimeImmutable|null
      */
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
     /**
      * Title.
-     *
-     * @var string|null
      */
     #[ORM\Column(length: 64)]
     private ?string $title = null;
 
     /**
      * Getter for id.
-     *
-     * @return int|null
      */
     public function getId(): ?int
     {
@@ -57,8 +55,6 @@ class Category
 
     /**
      * Getter for created at.
-     *
-     * @return \DateTimeImmutable|null
      */
     public function getCreatedAt(): ?\DateTimeImmutable
     {
@@ -67,8 +63,6 @@ class Category
 
     /**
      * Setter for created at.
-     *
-     * @param \DateTimeImmutable $createdAt
      */
     public function setCreatedAt(\DateTimeImmutable $createdAt): void
     {
@@ -77,8 +71,6 @@ class Category
 
     /**
      * Getter for updated at.
-     *
-     * @return \DateTimeImmutable|null
      */
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
@@ -87,8 +79,6 @@ class Category
 
     /**
      * Setter for updated at.
-     *
-     * @param \DateTimeImmutable $updatedAt
      */
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): void
     {
@@ -97,8 +87,6 @@ class Category
 
     /**
      * Getter for title.
-     *
-     * @return string|null
      */
     public function getTitle(): ?string
     {
@@ -107,8 +95,6 @@ class Category
 
     /**
      * Setter for title.
-     *
-     * @param string $title
      */
     public function setTitle(string $title): void
     {

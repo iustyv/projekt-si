@@ -24,7 +24,7 @@ class CommentFixtures extends AbstractBaseFixtures implements DependentFixtureIn
      */
     public function loadData(): void
     {
-        if (null === $this->manager || null === $this->faker) {
+        if (!$this->manager instanceof \Doctrine\Persistence\ObjectManager || !$this->faker instanceof \Faker\Generator) {
             return;
         }
 
@@ -32,9 +32,11 @@ class CommentFixtures extends AbstractBaseFixtures implements DependentFixtureIn
             $comment = new Comment();
             $comment->setContent($this->faker->realTextBetween(100, 250));
             $comment->setCreatedAt(
-                \DateTimeImmutable::createFromMutable($this->faker->dateTimeBetween('-100 days', '-1 days')));
+                \DateTimeImmutable::createFromMutable($this->faker->dateTimeBetween('-100 days', '-1 days'))
+            );
             $comment->setUpdatedAt(
-                \DateTimeImmutable::createFromMutable($this->faker->dateTimeBetween('-100 days', '-1 days')));
+                \DateTimeImmutable::createFromMutable($this->faker->dateTimeBetween('-100 days', '-1 days'))
+            );
             /** @var Report $report */
             $report = $this->getRandomReference('reports');
             $comment->setReport($report);

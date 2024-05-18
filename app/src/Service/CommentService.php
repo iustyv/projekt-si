@@ -29,8 +29,8 @@ class CommentService implements CommentServiceInterface
     /**
      * Constructor.
      *
-     * @param CommentRepository     $commentRepository Comment repository
-     * @param PaginatorInterface $paginator      Paginator
+     * @param CommentRepository  $commentRepository Comment repository
+     * @param PaginatorInterface $paginator         Paginator
      */
     public function __construct(private readonly CommentRepository $commentRepository, private readonly PaginatorInterface $paginator)
     {
@@ -39,8 +39,8 @@ class CommentService implements CommentServiceInterface
     /**
      * Get paginated list.
      *
-     * @param Report $report Report entity
-     * @param int $page Page number
+     * @param Report   $report Report entity
+     * @param int|null $page   Page number
      *
      * @return PaginationInterface<string, mixed> Paginated list
      */

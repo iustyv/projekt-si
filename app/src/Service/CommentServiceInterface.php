@@ -16,10 +16,10 @@ interface CommentServiceInterface
     /**
      * Get paginated list.
      *
-     * @param int $page Page number
+     * @param Report $report Report entity
+     * @param int    $page   Page number
      *
      * @return PaginationInterface<string, mixed> Paginated list
      */
     public function getPaginatedList(Report $report, int $page): PaginationInterface;
-
 }

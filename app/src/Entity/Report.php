@@ -132,8 +132,6 @@ class Report
 
     /**
      * Getter for description.
-     *
-     * @return string|null
      */
     public function getDescription(): ?string
     {
@@ -142,23 +140,25 @@ class Report
 
     /**
      * Setter for description.
-     *
-     * @param string|null $description
      */
     public function setDescription(?string $description): void
     {
         $this->description = $description;
     }
 
+    /**
+     * Getter for category.
+     */
     public function getCategory(): ?Category
     {
         return $this->category;
     }
 
-    public function setCategory(?Category $category): static
+    /**
+     * Setter for category.
+     */
+    public function setCategory(?Category $category): void
     {
         $this->category = $category;
-
-        return $this;
     }
 }

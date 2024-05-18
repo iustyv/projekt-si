@@ -6,10 +6,8 @@
 namespace App\Controller;
 
 use App\Entity\Report;
-use App\Repository\ReportRepository;
 use App\Service\CommentServiceInterface;
 use App\Service\ReportServiceInterface;
-use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
@@ -23,6 +21,9 @@ class ReportController extends AbstractController
 {
     /**
      * Constructor.
+     *
+     * @param ReportServiceInterface  $reportService  Report service interface
+     * @param CommentServiceInterface $commentService Comment service interface
      */
     public function __construct(private readonly ReportServiceInterface $reportService, private readonly CommentServiceInterface $commentService)
     {
@@ -31,9 +32,7 @@ class ReportController extends AbstractController
     /**
      * Index action.
      *
-     * @param ReportRepository   $reportRepository Report repository
-     * @param PaginatorInterface $paginator        Paginator
-     * @param int                $page             Page
+     * @param int $page Page
      *
      * @return Response HTTP Response
      */
@@ -49,11 +48,12 @@ class ReportController extends AbstractController
      * Show action.
      *
      * @param Report $report Report entity
+     * @param int    $page   Page number
      *
      * @return Response HTTP Response
      */
     #[Route('/{id}', name: 'report_show', requirements: ['id' => '[1-9]\d*'], methods: 'GET')]
-    public function show(Report $report = null, #[MapQueryParameter] int $page = 1): Response
+    public function show(?Report $report = null, #[MapQueryParameter] int $page = 1): Response
     {
         $comments = $this->commentService->getPaginatedList($report, $page);
 

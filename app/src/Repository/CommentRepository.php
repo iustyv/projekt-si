@@ -1,4 +1,7 @@
 <?php
+/**
+ * Comment repository.
+ */
 
 namespace App\Repository;
 
@@ -9,15 +12,23 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Class CommentRepository.
+ *
  * @extends ServiceEntityRepository<Comment>
  */
 class CommentRepository extends ServiceEntityRepository
 {
+    /**
+     * Constructor.
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Comment::class);
     }
 
+    /**
+     * Find all comments to report.
+     */
     public function findByReport(Report $report): array
     {
         return $this->getOrCreateQueryBuilder()
@@ -34,7 +45,7 @@ class CommentRepository extends ServiceEntityRepository
      *
      * @return QueryBuilder Query builder
      */
-    private function getOrCreateQueryBuilder(QueryBuilder $queryBuilder = null): QueryBuilder
+    private function getOrCreateQueryBuilder(?QueryBuilder $queryBuilder = null): QueryBuilder
     {
         return $queryBuilder ?? $this->createQueryBuilder('comment');
     }

@@ -28,8 +28,8 @@ class ReportService implements ReportServiceInterface
     /**
      * Constructor.
      *
-     * @param ReportRepository     $reportRepository Report repository
-     * @param PaginatorInterface $paginator      Paginator
+     * @param ReportRepository   $reportRepository Report repository
+     * @param PaginatorInterface $paginator        Paginator
      */
     public function __construct(private readonly ReportRepository $reportRepository, private readonly PaginatorInterface $paginator)
     {
@@ -38,7 +38,7 @@ class ReportService implements ReportServiceInterface
     /**
      * Get paginated list.
      *
-     * @param int $page Page number
+     * @param int|null $page Page number
      *
      * @return PaginationInterface<string, mixed> Paginated list
      */

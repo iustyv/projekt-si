@@ -1,10 +1,18 @@
 <?php
+/**
+ * Comment entity.
+ */
 
 namespace App\Entity;
 
 use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Class Comment.
+ *
+ * @psalm-suppress MissingConstructor
+ */
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 #[ORM\Table(name: 'comments')]
 class Comment
@@ -48,8 +56,6 @@ class Comment
 
     /**
      * Getter for id.
-     *
-     * @return int|null
      */
     public function getId(): ?int
     {
@@ -58,19 +64,14 @@ class Comment
 
     /**
      * Getter for created at.
-     *
-     * @return \DateTimeImmutable|null
      */
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-
     /**
      * Setter for created at.
-     *
-     * @param \DateTimeImmutable $createdAt
      */
     public function setCreatedAt(\DateTimeImmutable $createdAt): void
     {
@@ -79,8 +80,6 @@ class Comment
 
     /**
      * Getter for updated at.
-     *
-     * @return \DateTimeImmutable|null
      */
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
@@ -89,8 +88,6 @@ class Comment
 
     /**
      * Setter for updated at.
-     *
-     * @param \DateTimeImmutable $updatedAt
      */
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): void
     {
@@ -99,8 +96,6 @@ class Comment
 
     /**
      * Getter for content.
-     *
-     * @return string|null
      */
     public function getContent(): ?string
     {
@@ -109,8 +104,6 @@ class Comment
 
     /**
      * Setter for content.
-     *
-     * @param string $content
      */
     public function setContent(string $content): void
     {
@@ -119,8 +112,6 @@ class Comment
 
     /**
      * Getter for report.
-     *
-     * @return Report|null
      */
     public function getReport(): ?Report
     {
@@ -129,8 +120,6 @@ class Comment
 
     /**
      * Setter for report.
-     *
-     * @param Report|null $report
      */
     public function setReport(?Report $report): void
     {
