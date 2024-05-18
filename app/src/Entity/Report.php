@@ -47,8 +47,18 @@ class Report
     #[ORM\Column(type: 'string', length: 255)] // TODO change title length
     private ?string $title = null;
 
+    /**
+     * Description.
+     */
     #[ORM\Column(type: 'string', length: 512)]
     private ?string $description = null;
+
+    /**
+     * Category.
+     */
+    #[ORM\ManyToOne(targetEntity: Category::class, fetch: 'EXTRA_LAZY')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Category $category = null;
 
     /**
      * Getter for Id.
@@ -138,5 +148,17 @@ class Report
     public function setDescription(?string $description): void
     {
         $this->description = $description;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
+
+        return $this;
     }
 }

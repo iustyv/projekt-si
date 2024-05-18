@@ -16,6 +16,7 @@
             <tr>
                 <th>{{ knp_pagination_sortable(pagination, 'label.id'|trans, 'report.id') }}</th>
                 <th>{{ knp_pagination_sortable(pagination, 'label.title'|trans, 'report.title') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'label_category'|trans, 'category.title') }}</th>
                 <th>{{ knp_pagination_sortable(pagination, 'label.created_at'|trans, 'report.createdAt') }}</th>
                 <th>{{ knp_pagination_sortable(pagination, 'label.updated_at'|trans, 'report.updatedAt') }}</th>
             </tr>
@@ -25,6 +26,7 @@
                 <tr>
                     <td>{{ report.id }}</td>
                     <td><a href="{{ url('report_show', {id: report.id}) }}" title="{{ 'action.view'|trans }}" class="no_underline">{{ report.title }}</a></td>
+                    <td>{{ report.category.title }}</td>
                     <td>{{ report.createdAt|format_date('long') }}</td>
                     <td>{{ report.updatedAt|format_date('long') }}</td>
                 </tr>

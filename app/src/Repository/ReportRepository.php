@@ -41,7 +41,13 @@ class ReportRepository extends ServiceEntityRepository
      */
     public function queryAll(): QueryBuilder
     {
-        return $this->getOrCreateQueryBuilder()->orderBy('report.updatedAt', 'DESC');
+        return $this->getOrCreateQueryBuilder()
+            ->select(
+                'partial report.{id, createdAt, updatedAt, title}',
+                'partial category.{id, title}'
+            )
+            ->join('report.category', 'category')
+            ->orderBy('report.updatedAt', 'DESC');
     }
 
     /**

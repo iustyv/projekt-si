@@ -14,6 +14,8 @@
         <dd>{{ report.title }}</dd>
         <dt>{{ 'label.description'|trans }}</dt>
         <dd>{{ report.description }}</dd>
+        <dt>{{ 'label.category'|trans }}</dt>
+        <dd>{{  report.category.title }}</dd>
         <dt>{{ 'label.created_at'|trans }}</dt>
         <dd>{{ report.createdAt|format_date('long') }}</dd>
         <dt>{{ 'label.updated_at'|trans }}</dt>
