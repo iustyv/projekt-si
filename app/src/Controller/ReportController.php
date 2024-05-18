@@ -53,8 +53,10 @@ class ReportController extends AbstractController
      * @return Response HTTP Response
      */
     #[Route('/{id}', name: 'report_show', requirements: ['id' => '[1-9]\d*'], methods: 'GET')]
-    public function show(Report $report = null): Response
+    public function show(Report $report = null, #[MapQueryParameter] int $page = 1): Response
     {
-        return $this->render('report/show.html.twig', ['report' => $report]);
+        $comments = $this->commentService->getPaginatedList($report, $page);
+
+        return $this->render('report/show.html.twig', ['report' => $report, 'comments' => $comments]);
     }
 }
