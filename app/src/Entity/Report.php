@@ -47,6 +47,9 @@ class Report
     #[ORM\Column(type: 'string', length: 255)] // TODO change title length
     private ?string $title = null;
 
+    #[ORM\Column(type: 'string', length: 512)]
+    private ?string $description = null;
+
     /**
      * Getter for Id.
      *
@@ -115,5 +118,25 @@ class Report
     public function setTitle(?string $title): void
     {
         $this->title = $title;
+    }
+
+    /**
+     * Getter for description.
+     *
+     * @return string|null
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * Setter for description.
+     *
+     * @param string|null $description
+     */
+    public function setDescription(?string $description): void
+    {
+        $this->description = $description;
     }
 }
