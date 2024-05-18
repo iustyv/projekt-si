@@ -12,7 +12,10 @@
         <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
     {% endblock %}
 </head>
-<body>
+<body data-bs-theme="dark">
+{% block nav %}
+    {% include 'navigation.html.twig' %}
+{% endblock %}
 <main role="main" class="container-fluid">
     {#{% include 'default/_nav.html.twig' %}#}
     {# % include 'default/_flash_messages.html.twig' %}#}
