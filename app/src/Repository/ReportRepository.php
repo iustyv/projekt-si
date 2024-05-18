@@ -5,6 +5,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Category;
 use App\Entity\Report;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -49,6 +50,21 @@ class ReportRepository extends ServiceEntityRepository
                 'partial category.{id, title}'
             )
             ->join('report.category', 'category')
+            ->orderBy('report.updatedAt', 'DESC');
+    }
+
+    /**
+     * Find reports by category.
+     *
+     * @param Category $category Category entity
+     *
+     * @return QueryBuilder QueryBuilder
+     */
+    public function findByCategory(Category $category): QueryBuilder
+    {
+        return $this->getOrCreateQueryBuilder()
+            ->andWhere('report.category = :category')
+            ->setParameter('category', $category)
             ->orderBy('report.updatedAt', 'DESC');
     }
 
