@@ -19,7 +19,7 @@ class ReportFixtures extends AbstractBaseFixtures
     {
         for ($i = 0; $i < 100; ++$i) {
             $report = new Report();
-            $report->setTitle($this->faker->sentence);
+            $report->setTitle($this->faker->realTextBetween(20, 35));
             $report->setCreatedAt(
                 \DateTimeImmutable::createFromMutable($this->faker->dateTimeBetween('-100 days', '-1 days'))
             );
