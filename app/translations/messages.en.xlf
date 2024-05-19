@@ -18,6 +18,10 @@
         <source>label.content</source>
         <target>Content</target>
       </trans-unit>
+      <trans-unit id="label.description">
+        <source>label.description</source>
+        <target>Description</target>
+      </trans-unit>
       <trans-unit id="label.created_at">
         <source>label.created_at</source>
         <target>Created at</target>
@@ -25,6 +29,22 @@
       <trans-unit id="label.updated_at">
         <source>label.updated_at</source>
         <target>Updated at</target>
+      </trans-unit>
+      <trans-unit id="label.categories">
+        <source>label.categories</source>
+        <target>Categories</target>
+      </trans-unit>
+      <trans-unit id="label.category">
+        <source>label.category</source>
+        <target>Category</target>
+      </trans-unit>
+      <trans-unit id="label.reports">
+        <source>label.reports</source>
+        <target>Reports</target>
+      </trans-unit>
+      <trans-unit id="label.report">
+        <source>label.report</source>
+        <target>Report</target>
       </trans-unit>
       <trans-unit id="message.empty_list">
         <source>message.empty_list</source>
@@ -45,6 +65,18 @@
       <trans-unit id="action.view">
         <source>action.view</source>
         <target>View</target>
+      </trans-unit>
+      <trans-unit id="action.create">
+        <source>action.create</source>
+        <target>Create</target>
+      </trans-unit>
+      <trans-unit id="action.edit">
+        <source>action.edit</source>
+        <target>Edit</target>
+      </trans-unit>
+      <trans-unit id="action.delete">
+        <source>action.delete</source>
+        <target>Delete</target>
       </trans-unit>
       <trans-unit id="action.back_to_list">
         <source>action.back_to_list</source>
