@@ -2,17 +2,8 @@ p {
     color: red;
 }
 
-.no_underline {
+.knp-th a {
     text-decoration: none;
-}
-
-.list-no-style {
-    list-style-type: none;
-}
-
-.disp-flex-row {
-    display: flex;
-    flex-direction: row;
 }
 
 .col-gap10 {

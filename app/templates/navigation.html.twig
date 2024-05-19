@@ -1,8 +1,9 @@
 {% block nav %}
-    <nav>
-        <ul class="list-no-style disp-flex-row col-gap10">
-            <li><a href="{{ url('category_index') }}" class="no_underline">{{ 'label.categories'|trans }}</a></li>
-            <li><a href="{{ url('report_index') }}" class="no_underline">{{ 'label.reports'|trans }}</a></li>
+    <nav class="navbar bg-dark navbar-dark p-3">
+        <a class="navbar-brand">Bug app</a>
+        <ul class="navbar-nav d-flex flex-row col-gap10">
+            <li class="nav-item"><a href="{{ url('category_index') }}" class="nav-link">{{ 'label.categories'|trans }}</a></li>
+            <li class="nav-item"><a href="{{ url('report_index') }}" class="nav-link">{{ 'label.reports'|trans }}</a></li>
         </ul>
     </nav>
 {% endblock %}

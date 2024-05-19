@@ -7,31 +7,25 @@
 {% block body %}
     <h1>{{ 'title.category_list'|trans }}</h1>
     {% if pagination is defined and pagination.items|length %}
-
-        <div class="navigation text-center">
-            {{ knp_pagination_render(pagination) }}
-        </div>
-
         <table class="table table-striped">
             <thead>
             <tr>
-                <th>{{ knp_pagination_sortable(pagination, 'label.id'|trans, 'category.id') }}</th>
-                <th>{{ knp_pagination_sortable(pagination, 'label.title'|trans, 'category.title') }}</th>
-                <th>{{ knp_pagination_sortable(pagination, 'label.created_at'|trans, 'category.createdAt') }}</th>
-                <th>{{ knp_pagination_sortable(pagination, 'label.updated_at'|trans, 'category.updatedAt') }}</th>
+                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.title'|trans, 'category.title') }}</th>
+                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.created_at'|trans, 'category.createdAt') }}</th>
+                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.updated_at'|trans, 'category.updatedAt') }}</th>
             </tr>
             </thead>
             <tbody>
             {% for category in pagination.items %}
-                <tr>
-                    <td>{{ category.id }}</td>
-                    <td><a href="{{ url('category_show', {id: category.id}) }}" title="{{ 'action.view'|trans }}" class="no_underline">{{ category.title }}</a></td>
+                <tr class="rounded">
+                    <td><a href="{{ url('category_show', {id: category.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ category.title }}</a></td>
                     <td>{{ category.createdAt|format_date('long') }}</td>
                     <td>{{ category.updatedAt|format_date('long') }}</td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
+        <a href="{{ url('category_create') }}" class="btn btn-primary my-2">{{ 'action.create'|trans }}</a>
 
         <div class="navigation text-center">
             {{ knp_pagination_render(pagination) }}

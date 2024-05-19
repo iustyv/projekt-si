@@ -7,25 +7,19 @@
 {% block body %}
     <h1>{{ 'title.report_list'|trans }}</h1>
     {% if pagination is defined and pagination.items|length %}
-        <div class="navigation text-center">
-            {{ knp_pagination_render(pagination) }}
-        </div>
-
         <table class="table table-striped">
             <thead>
             <tr>
-                <th>{{ knp_pagination_sortable(pagination, 'label.id'|trans, 'report.id') }}</th>
-                <th>{{ knp_pagination_sortable(pagination, 'label.title'|trans, 'report.title') }}</th>
-                <th>{{ knp_pagination_sortable(pagination, 'label_category'|trans, 'category.title') }}</th>
-                <th>{{ knp_pagination_sortable(pagination, 'label.created_at'|trans, 'report.createdAt') }}</th>
-                <th>{{ knp_pagination_sortable(pagination, 'label.updated_at'|trans, 'report.updatedAt') }}</th>
+                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.title'|trans, 'report.title') }}</th>
+                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.category'|trans, 'category.title') }}</th>
+                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.created_at'|trans, 'report.createdAt') }}</th>
+                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.updated_at'|trans, 'report.updatedAt') }}</th>
             </tr>
             </thead>
             <tbody>
             {% for report in pagination.items %}
                 <tr>
-                    <td>{{ report.id }}</td>
-                    <td><a href="{{ url('report_show', {id: report.id}) }}" title="{{ 'action.view'|trans }}" class="no_underline">{{ report.title }}</a></td>
+                    <td><a href="{{ url('report_show', {id: report.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ report.title }}</a></td>
                     <td>{{ report.category.title }}</td>
                     <td>{{ report.createdAt|format_date('long') }}</td>
                     <td>{{ report.updatedAt|format_date('long') }}</td>
@@ -33,6 +27,7 @@
             {% endfor %}
             </tbody>
         </table>
+        <a href="{{ url('report_create') }}" class="btn btn-primary my-2">{{ 'action.create'|trans }}</a>
 
         <div class="navigation text-center">
             {{ knp_pagination_render(pagination) }}

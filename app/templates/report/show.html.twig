@@ -10,8 +10,6 @@
     <dl class="dl-horizontal">
         <dt>{{ 'label.id'|trans }}</dt>
         <dd>{{ report.id }}</dd>
-        <dt>{{ 'label.title'|trans }}</dt>
-        <dd>{{ report.title }}</dd>
         <dt>{{ 'label.description'|trans }}</dt>
         <dd>{{ report.description }}</dd>
         <dt>{{ 'label.category'|trans }}</dt>
@@ -21,25 +19,21 @@
         <dt>{{ 'label.updated_at'|trans }}</dt>
         <dd>{{ report.updatedAt|format_date('long') }}</dd>
     </dl>
+    <a href="{{ url('report_edit', {id: report.id}) }}" class="btn btn-primary">{{ 'action.edit'|trans }}</a>
     {% if comments is defined and comments.items|length %}
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>{{ 'label.content'|trans }}</th>
-                <th>{{ 'label.created_at'|trans }}</th>
-                <th>{{ 'label.updated_at'|trans }}</th>
-            </tr>
-            </thead>
-            <tbody>
+        <div class="mt-5">
+            <p class="h5">{{ 'label.comments'|trans }}</p>
             {% for comment in comments.items %}
-                <tr>
-                    <td>{{ comment.content }}</td>
-                    <td>{{ comment.createdAt|format_date('long') }}</td>
-                    <td>{{ comment.updatedAt|format_date('long') }}</td>
-                </tr>
+            <div class="border rounded p-3 mb-2">
+                <div class="pb-1">
+                    <span class="fw-bold">Username</span> &bull; <span>{{ comment.createdAt|format_date('long') }}</span>
+                </div>
+                <div>
+                    {{ comment.content }}
+                </div>
+            </div>
             {% endfor %}
-            </tbody>
-        </table>
+        </div>
 
         <div class="navigation text-center">
             {{ knp_pagination_render(comments) }}
@@ -47,11 +41,6 @@
     {% else %}
         {{ 'message.empty_list'|trans }}
     {% endif %}
-    <p>
-        <a href="{{ url('report_index') }}" title="{{ 'action.back_to_list'|trans }}">
-            {{ 'action.back_to_list'|trans }}
-        </a>
-    </p>
     {% else %}
     <p>{{ 'message.report_not_found'|trans }}</p>
     {% endif %}

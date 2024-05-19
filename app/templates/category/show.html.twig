@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    {{ 'title.category_details'|trans({'%id%': category.id|default('')}) }}
+    {{  category.title|default('message.category_not_found'|trans) }}
 {% endblock %}
 
 {% block body %}
-    <h1>{{ 'title.category_details'|trans({'%id%': category.id|default('')}) }}</h1>
+    <h1>{{  category.title|default('message.category_not_found'|trans) }}</h1>
     {% if category is defined and category|length %}
         <dl class="dl-horizontal">
             <dt>{{ 'label.id'|trans }}</dt>
@@ -14,15 +14,16 @@
             <dd>{{ category.createdAt|format_date('long') }}</dd>
             <dt>{{ 'label.updated_at'|trans }}</dt>
             <dd>{{ category.updatedAt|format_date('long') }}</dd>
-            <dt>{{ 'label.title'|trans }}</dt>
-            <dd>{{  category.title }}</dd>
         </dl>
+        <div class="mb-5">
+            <a href="{{ url('category_edit', {id: category.id}) }}" class="btn btn-primary">{{ 'action.edit'|trans }}</a>
+            <a href="{{ url('category_delete', {id: category.id}) }}" class="btn btn-danger float-right">{{ 'action.delete'|trans }}</a>
+        </div>
         {% if reports is defined and reports.items|length %}
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th>{{ 'label.id'|trans }}</th>
-                    <th>{{ 'label.title'|trans }}</th>
+                    <th>{{ 'label.report'|trans }}</th>
                     <th>{{ 'label.created_at'|trans }}</th>
                     <th>{{ 'label.updated_at'|trans }}</th>
                 </tr>
@@ -30,8 +31,7 @@
                 <tbody>
                 {% for report in reports.items %}
                     <tr>
-                        <td>{{ report.id }}</td>
-                        <td><a href="{{ url('report_show', {id: report.id}) }}" title="{{ 'action.view'|trans }}" class="no_underline">{{ report.title }}</a></td>
+                        <td><a href="{{ url('report_show', {id: report.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ report.title }}</a></td>
                         <td>{{ report.createdAt|format_date('long') }}</td>
                         <td>{{ report.updatedAt|format_date('long') }}</td>
                     </tr>
@@ -45,11 +45,6 @@
         {% else %}
             {{ 'message.empty_list'|trans }}
         {% endif %}
-        <p>
-            <a href="{{ url('category_index') }}" title="{{ 'action.back_to_list'|trans }}">
-                {{ 'action.back_to_list'|trans }}
-            </a>
-        </p>
     {% else %}
         <p>
             {{ 'message.record_not_found'|trans }}
