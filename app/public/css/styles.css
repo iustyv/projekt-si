@@ -18,3 +18,7 @@ p {
 .col-gap10 {
     column-gap: 10px;
 }
+
+.width-fit {
+    width: fit-content;
+}
