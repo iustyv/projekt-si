@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class ReportController.
@@ -26,8 +27,9 @@ class ReportController extends AbstractController
      *
      * @param ReportServiceInterface  $reportService  Report service interface
      * @param CommentServiceInterface $commentService Comment service interface
+     * @param TranslatorInterface $translator Translator interface
      */
-    public function __construct(private readonly ReportServiceInterface $reportService, private readonly CommentServiceInterface $commentService)
+    public function __construct(private readonly ReportServiceInterface $reportService, private readonly CommentServiceInterface $commentService, private readonly TranslatorInterface $translator)
     {
     }
 
@@ -79,9 +81,43 @@ class ReportController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->reportService->save($report);
 
+            $this->addFlash('success', $this->translator->trans('message.created_successfully'));
+
             return $this->redirectToRoute('report_index');
         }
 
         return $this->render('report/create.html.twig', ['form' => $form->createView()]);
+    }
+
+    /**
+     * Edit action.
+     *
+     * @param Request  $request  HTTP request
+     * @param Report $report Report entity
+     *
+     * @return Response HTTP response
+     */
+    #[Route('/{id}/edit', name: 'report_edit', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
+    public function edit(Request $request, Report $report): Response
+    {
+        $form = $this->createForm(
+            ReportType::class,
+            $report,
+            [
+                'method' => 'PUT',
+                'action' => $this->generateUrl('report_edit', ['id' => $report->getId()]),
+            ]
+        );
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->reportService->save($report);
+
+            $this->addFlash('success', $this->translator->trans('message.edited_successfully'));
+
+            return $this->redirectToRoute('report_index');
+        }
+
+        return $this->render('report/edit.html.twig', ['form' => $form->createView(), 'report' => $report]);
     }
 }
