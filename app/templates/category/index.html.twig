@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    {{ 'title.category_list'|trans }}
+    {{ 'label.categories'|trans }}
 {% endblock %}
 
 {% block body %}
-    <h1>{{ 'title.category_list'|trans }}</h1>
+    <h1 class="my-3">{{ 'label.categories'|trans }}</h1>
     {% if pagination is defined and pagination.items|length %}
         <table class="table table-striped">
             <thead>

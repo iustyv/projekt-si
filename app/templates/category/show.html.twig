@@ -23,9 +23,9 @@
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th>{{ 'label.report'|trans }}</th>
-                    <th>{{ 'label.created_at'|trans }}</th>
-                    <th>{{ 'label.updated_at'|trans }}</th>
+                    <th class="knp-th">{{ knp_pagination_sortable(reports, 'label.title'|trans, 'report.title') }}</th>
+                    <th class="knp-th">{{ knp_pagination_sortable(reports, 'label.created_at'|trans, 'report.createdAt') }}</th>
+                    <th class="knp-th">{{ knp_pagination_sortable(reports, 'label.updated_at'|trans, 'report.updatedAt') }}</th>
                 </tr>
                 </thead>
                 <tbody>

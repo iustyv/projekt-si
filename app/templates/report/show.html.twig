@@ -7,13 +7,12 @@
 {% block body %}
     <h1>{{ report.title|default('message.report_not_found'|trans) }}</h1>
     {% if report is defined and report|length %}
-    <dl class="dl-horizontal">
+    <p class="fs-6 mt-3">{{ report.description }}</p>
+    <dl class="dl-horizontal mt-4">
         <dt>{{ 'label.id'|trans }}</dt>
         <dd>{{ report.id }}</dd>
-        <dt>{{ 'label.description'|trans }}</dt>
-        <dd>{{ report.description }}</dd>
         <dt>{{ 'label.category'|trans }}</dt>
-        <dd>{{  report.category.title }}</dd>
+        <dd><a href="{{ url('category_show', {id: report.category.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ report.category.title }}</a></dd>
         <dt>{{ 'label.created_at'|trans }}</dt>
         <dd>{{ report.createdAt|format_date('long') }}</dd>
         <dt>{{ 'label.updated_at'|trans }}</dt>
@@ -28,9 +27,7 @@
                 <div class="pb-1">
                     <span class="fw-bold">Username</span> &bull; <span>{{ comment.createdAt|format_date('long') }}</span>
                 </div>
-                <div>
-                    {{ comment.content }}
-                </div>
+                <div>{{ comment.content }}</div>
             </div>
             {% endfor %}
         </div>
