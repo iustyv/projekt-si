@@ -69,7 +69,7 @@ class ReportController extends AbstractController
      *
      * @return Response HTTP response
      */
-    #[Route('/create', name: 'category_create', methods: 'GET|POST')]
+    #[Route('/create', name: 'report_create', methods: 'GET|POST')]
     public function create(Request $request): Response
     {
         $report = new Report();
