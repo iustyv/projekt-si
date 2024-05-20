@@ -5,6 +5,7 @@
 
 namespace App\Service;
 
+use App\Entity\Comment;
 use App\Entity\Report;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 
@@ -22,4 +23,13 @@ interface CommentServiceInterface
      * @return PaginationInterface<string, mixed> Paginated list
      */
     public function getPaginatedList(Report $report, int $page): PaginationInterface;
+
+    /**
+     * Save entity.
+     *
+     * @param Comment $comment Comment entity
+     * @param Report $report Report entity
+     *
+     */
+    public function save(Comment $comment, Report $report): void;
 }

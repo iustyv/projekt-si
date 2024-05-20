@@ -18,26 +18,37 @@
         <dt>{{ 'label.updated_at'|trans }}</dt>
         <dd>{{ report.updatedAt|format_date('long') }}</dd>
     </dl>
+
     <a href="{{ url('report_edit', {id: report.id}) }}" class="btn btn-primary">{{ 'action.edit'|trans }}</a>
+    <a href="{{ url('comment_create', {id: report.id}) }}" class="btn btn-primary">{{ 'action.comment'|trans }}</a>
+
+    <div class="mt-5">
+    {% if form is defined and form|length %}
+        {% include 'default/_trial_form.html.twig' with {
+            form: form,
+            submit_label: 'action.create'|trans,
+            cancel_path: path('report_show', {id :report.id})
+        } %}
+    {% endif %}
+
     {% if comments is defined and comments.items|length %}
-        <div class="mt-5">
-            <p class="h5">{{ 'label.comments'|trans }}</p>
+            <p class="h5 mt-3">{{ 'label.comments'|trans }}</p>
             {% for comment in comments.items %}
             <div class="border rounded p-3 mb-2">
                 <div class="pb-1">
                     <span class="fw-bold">Username</span> &bull; <span>{{ comment.createdAt|format_date('long') }}</span>
-                </div>
+                </div>{# TODO add usernames to placeholder #}
                 <div>{{ comment.content }}</div>
             </div>
             {% endfor %}
-        </div>
 
-        <div class="navigation text-center">
-            {{ knp_pagination_render(comments) }}
-        </div>
+            <div class="navigation text-center">
+                {{ knp_pagination_render(comments) }}
+            </div>
     {% else %}
         {{ 'message.empty_list'|trans }}
     {% endif %}
+    </div>
     {% else %}
     <p>{{ 'message.report_not_found'|trans }}</p>
     {% endif %}

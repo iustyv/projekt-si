@@ -9,3 +9,11 @@
 .width-fit {
     width: fit-content;
 }
+
+textarea {
+    resize: none;
+}
+
+.form-block div {
+    display: block;
+}

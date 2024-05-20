@@ -38,6 +38,10 @@
         <source>label.category</source>
         <target>Category</target>
       </trans-unit>
+      <trans-unit id="label.comments">
+        <source>label.comments</source>
+        <target>Comments</target>
+      </trans-unit>
       <trans-unit id="label.reports">
         <source>label.reports</source>
         <target>Reports</target>
@@ -77,6 +81,14 @@
       <trans-unit id="action.delete">
         <source>action.delete</source>
         <target>Delete</target>
+      </trans-unit>
+      <trans-unit id="action.comment">
+        <source>action.comment</source>
+        <target>Comment</target>
+      </trans-unit>
+      <trans-unit id="action.cancel">
+        <source>action.cancel</source>
+        <target>Cancel</target>
       </trans-unit>
       <trans-unit id="action.back_to_list">
         <source>action.back_to_list</source>

@@ -5,6 +5,7 @@
 
 namespace App\Service;
 
+use App\Entity\Comment;
 use App\Entity\Report;
 use App\Repository\CommentRepository;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -51,5 +52,20 @@ class CommentService implements CommentServiceInterface
             $page ?? 1,
             self::PAGINATOR_ITEMS_PER_PAGE
         );
+    }
+
+    /**
+     * Save entity.
+     *
+     * @param Comment $comment Comment entity
+     */
+    public function save(Comment $comment, Report $report): void
+    {
+        if (null == $comment->getId()) {
+            $comment->setCreatedAt(new \DateTimeImmutable());
+            $comment->setReport($report);
+        }
+        $comment->setUpdatedAt(new \DateTimeImmutable());
+        $this->commentRepository->save($comment);
     }
 }
