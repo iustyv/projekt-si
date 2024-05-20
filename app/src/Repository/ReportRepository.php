@@ -70,6 +70,27 @@ class ReportRepository extends ServiceEntityRepository
             ->orderBy('report.updatedAt', 'DESC');
     }
 
+    /**
+     * Count reports by category.
+     *
+     * @param Category $category Category
+     *
+     * @return int Number of reports in category
+     *
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function countByCategory(Category $category): int
+    {
+        $qb = $this->getOrCreateQueryBuilder();
+
+        return $qb->select($qb->expr()->countDistinct('report.id'))
+            ->where('report.category = :category')
+            ->setParameter(':category', $category)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     public function save(Report $report): void
     {
         assert($this->_em instanceof EntityManager);
