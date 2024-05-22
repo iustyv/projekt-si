@@ -8,6 +8,7 @@ namespace App\Entity;
 use App\Repository\ReportRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Report.
@@ -32,6 +33,7 @@ class Report
      * @psalm-suppress PropertyNotSetInConstructor
      */
     #[ORM\Column(type: 'datetime_immutable')]
+    #[Assert\Type(\DateTimeImmutable::class)]
     #[Gedmo\Timestampable(on: 'create')]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -41,6 +43,7 @@ class Report
      * @psalm-suppress PropertyNotSetInConstructor
      */
     #[ORM\Column(type: 'datetime_immutable')]
+    #[Assert\Type(\DateTimeImmutable::class)]
     #[Gedmo\Timestampable(on: 'update')]
     private ?\DateTimeImmutable $updatedAt = null;
 
@@ -48,12 +51,18 @@ class Report
      * Title.
      */
     #[ORM\Column(type: 'string', length: 64)]
+    #[Assert\Type('string')]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 1, max: 64)]
     private ?string $title = null;
 
     /**
      * Description.
      */
     #[ORM\Column(type: 'string', length: 512)]
+    #[Assert\Type('string')]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 1, max: 512)]
     private ?string $description = null;
 
     /**
@@ -61,6 +70,8 @@ class Report
      */
     #[ORM\ManyToOne(targetEntity: Category::class, fetch: 'EXTRA_LAZY')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\Type(Category::class)]
+    #[Assert\NotBlank]
     private ?Category $category = null;
 
     /**

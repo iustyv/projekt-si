@@ -6,16 +6,22 @@
 namespace App\Form\Type;
 
 use App\Entity\Category;
+use App\Repository\CategoryRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class CategoryType.
  */
 class CategoryType extends AbstractType
 {
+    public function __construct(private readonly TranslatorInterface $translator)
+    {
+    }
+
     /**
      * Builds the form.
      *
@@ -29,13 +35,16 @@ class CategoryType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $title = $this->translator->trans('label.title').' *';
+
         $builder->add(
             'title',
             TextType::class,
             [
-                'label' => 'label.title',
+                'label' => $title,
                 'required' => true,
                 'attr' => ['max_length' => 64],
+                'label_attr' => ['class' => 'fw-bold'],
             ]);
     }
 

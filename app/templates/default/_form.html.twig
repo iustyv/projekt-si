@@ -14,6 +14,7 @@ parameters:
 
 {% block body %}
     <h1>{{ page_title }}</h1>
+    <p>{{ 'message.fill_out_required'|trans }}</p>
     {{ form_start(form) }}
     {#{% if false == form.vars.valid %}
           {% include 'default/_single_alert_message.html.twig' with {

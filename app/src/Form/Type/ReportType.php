@@ -7,18 +7,24 @@ namespace App\Form\Type;
 
 use App\Entity\Category;
 use App\Entity\Report;
+use App\Repository\CategoryRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class ReportType.
  */
 class ReportType extends AbstractType
 {
+    public function __construct(private readonly TranslatorInterface $translator)
+    {
+    }
+
     /**
      * Builds the form.
      *
@@ -32,25 +38,31 @@ class ReportType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $title = $this->translator->trans('label.title').' *';
+        $description = $this->translator->trans('label.description').' *';
+        $category = $this->translator->trans('label.category').' *';
+
         $builder
             ->add(
             'title',
             TextType::class,
             [
-                'label' => 'label.title',
+                'label' => $title,
                 'required' => true,
                 'attr' => ['max_length' => 64],
+                'label_attr' => ['class' => 'fw-bold'],
             ])
             ->add(
                 'description',
                 TextareaType::class,
                 [
-                    'label' => 'label.description',
+                    'label' => $description,
                     'required' => true,
                     'attr' => [
                         'max_length' => 500,
                         'rows' => 6
                     ],
+                    'label_attr' => ['class' => 'fw-bold']
                 ])
             ->add(
                 'category',
@@ -60,9 +72,9 @@ class ReportType extends AbstractType
                     'choice_label' => function ($category): string {
                         return $category->getTitle();
                     },
-                    'label' => 'label.category',
-                    'placeholder' => 'label.none',
+                    'label' => $category,
                     'required' => true,
+                    'label_attr' => ['class' => 'fw-bold']
                 ]
             );
         ;
