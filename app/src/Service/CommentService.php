@@ -62,10 +62,8 @@ class CommentService implements CommentServiceInterface
     public function save(Comment $comment, Report $report): void
     {
         if (null == $comment->getId()) {
-            $comment->setCreatedAt(new \DateTimeImmutable());
             $comment->setReport($report);
         }
-        $comment->setUpdatedAt(new \DateTimeImmutable());
         $this->commentRepository->save($comment);
     }
 }

@@ -59,10 +59,6 @@ class ReportService implements ReportServiceInterface
      */
     public function save(Report $report): void
     {
-        if (null == $report->getId()) {
-            $report->setCreatedAt(new \DateTimeImmutable());
-        }
-        $report->setUpdatedAt(new \DateTimeImmutable());
         $this->reportRepository->save($report);
     }
 }
