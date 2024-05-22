@@ -41,6 +41,12 @@ class ReportFixtures extends AbstractBaseFixtures implements DependentFixtureInt
             $category = $this->getRandomReference('categories');
             $report->setCategory($category);
 
+            $tagNum = $this->faker->numberBetween(1, 6);
+            for($j=0; $j<$tagNum; ++$j) {
+                $tag = $this->getRandomReference('tags');
+                $report->addTag($tag);
+            }
+
             return $report;
         });
 
@@ -57,6 +63,9 @@ class ReportFixtures extends AbstractBaseFixtures implements DependentFixtureInt
      */
     public function getDependencies(): array
     {
-        return [CategoryFixtures::class];
+        return [
+            CategoryFixtures::class,
+            TagFixtures::class
+        ];
     }
 }

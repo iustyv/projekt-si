@@ -7,6 +7,7 @@ namespace App\Form\Type;
 
 use App\Entity\Category;
 use App\Entity\Report;
+use App\Entity\Tag;
 use App\Repository\CategoryRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -74,10 +75,25 @@ class ReportType extends AbstractType
                     },
                     'label' => $category,
                     'required' => true,
+                    'placeholder' => 'label.choose_category',
                     'label_attr' => ['class' => 'fw-bold']
                 ]
+            )
+            ->add(
+                'tags',
+                EntityType::class,
+                [
+                    'class' => Tag::class,
+                    'choice_label' => function ($tag): string {
+                        return $tag->getTitle();
+                    },
+                    'label' => 'label.tags',
+                    'placeholder' => 'label.choose_tags',
+                    'required' => false,
+                    'expanded' => true,
+                    'multiple' => true,
+                ]
             );
-        ;
     }
 
     /**

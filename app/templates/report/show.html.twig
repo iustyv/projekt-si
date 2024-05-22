@@ -17,6 +17,12 @@
         <dd>{{ report.createdAt|format_date('long') }}</dd>
         <dt>{{ 'label.updated_at'|trans }}</dt>
         <dd>{{ report.updatedAt|format_date('long') }}</dd>
+        <dt>{{ 'label.tags'|trans }}</dt>
+        <dd>
+            {% for tag in report.tags %}
+                {{ tag.title }}{% if not loop.last %}, {% endif %}
+            {% endfor %}
+        </dd>
     </dl>
 
     <a href="{{ url('report_edit', {id: report.id}) }}" class="btn btn-primary">{{ 'action.edit'|trans }}</a>
