@@ -44,7 +44,7 @@ class Report
     /**
      * Title.
      */
-    #[ORM\Column(type: 'string', length: 255)] // TODO change title length
+    #[ORM\Column(type: 'string', length: 64)]
     private ?string $title = null;
 
     /**
