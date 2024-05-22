@@ -65,7 +65,6 @@ class ReportType extends AbstractType
                     'required' => true,
                 ]
             );
-            // TODO add a category field
         ;
     }
 
