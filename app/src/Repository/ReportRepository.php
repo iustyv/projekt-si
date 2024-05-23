@@ -23,13 +23,6 @@ use Doctrine\Persistence\ManagerRegistry;
 class ReportRepository extends ServiceEntityRepository
 {
     /**
-     * Items per page.
-     *
-     * @constant int
-     */
-    public const PAGINATOR_ITEMS_PER_PAGE = 10;
-
-    /**
      * Constructor.
      *
      * @param ManagerRegistry $registry Manager registry
@@ -95,6 +88,18 @@ class ReportRepository extends ServiceEntityRepository
     {
         assert($this->_em instanceof EntityManager);
         $this->_em->persist($report);
+        $this->_em->flush();
+    }
+
+    /**
+     * Delete entity.
+     *
+     * @param Report $report Report entity
+     */
+    public function delete(Report $report): void
+    {
+        assert($this->_em instanceof EntityManager);
+        $this->_em->remove($report);
         $this->_em->flush();
     }
 

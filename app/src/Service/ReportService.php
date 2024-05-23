@@ -24,7 +24,7 @@ class ReportService implements ReportServiceInterface
      *
      * @constant int
      */
-    private const PAGINATOR_ITEMS_PER_PAGE = 10;
+    private const PAGINATOR_ITEMS_PER_PAGE = 6;
 
     /**
      * Constructor.
@@ -60,5 +60,15 @@ class ReportService implements ReportServiceInterface
     public function save(Report $report): void
     {
         $this->reportRepository->save($report);
+    }
+
+    /**
+     * Delete entity.
+     *
+     * @param Report $report
+     */
+    public function delete(Report $report): void
+    {
+        $this->reportRepository->delete($report);
     }
 }

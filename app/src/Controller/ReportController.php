@@ -120,4 +120,32 @@ class ReportController extends AbstractController
 
         return $this->render('report/edit.html.twig', ['form' => $form->createView(), 'report' => $report]);
     }
+
+    /**
+     * Delete action.
+     *
+     * @param Request  $request  HTTP request
+     * @param Report $report Report entity
+     *
+     * @return Response HTTP response
+     */
+    #[Route('/{id}/delete', name: 'report_delete', requirements: ['id' => '[1-9]\d*'], methods: 'GET|DELETE')]
+    public function delete(Request $request, Report $report): Response
+    {
+        $form = $this->createForm(ReportType::class, $report, [
+            'method' => 'DELETE',
+            'action' => $this->generateUrl('report_delete', ['id' => $report->getId()]),
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->reportService->delete($report);
+
+            $this->addFlash('success', $this->translator->trans('message.deleted_successfully'));
+
+            return $this->redirectToRoute('report_index');
+        }
+
+        return $this->render('report/delete.html.twig', ['form' => $form->createView(), 'report' => $report,]);
+    }
 }

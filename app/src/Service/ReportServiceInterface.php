@@ -28,4 +28,11 @@ interface ReportServiceInterface
      * @param Report $report Report entity
      */
     public function save(Report $report): void;
+
+    /**
+     * Delete entity.
+     *
+     * @param Report $report
+     */
+    public function delete(Report $report): void;
 }
