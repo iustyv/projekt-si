@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{  tag.title|default('message.tag_not_found'|trans) }}
+{% endblock %}
+
+{% block body %}
+    <h1>{{  tag.title|default('message.tag_not_found'|trans) }}</h1>
+    {% if tag is defined and tag|length %}
+        <dl class="dl-horizontal">
+            <dt>{{ 'label.id'|trans }}</dt>
+            <dd>{{ tag.id }}</dd>
+            <dt>{{ 'label.created_at'|trans }}</dt>
+            <dd>{{ tag.createdAt|format_date('long') }}</dd>
+            <dt>{{ 'label.updated_at'|trans }}</dt>
+            <dd>{{ tag.updatedAt|format_date('long') }}</dd>
+        </dl>
+        <div class="mb-5">
+            <a href="{{ url('tag_edit', {id: tag.id}) }}" class="btn btn-primary">{{ 'action.edit'|trans }}</a>
+            <a href="{{ url('tag_delete', {id: tag.id}) }}" class="btn btn-danger float-right">{{ 'action.delete'|trans }}</a>
+        </div>
+    {% else %}
+        <p>
+            {{ 'message.record_not_found'|trans }}
+        </p>
+    {% endif %}
+{% endblock %}

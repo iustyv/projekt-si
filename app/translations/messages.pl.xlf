@@ -50,6 +50,10 @@
         <source>label.report</source>
         <target>Zgłoszenie</target>
       </trans-unit>
+      <trans-unit id="label.tags">
+        <source>label.tags</source>
+        <target>Tagi</target>
+      </trans-unit>
       <trans-unit id="message.empty_list">
         <source>message.empty_list</source>
         <target>Lista jest pusta.</target>
@@ -57,6 +61,10 @@
       <trans-unit id="message.report_not_found">
         <source>message.report_not_found</source>
         <target>Nie znaleziono zgłoszenia.</target>
+      </trans-unit>
+      <trans-unit id="message.tag_invalid_characters">
+        <source>message.tag_invalid_characters</source>
+        <target>Pole musi zawierać tylko litery.</target>
       </trans-unit>
       <trans-unit id="title.report_list">
         <source>title.report_list</source>

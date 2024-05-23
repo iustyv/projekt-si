@@ -18,6 +18,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class TagRepository extends ServiceEntityRepository
 {
+
     /**
      * Constructor.
      *
@@ -36,6 +37,24 @@ class TagRepository extends ServiceEntityRepository
     public function queryAll(): QueryBuilder
     {
         return $this->getOrCreateQueryBuilder()->orderBy('tag.updatedAt', 'DESC');
+    }
+
+    /**
+     * Find tag by title.
+     *
+     * @param string $title
+     *
+     * @return Tag|null
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findOneByTitle(string $title): ?Tag
+    {
+        return $this->getOrCreateQueryBuilder()
+            ->andWhere('tag.title = :title')
+            ->setParameter('title', $title)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**

@@ -7,8 +7,7 @@ namespace App\Form\Type;
 
 use App\Entity\Category;
 use App\Entity\Report;
-use App\Entity\Tag;
-use App\Repository\CategoryRepository;
+use App\Form\DataTransformer\TagsDataTransformer;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -16,13 +15,14 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class ReportType.
  */
 class ReportType extends AbstractType
 {
-    public function __construct(private readonly TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator, private readonly TagsDataTransformer $tagsDataTransformer)
     {
     }
 
@@ -42,6 +42,8 @@ class ReportType extends AbstractType
         $title = $this->translator->trans('label.title').' *';
         $description = $this->translator->trans('label.description').' *';
         $category = $this->translator->trans('label.category').' *';
+
+        $invalidFormatMessage = $this->translator->trans('message.tag_invalid_format');
 
         $builder
             ->add(
@@ -81,19 +83,17 @@ class ReportType extends AbstractType
             )
             ->add(
                 'tags',
-                EntityType::class,
+                TextType::class,
                 [
-                    'class' => Tag::class,
-                    'choice_label' => function ($tag): string {
-                        return $tag->getTitle();
-                    },
                     'label' => 'label.tags',
-                    'placeholder' => 'label.choose_tags',
                     'required' => false,
-                    'expanded' => true,
-                    'multiple' => true,
+                    'attr' => ['max_length' => 128]
                 ]
             );
+
+        $builder->get('tags')->addModelTransformer(
+            $this->tagsDataTransformer
+        );
     }
 
     /**

@@ -50,6 +50,10 @@
         <source>label.report</source>
         <target>Report</target>
       </trans-unit>
+      <trans-unit id="label.tags">
+        <source>label.tags</source>
+        <target>Tags</target>
+      </trans-unit>
       <trans-unit id="message.empty_list">
         <source>message.empty_list</source>
         <target>List is empty.</target>
@@ -93,6 +97,10 @@
       <trans-unit id="action.back_to_list">
         <source>action.back_to_list</source>
         <target>Back to list</target>
+      </trans-unit>
+      <trans-unit id="message.tag_invalid_characters">
+        <source>message.tag_invalid_characters</source>
+        <target>Field must contain only letters.</target>
       </trans-unit>
     </body>
   </file>
