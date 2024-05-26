@@ -27,6 +27,7 @@
 
     <a href="{{ url('report_edit', {id: report.id}) }}" class="btn btn-primary">{{ 'action.edit'|trans }}</a>
     <a href="{{ url('comment_create', {id: report.id}) }}" class="btn btn-primary">{{ 'action.comment'|trans }}</a>
+    <a href="{{ url('report_delete', {id: report.id}) }}" class="btn btn-danger float-right">{{ 'action.delete'|trans }}</a>
 
     <div class="mt-5">
     {% if form is defined and form|length %}
