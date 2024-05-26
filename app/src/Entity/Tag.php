@@ -52,6 +52,7 @@ class Tag
     #[ORM\Column(type:'string', length: 64)]
     #[Assert\Type('string')]
     #[Assert\NotBlank]
+    #[Assert\Regex(pattern: '/^[a-zA-Z0-9]+$/', message: 'message.tag_invalid_characters')]
     #[Assert\Length(min: 3, max: 64)]
     private ?string $title = null;
 

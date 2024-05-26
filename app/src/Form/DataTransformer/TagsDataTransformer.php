@@ -62,7 +62,7 @@ class TagsDataTransformer implements DataTransformerInterface
         $tags = [];
 
         foreach ($tagTitles as $tagTitle) {
-            if ('' !== trim($tagTitle)) {
+            if ('' !== trim($tagTitle, '\s')) {
                 $tag = $this->tagService->findOneByTitle(strtolower($tagTitle));
                 if (null === $tag) {
                     $tag = new Tag();
