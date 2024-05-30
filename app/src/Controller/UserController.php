@@ -173,6 +173,8 @@ class UserController extends AbstractController
                 return $this->redirectToRoute('pass_edit', ['id' => $user->getId()]);
             }
 
+            $newPassword = $form->get('password')->getData();
+            $user->setPassword($this->passwordHasher->hashPassword($user, $newPassword));
             $this->userService->save($user);
 
             $this->addFlash('success', $this->translator->trans('message.edited_successfully'));
