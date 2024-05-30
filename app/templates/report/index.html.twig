@@ -6,20 +6,26 @@
 
 {% block body %}
     <h1 class="mt-3 mb-4">{{ 'label.reports'|trans }}</h1>
-    {% if pagination is defined and pagination.items|length %}{# TODO add sortable #}
+    <div class="btn-group">
+        <button type="button" class="btn btn-outline-primary knp-th">{{ knp_pagination_sortable(pagination, 'label.title'|trans, 'report.title') }}</button>
+        <button type="button" class="btn btn-outline-primary knp-th">{{ knp_pagination_sortable(pagination, 'label.category'|trans, 'category.title') }}</button>
+        <button type="button" class="btn btn-outline-primary knp-th">{{ knp_pagination_sortable(pagination, 'label.created_at'|trans, 'report.createdAt') }}</button>
+        <button type="button" class="btn btn-outline-primary knp-th">{{ knp_pagination_sortable(pagination, 'label.updated_at'|trans, 'report.updatedAt') }}</button>
+    </div>
+    {% if pagination is defined and pagination.items|length %}
         {% for report in pagination.items %}
             <div class="d-flex justify-content-between border rounded py-3 px-4 mb-2">
                 <div class="pb-1">
-                    <div class="fw-bold">Username</div>{# TODO add usernames to placeholder #}
+                    <div class="fw-bold">{{ report.author.nickname }}</div>
                     <div><a href="{{ url('report_show', {id: report.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none fs-5">{{ report.title }}</a></div>
                     <div>
                         <div>
                             <span class="fw-bold">{{ 'label.category'|trans }}</span>
-                            <a href="{{ url('category_show', {id: report.category.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ report.category.title }}</a>
+                            <a class="text-primary text-decoration-none" href="{{ url('report_index', {'categoryId' : report.category.id}) }}"{# TODO add report status #} title="{{ report.category.title }}">{{ report.category.title }}</a>
                         </div>
                         <span class="fw-bold pr-4">{{ 'label.tags'|trans }}</span>
                         <span>{% for tag in report.tags %}
-                            {{ tag.title }}{% if not loop.last %}, {% endif %}
+                            <a href="{{ url('report_index', {'tagId' : tag.id}) }}"{# TODO add report status #} title="{{ tag.title }}" class="text-primary text-decoration-none">{{ tag.title }}</a>{% if not loop.last %}, {% endif %}
                         {% endfor %}</span>
                     </div>
                 </div>
@@ -29,26 +35,7 @@
                 </div>
             </div>
         {% endfor %}
-        {#  <table class="table table-striped ">
-            <thead>
-            <tr>
-                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.title'|trans, 'report.title') }}</th>
-                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.category'|trans, 'category.title') }}</th>
-                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.created_at'|trans, 'report.createdAt') }}</th>
-                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.updated_at'|trans, 'report.updatedAt') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for report in pagination.items %}
-                <tr>
-                    <td><a href="{{ url('report_show', {id: report.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ report.title }}</a></td>
-                    <td><a href="{{ url('category_show', {id: report.category.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ report.category.title }}</a></td>
-                    <td>{{ report.createdAt|format_date('long') }}</td>
-                    <td>{{ report.updatedAt|format_date('long') }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>#}
+
         <a href="{{ url('report_create') }}" class="btn btn-primary my-2">{{ 'action.create'|trans }}</a>
 
         <div class="navigation text-center">

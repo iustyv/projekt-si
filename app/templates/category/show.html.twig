@@ -15,36 +15,15 @@
             <dt>{{ 'label.updated_at'|trans }}</dt>
             <dd>{{ category.updatedAt|format_date('long') }}</dd>
         </dl>
-        <div class="mb-5">
-            <a href="{{ url('category_edit', {id: category.id}) }}" class="btn btn-primary">{{ 'action.edit'|trans }}</a>
-            <a href="{{ url('category_delete', {id: category.id}) }}" class="btn btn-danger float-right">{{ 'action.delete'|trans }}</a>
-        </div>
-        {% if reports is defined and reports.items|length %}
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th class="knp-th">{{ knp_pagination_sortable(reports, 'label.title'|trans, 'report.title') }}</th>
-                    <th class="knp-th">{{ knp_pagination_sortable(reports, 'label.created_at'|trans, 'report.createdAt') }}</th>
-                    <th class="knp-th">{{ knp_pagination_sortable(reports, 'label.updated_at'|trans, 'report.updatedAt') }}</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for report in reports.items %}
-                    <tr>
-                        <td><a href="{{ url('report_show', {id: report.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ report.title }}</a></td>
-                        <td>{{ report.createdAt|format_date('long') }}</td>
-                        <td>{{ report.updatedAt|format_date('long') }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
 
-            <div class="navigation text-center">
-                {{ knp_pagination_render(reports) }}
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="mb-5">
+                <a href="{{ url('category_edit', {id: category.id}) }}" class="btn btn-primary">{{ 'action.edit'|trans }}</a>
+                <a href="{{ url('category_delete', {id: category.id}) }}" class="btn btn-danger float-right">{{ 'action.delete'|trans }}</a>
             </div>
-        {% else %}
-            {{ 'message.empty_list'|trans }}
         {% endif %}
+
+        <a href="{{ url('report_index', {categoryId: category.id}) }}" class="btn btn-secondary">{{ 'action.category_report_list'|trans }}</a>
     {% else %}
         <p>
             {{ 'message.record_not_found'|trans }}

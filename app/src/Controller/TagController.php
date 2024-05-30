@@ -69,6 +69,12 @@ class TagController extends AbstractController
     #[Route('/create', name: 'tag_create', methods: 'GET|POST')]
     public function create(Request $request): Response
     {
+        $user = $this->getUser();
+        if(null === $user)
+        {
+            return $this->redirectToRoute('app_login');
+        }
+
         $tag = new Tag();
         $form = $this->createForm(TagType::class, $tag);
         $form->handleRequest($request);
@@ -95,6 +101,11 @@ class TagController extends AbstractController
     #[Route('/{id}/edit', name: 'tag_edit', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
     public function edit(Request $request, Tag $tag): Response
     {
+        if(!$this->isGranted('ROLE_ADMIN'))
+        {
+            return $this->redirectToRoute('tag_show', ['id' => $tag->getId()]);
+        }
+
         $form = $this->createForm(
             TagType::class,
             $tag,
@@ -127,6 +138,11 @@ class TagController extends AbstractController
     #[Route('/{id}/delete', name: 'tag_delete', requirements: ['id' => '[1-9]\d*'], methods: 'GET|DELETE')]
     public function delete(Request $request, Tag $tag): Response
     {
+        if(!$this->isGranted('ROLE_ADMIN'))
+        {
+            return $this->redirectToRoute('tag_show', ['id' => $tag->getId()]);
+        }
+
         $form = $this->createForm(TagType::class, $tag, [
             'method' => 'DELETE',
             'action' => $this->generateUrl('tag_delete', ['id' => $tag->getId()]),

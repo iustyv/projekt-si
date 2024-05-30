@@ -66,6 +66,15 @@ class Comment
     private ?Report $report = null;
 
     /**
+     * Author.
+     */
+    #[ORM\ManyToOne(targetEntity: User::class, fetch: 'EXTRA_LAZY')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\Type(User::class)]
+    #[Assert\NotBlank]
+    private ?User $author = null;
+
+    /**
      * Getter for id.
      */
     public function getId(): ?int
@@ -135,5 +144,21 @@ class Comment
     public function setReport(?Report $report): void
     {
         $this->report = $report;
+    }
+
+    /**
+     * Getter for author.
+     */
+    public function getAuthor(): ?User
+    {
+        return $this->author;
+    }
+
+    /**
+     * Setter for author.
+     */
+    public function setAuthor(?User $author): void
+    {
+        $this->author = $author;
     }
 }

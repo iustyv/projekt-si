@@ -13,6 +13,8 @@
         <dd>{{ report.id }}</dd>
         <dt>{{ 'label.category'|trans }}</dt>
         <dd><a href="{{ url('category_show', {id: report.category.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ report.category.title }}</a></dd>
+        <dt>{{ 'label.author'|trans }}</dt>
+        <dd>{{ report.author.nickname }}</dd>
         <dt>{{ 'label.created_at'|trans }}</dt>
         <dd>{{ report.createdAt|format_date('long') }}</dd>
         <dt>{{ 'label.updated_at'|trans }}</dt>
@@ -25,9 +27,14 @@
         </dd>
     </dl>
 
-    <a href="{{ url('report_edit', {id: report.id}) }}" class="btn btn-primary">{{ 'action.edit'|trans }}</a>
-    <a href="{{ url('comment_create', {id: report.id}) }}" class="btn btn-primary">{{ 'action.comment'|trans }}</a>
-    <a href="{{ url('report_delete', {id: report.id}) }}" class="btn btn-danger float-right">{{ 'action.delete'|trans }}</a>
+    <a href="{{ url('comment_create', {report_id: report.id}) }}" class="btn btn-primary">{{ 'action.comment'|trans }}</a>
+
+    {% if is_granted('EDIT', report) %}
+        <a href="{{ url('report_edit', {id: report.id}) }}" class="btn btn-primary">{{ 'action.edit'|trans }}</a>
+    {% endif %}
+    {% if is_granted('DELETE', report) %}
+        <a href="{{ url('report_delete', {id: report.id}) }}" class="btn btn-danger float-right">{{ 'action.delete'|trans }}</a>
+    {% endif %}
 
     <div class="mt-5">
     {% if form is defined and form|length %}
@@ -43,9 +50,15 @@
             {% for comment in comments.items %}
             <div class="border rounded p-3 mb-2">
                 <div class="pb-1">
-                    <span class="fw-bold">Username</span> &bull; <span>{{ comment.createdAt|format_date('long') }}</span>
-                </div>{# TODO add usernames to placeholder #}
+                    <span class="fw-bold">{{ comment.author.nickname }}</span> &bull; <span>{{ comment.createdAt|format_date('long') }}</span>
+                </div>
                 <div>{{ comment.content }}</div>
+                {% if is_granted('EDIT', comment) and is_granted('DELETE', comment) %}
+                    <div class="btn-group">
+                        <a href="{{ url('comment_edit', {id: comment.id}) }}" class="btn btn-outline-primary">{{ 'action.edit'|trans }}</a>
+                        <a href="{{ url('comment_delete', {id: comment.id}) }}" class="btn btn-outline-danger">{{ 'action.delete'|trans }}</a>
+                    </div>
+                {% endif %}
             </div>
             {% endfor %}
 

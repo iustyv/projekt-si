@@ -87,6 +87,15 @@ class Report
     private Collection $tags;
 
     /**
+     * Author.
+     */
+    #[ORM\ManyToOne(targetEntity: User::class, fetch: 'EXTRA_LAZY')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\Type(User::class)]
+    #[Assert\NotBlank]
+    private ?User $author = null;
+
+    /**
      * Constructor.
      */
     public function __construct()
@@ -226,5 +235,21 @@ class Report
     public function removeTag(Tag $tag): void
     {
         $this->tags->removeElement($tag);
+    }
+
+    /**
+     * Getter for author.
+     */
+    public function getAuthor(): ?User
+    {
+        return $this->author;
+    }
+
+    /**
+     * Setter for author.
+     */
+    public function setAuthor(?User $author): void
+    {
+        $this->author = $author;
     }
 }

@@ -7,6 +7,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Comment;
 use App\Entity\Report;
+use App\Entity\User;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
 /**
@@ -41,6 +42,10 @@ class CommentFixtures extends AbstractBaseFixtures implements DependentFixtureIn
             $report = $this->getRandomReference('reports');
             $comment->setReport($report);
 
+            /** @var User $author */
+            $author = $this->getRandomReference('users');
+            $comment->setAuthor($author);
+
             return $comment;
         });
 
@@ -57,6 +62,9 @@ class CommentFixtures extends AbstractBaseFixtures implements DependentFixtureIn
      */
     public function getDependencies(): array
     {
-        return [ReportFixtures::class];
+        return [
+            ReportFixtures::class,
+            UserFixtures::class,
+        ];
     }
 }

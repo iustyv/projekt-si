@@ -7,6 +7,8 @@ namespace App\DataFixtures;
 
 use App\Entity\Report;
 use App\Entity\Category;
+use App\Entity\Tag;
+use App\Entity\User;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
 /**
@@ -43,9 +45,14 @@ class ReportFixtures extends AbstractBaseFixtures implements DependentFixtureInt
 
             $tagNum = $this->faker->numberBetween(1, 6);
             for($j=0; $j<$tagNum; ++$j) {
+                /** @var Tag $tag */
                 $tag = $this->getRandomReference('tags');
                 $report->addTag($tag);
             }
+
+            /** @var User $author */
+            $author = $this->getRandomReference('users');
+            $report->setAuthor($author);
 
             return $report;
         });
@@ -65,7 +72,8 @@ class ReportFixtures extends AbstractBaseFixtures implements DependentFixtureInt
     {
         return [
             CategoryFixtures::class,
-            TagFixtures::class
+            TagFixtures::class,
+            UserFixtures::class,
         ];
     }
 }

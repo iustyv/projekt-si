@@ -15,10 +15,15 @@
             <dt>{{ 'label.updated_at'|trans }}</dt>
             <dd>{{ tag.updatedAt|format_date('long') }}</dd>
         </dl>
-        <div class="mb-5">
-            <a href="{{ url('tag_edit', {id: tag.id}) }}" class="btn btn-primary">{{ 'action.edit'|trans }}</a>
-            <a href="{{ url('tag_delete', {id: tag.id}) }}" class="btn btn-danger float-right">{{ 'action.delete'|trans }}</a>
-        </div>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="mb-5">
+                <a href="{{ url('tag_edit', {id: tag.id}) }}" class="btn btn-primary">{{ 'action.edit'|trans }}</a>
+                <a href="{{ url('tag_delete', {id: tag.id}) }}" class="btn btn-danger float-right">{{ 'action.delete'|trans }}</a>
+            </div>
+        {% endif %}
+
+        <a href="{{ url('report_index', {tagId: tag.id}) }}" class="btn btn-secondary">{{ 'action.tag_report_list'|trans }}</a>
     {% else %}
         <p>
             {{ 'message.record_not_found'|trans }}
