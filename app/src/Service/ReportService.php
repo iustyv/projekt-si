@@ -7,6 +7,7 @@ namespace App\Service;
 
 use App\Dto\ReportListFiltersDto;
 use App\Dto\ReportListInputFiltersDto;
+use App\Entity\Enum\ReportStatus;
 use App\Entity\Report;
 use App\Entity\User;
 use App\Repository\ReportRepository;
@@ -90,7 +91,7 @@ class ReportService implements ReportServiceInterface
         return new ReportListFiltersDto(
             null !== $filters->categoryId ? $this->categoryService->findOneById($filters->categoryId) : null,
             null !== $filters->tagId ? $this->tagService->findOneById($filters->tagId) : null,
-            //ReportStatus::tryFrom($filters->statusId)
+            ReportStatus::tryFrom($filters->statusId)
         );
     }
 }

@@ -5,6 +5,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Enum\ReportStatus;
 use App\Repository\ReportRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -101,8 +102,15 @@ class Report
     #[ORM\ManyToOne(targetEntity: Project::class, fetch: 'EXTRA_LAZY')]
     #[ORM\JoinColumn(nullable: true)]
     #[Assert\Type(Project::class)]
-    #[Assert\NotBlank]
     private ?Project $project = null;
+
+    /**
+     * Report status.
+     */
+    #[ORM\Column(type: 'integer', enumType: ReportStatus::class)]
+    #[Assert\NotBlank]
+    #[Assert\Type(ReportStatus::class)]
+    private ReportStatus $status = ReportStatus::STATUS_PENDING;
 
     /**
      * Constructor.
@@ -276,5 +284,21 @@ class Report
     public function setProject(?Project $project): void
     {
         $this->project = $project;
+    }
+
+    /**
+     * Getter for status.
+     */
+    public function getStatus(): ReportStatus
+    {
+        return ($this->status ?? ReportStatus::STATUS_PENDING);
+    }
+
+    /**
+     * Setter for status.
+     */
+    public function setStatus(ReportStatus $status): void
+    {
+        $this->status = $status;
     }
 }

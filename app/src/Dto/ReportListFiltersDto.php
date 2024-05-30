@@ -6,7 +6,7 @@
 namespace App\Dto;
 
 use App\Entity\Category;
-//use App\Entity\Enum\ReportStatus;
+use App\Entity\Enum\ReportStatus;
 use App\Entity\Tag;
 
 /**
@@ -19,12 +19,10 @@ class ReportListFiltersDto
      *
      * @param Category|null $category   Category entity
      * @param Tag|null      $tag        Tag entity
-     * @param ReportStatus    $reportStatus Report status
+     * @param ReportStatus|null    $reportStatus Report status
      */
-    /*public function __construct(public readonly ?Category $category, public readonly ?Tag $tag, public readonly ReportStatus $taskStatus)
-    {
-    }*/
-    public function __construct(public readonly ?Category $category, public readonly ?Tag $tag)
+
+    public function __construct(public readonly ?Category $category, public readonly ?Tag $tag, public readonly ?ReportStatus $reportStatus)
     {
     }
 }

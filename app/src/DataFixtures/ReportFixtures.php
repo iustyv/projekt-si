@@ -5,6 +5,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Enum\ReportStatus;
 use App\Entity\Project;
 use App\Entity\Report;
 use App\Entity\Category;
@@ -58,6 +59,10 @@ class ReportFixtures extends AbstractBaseFixtures implements DependentFixtureInt
             /** @var Project $project Project entity */
             $project = $this->getRandomReference('projects');
             $report->setProject($project);
+
+            /** @var ReportStatus::class $status Report status */
+            $status = ReportStatus::getRandomValue();
+            $report->setStatus($status);
 
             return $report;
         });

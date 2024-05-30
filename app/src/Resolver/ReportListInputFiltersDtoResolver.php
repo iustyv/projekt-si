@@ -6,7 +6,6 @@
 namespace App\Resolver;
 
 use App\Dto\ReportListInputFiltersDto;
-//use App\Entity\Enum\ReportStatus;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
@@ -34,9 +33,8 @@ class ReportListInputFiltersDtoResolver implements ValueResolverInterface
 
         $categoryId = $request->query->get('categoryId');
         $tagId = $request->query->get('tagId');
-        //$statusId = $request->query->get('statusId', ReportStatus::ACTIVE->value);
+        $statusId = $request->query->get('statusId');
 
-        //return [new ReportListInputFiltersDto($categoryId, $tagId, $statusId)];
-        return [new ReportListInputFiltersDto($categoryId, $tagId)];
+        return [new ReportListInputFiltersDto($categoryId, $tagId, $statusId)];
     }
 }

@@ -11,7 +11,9 @@
         <button type="button" class="btn btn-outline-primary knp-th">{{ knp_pagination_sortable(pagination, 'label.category'|trans, 'category.title') }}</button>
         <button type="button" class="btn btn-outline-primary knp-th">{{ knp_pagination_sortable(pagination, 'label.created_at'|trans, 'report.createdAt') }}</button>
         <button type="button" class="btn btn-outline-primary knp-th">{{ knp_pagination_sortable(pagination, 'label.updated_at'|trans, 'report.updatedAt') }}</button>
+        <a href="{{ url('report_index') }}" class="btn btn-outline-secondary float-right">{{ 'action.clear_filters'|trans }}</a>
     </div>
+
     {% if pagination is defined and pagination.items|length %}
         {% for report in pagination.items %}
             <div class="d-flex justify-content-between border rounded py-3 px-4 mb-2">
@@ -21,17 +23,24 @@
                     <div>
                         <div>
                             <span class="fw-bold">{{ 'label.category'|trans }}</span>
-                            <a class="text-primary text-decoration-none" href="{{ url('report_index', {'categoryId' : report.category.id}) }}"{# TODO add report status #} title="{{ report.category.title }}">{{ report.category.title }}</a>
+                            <a class="text-primary text-decoration-none" href="{{ url('report_index', {'categoryId' : report.category.id}) }}" title="{{ report.category.title }}">{{ report.category.title }}</a>
                         </div>
-                        <span class="fw-bold pr-4">{{ 'label.tags'|trans }}</span>
-                        <span>{% for tag in report.tags %}
-                            <a href="{{ url('report_index', {'tagId' : tag.id}) }}"{# TODO add report status #} title="{{ tag.title }}" class="text-primary text-decoration-none">{{ tag.title }}</a>{% if not loop.last %}, {% endif %}
-                        {% endfor %}</span>
+                        <div>
+                            <span class="fw-bold pr-4">{{ 'label.tags'|trans }}</span>
+                            <span>
+                                {% for tag in report.tags %}
+                                <a href="{{ url('report_index', {'tagId' : tag.id}) }}" title="{{ tag.title }}" class="text-primary text-decoration-none">{{ tag.title }}</a>{% if not loop.last %}, {% endif %}
+                                {% endfor %}</span>
+                        </div>
                     </div>
                 </div>
                 <div>
                     <div>{{ 'label.created_at'|trans }} {{ report.createdAt|format_date('long') }}</div>
                     <div>{{ 'label.updated_at'|trans }} {{ report.updatedAt|format_date('long') }}</div>
+                    <div class="mt-3">
+                        <span class="fw-bold">{{ 'label.status'|trans }}</span>
+                        <a class="text-primary text-decoration-none" href="{{ url('report_index', {'statusId' : report.status.value}) }}" title="{{ report.status.label|trans }}">{{ report.status.label|trans }}</a>
+                    </div>
                 </div>
             </div>
         {% endfor %}

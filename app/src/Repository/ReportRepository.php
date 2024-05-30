@@ -7,9 +7,11 @@ namespace App\Repository;
 
 use App\Dto\ReportListFiltersDto;
 use App\Entity\Category;
+use App\Entity\Enum\ReportStatus;
 use App\Entity\Report;
 use App\Entity\Tag;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -44,7 +46,7 @@ class ReportRepository extends ServiceEntityRepository
     {
         $queryBuilder = $this->getOrCreateQueryBuilder()
             ->select(
-                'partial report.{id, createdAt, updatedAt, title}',
+                'partial report.{id, createdAt, updatedAt, title, status, author}',
                 'partial category.{id, title}',
                 'partial tags.{id, title}'
             )
@@ -148,10 +150,10 @@ class ReportRepository extends ServiceEntityRepository
                 ->setParameter('tag', $filters->tag);
         }
 
-        /*if ($filters->reportStatus instanceof TaskStatus) {
+        if ($filters->reportStatus instanceof ReportStatus) {
             $queryBuilder->andWhere('report.status = :status')
                 ->setParameter('status', $filters->reportStatus->value, Types::INTEGER);
-        }*/
+        }
 
         return $queryBuilder;
     }

@@ -15,6 +15,12 @@
         <dd><a href="{{ url('category_show', {id: report.category.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ report.category.title }}</a></dd>
         <dt>{{ 'label.author'|trans }}</dt>
         <dd>{{ report.author.nickname }}</dd>
+        {% if report.project is defined and report.project is not null%}
+            <dt>{{ 'label.project'|trans }}</dt>
+            <dd>{{ report.project.name }}</dd>
+        {% endif %}
+        <dt>{{ 'label.status'|trans }}</dt>
+        <dd>{{ report.status.label|trans }}</dd>
         <dt>{{ 'label.created_at'|trans }}</dt>
         <dd>{{ report.createdAt|format_date('long') }}</dd>
         <dt>{{ 'label.updated_at'|trans }}</dt>
