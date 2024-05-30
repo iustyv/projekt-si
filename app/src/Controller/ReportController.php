@@ -5,7 +5,10 @@
 
 namespace App\Controller;
 
+use App\Dto\ReportListInputFiltersDto;
+use App\Resolver\ReportListInputFiltersDtoResolver;
 use App\Entity\Report;
+use App\Entity\User;
 use App\Form\Type\ReportType;
 use App\Service\CommentServiceInterface;
 use App\Service\ReportServiceInterface;
@@ -13,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -41,9 +45,15 @@ class ReportController extends AbstractController
      * @return Response HTTP Response
      */
     #[Route(name: 'report_index', methods: 'GET')]
-    public function index(#[MapQueryParameter] int $page = 1): Response
+    public function index(#[MapQueryString(resolver: ReportListInputFiltersDtoResolver::class)] ReportListInputFiltersDto $filters, #[MapQueryParameter] int $page = 1): Response
     {
-        $pagination = $this->reportService->getPaginatedList($page);
+        /** @var User $user */
+        $user = $this->getUser();
+        $pagination = $this->reportService->getPaginatedList(
+            $filters,
+            //$user,
+            $page
+        );
 
         return $this->render('report/index.html.twig', ['pagination' => $pagination]);
     }
@@ -74,8 +84,20 @@ class ReportController extends AbstractController
     #[Route('/create', name: 'report_create', methods: 'GET|POST')]
     public function create(Request $request): Response
     {
+        if(!$this->isGranted('IS_AUTHENTICATED_FULLY'))
+        {
+            return $this->redirectToRoute('app_login');
+        }
+
         $report = new Report();
-        $form = $this->createForm(ReportType::class, $report);
+        $user = $this->getUser();
+        $report->setAuthor($user);
+
+        $form = $this->createForm(
+            ReportType::class,
+            $report,
+            ['action' => $this->generateUrl('report_create')]
+        );
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -100,6 +122,11 @@ class ReportController extends AbstractController
     #[Route('/{id}/edit', name: 'report_edit', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
     public function edit(Request $request, Report $report): Response
     {
+        if(!$this->isGranted('EDIT', $report))
+        {
+            return $this->redirectToRoute('report_index'); // TODO report_show (??)
+        }
+
         $form = $this->createForm(
             ReportType::class,
             $report,

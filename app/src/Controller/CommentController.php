@@ -3,7 +3,7 @@
  * Comment Controller.
  */
 
-namespace App\Controller;
+namespace public;
 
 use App\Entity\Comment;
 use App\Entity\Report;

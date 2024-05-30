@@ -63,6 +63,24 @@ class CategoryRepository extends ServiceEntityRepository
     }
 
     /**
+     * Find category by id.
+     *
+     * @param int $id
+     *
+     * @return Category|null
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findOneById(int $id): ?Category
+    {
+        return $this->getOrCreateQueryBuilder()
+            ->andWhere('category.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * Get or create new query builder.
      *
      * @param QueryBuilder|null $queryBuilder Query builder

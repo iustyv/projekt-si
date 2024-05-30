@@ -5,6 +5,7 @@
 
 namespace App\Service;
 
+use App\Dto\ReportListInputFiltersDto;
 use App\Entity\Report;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 
@@ -20,7 +21,7 @@ interface ReportServiceInterface
      *
      * @return PaginationInterface<string, mixed> Paginated list
      */
-    public function getPaginatedList(int $page): PaginationInterface;
+    public function getPaginatedList(ReportListInputFiltersDto $filters, ?int $page = 1): PaginationInterface;
 
     /**
      * Save entity.

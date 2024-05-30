@@ -5,7 +5,10 @@
 
 namespace App\Service;
 
+use App\Dto\ReportListFiltersDto;
+use App\Dto\ReportListInputFiltersDto;
 use App\Entity\Report;
+use App\Entity\User;
 use App\Repository\ReportRepository;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -32,7 +35,7 @@ class ReportService implements ReportServiceInterface
      * @param ReportRepository   $reportRepository Report repository
      * @param PaginatorInterface $paginator        Paginator
      */
-    public function __construct(private readonly ReportRepository $reportRepository, private readonly PaginatorInterface $paginator)
+    public function __construct(private readonly ReportRepository $reportRepository, private readonly PaginatorInterface $paginator, private readonly CategoryServiceInterface $categoryService, private readonly TagServiceInterface $tagService)
     {
     }
 
@@ -43,10 +46,13 @@ class ReportService implements ReportServiceInterface
      *
      * @return PaginationInterface<string, mixed> Paginated list
      */
-    public function getPaginatedList(?int $page = 1): PaginationInterface
+    public function getPaginatedList(ReportListInputFiltersDto $filters, ?int $page = 1): PaginationInterface //TODO add user filter
     {
+        $filters = $this->prepareFilters($filters);
+
         return $this->paginator->paginate(
-            $this->reportRepository->queryAll(),
+            $this->reportRepository->queryAll($filters),
+            //$this->reportRepository->queryByAuthor($user, $filters),
             $page ?? 1,
             self::PAGINATOR_ITEMS_PER_PAGE
         );
@@ -70,5 +76,21 @@ class ReportService implements ReportServiceInterface
     public function delete(Report $report): void
     {
         $this->reportRepository->delete($report);
+    }
+
+    /**
+     * Prepare filters for the reports list.
+     *
+     * @param ReportListInputFiltersDto $filters Raw filters from request
+     *
+     * @return ReportListFiltersDto Result filters
+     */
+    private function prepareFilters(ReportListInputFiltersDto $filters): ReportListFiltersDto
+    {
+        return new ReportListFiltersDto(
+            null !== $filters->categoryId ? $this->categoryService->findOneById($filters->categoryId) : null,
+            null !== $filters->tagId ? $this->tagService->findOneById($filters->tagId) : null,
+            //ReportStatus::tryFrom($filters->statusId)
+        );
     }
 }
