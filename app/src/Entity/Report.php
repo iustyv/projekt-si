@@ -96,6 +96,15 @@ class Report
     private ?User $author = null;
 
     /**
+     * Project.
+     */
+    #[ORM\ManyToOne(targetEntity: Project::class, fetch: 'EXTRA_LAZY')]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Assert\Type(Project::class)]
+    #[Assert\NotBlank]
+    private ?Project $project = null;
+
+    /**
      * Constructor.
      */
     public function __construct()
@@ -251,5 +260,21 @@ class Report
     public function setAuthor(?User $author): void
     {
         $this->author = $author;
+    }
+
+    /**
+     * Getter for project.
+    */
+    public function getProject(): ?Project
+    {
+        return $this->project;
+    }
+
+    /**
+     * Setter for project.
+    */
+    public function setProject(?Project $project): void
+    {
+        $this->project = $project;
     }
 }

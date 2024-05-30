@@ -5,6 +5,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Project;
 use App\Entity\Report;
 use App\Entity\Category;
 use App\Entity\Tag;
@@ -44,15 +45,19 @@ class ReportFixtures extends AbstractBaseFixtures implements DependentFixtureInt
             $report->setCategory($category);
 
             $tagNum = $this->faker->numberBetween(1, 6);
-            for($j=0; $j<$tagNum; ++$j) {
-                /** @var Tag $tag */
+            for($j=0; $j < $tagNum; ++$j) {
+                /** @var Tag $tag Tag entity */
                 $tag = $this->getRandomReference('tags');
                 $report->addTag($tag);
             }
 
-            /** @var User $author */
+            /** @var User $author User entity */
             $author = $this->getRandomReference('users');
             $report->setAuthor($author);
+
+            /** @var Project $project Project entity */
+            $project = $this->getRandomReference('projects');
+            $report->setProject($project);
 
             return $report;
         });
@@ -66,7 +71,7 @@ class ReportFixtures extends AbstractBaseFixtures implements DependentFixtureInt
      *
      * @return string[] of dependencies
      *
-     * @psalm-return array{0: CategoryFixtures::class}
+     * @psalm-return array{0: CategoryFixtures::class, TagFixtures::class, UserFixtures::class, ProjectFixtures::class}
      */
     public function getDependencies(): array
     {
@@ -74,6 +79,7 @@ class ReportFixtures extends AbstractBaseFixtures implements DependentFixtureInt
             CategoryFixtures::class,
             TagFixtures::class,
             UserFixtures::class,
+            ProjectFixtures::class
         ];
     }
 }
