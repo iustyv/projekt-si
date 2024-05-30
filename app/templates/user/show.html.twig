@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ 'label.my_account'|trans }}
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'label.my_account'|trans }}</h1>
+    {% if user is defined and user|length %}
+
+    <dl class="dl-horizontal mt-4">
+        <dt>{{ 'label.nickname'|trans }}</dt>
+        <dd class="d-flex justify-content-between">
+            <span>{{ user.nickname }}</span>
+            <a href="{{ url('nick_edit', {id: user.id}) }}" class="btn btn-outline-primary">{{ 'action.edit'|trans }}</a>
+        </dd>
+        <dt>{{ 'label.id'|trans }}</dt>
+        <dd>{{ user.id }}</dd>
+        <dt>{{ 'label.email'|trans }}</dt>
+        <dd>{{ user.email }}</dd>
+    </dl>
+    <a href="{{ url('pass_edit', {id: user.id}) }}" class="btn btn-outline-primary">{{ 'action.edit_pass'|trans }}</a>
+    {% endif %}
+{% endblock %}
