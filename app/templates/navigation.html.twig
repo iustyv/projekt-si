@@ -5,6 +5,11 @@
             <li class="nav-item"><a href="{{ url('report_index') }}" class="nav-link">{{ 'label.reports'|trans }}</a></li>
             <li class="nav-item"><a href="{{ url('category_index') }}" class="nav-link">{{ 'label.categories'|trans }}</a></li>
             <li class="nav-item"><a href="{{ url('tag_index') }}" class="nav-link">{{ 'label.tags'|trans }}</a></li>
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                <li class="nav-item"><a href="{{ url('app_logout') }}" class="nav-link">{{ 'action.logout'|trans }}</a></li>
+            {% else %}
+                <li class="nav-item"><a href="{{ url('app_login') }}" class="nav-link">{{ 'action.login'|trans }}</a></li>
+            {% endif %}
         </ul>
     </nav>
 {% endblock %}
