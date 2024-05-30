@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ 'label.users'|trans }}
+{% endblock %}
+
+{% block body %}
+    <h1 class="my-3">{{ 'label.users'|trans }}</h1>
+    {% if pagination is defined and pagination.items|length %}
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.nickname'|trans, 'user.nickname') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in pagination.items %}
+                <tr class="rounded">
+                    <td><a href="{{ url('user_show', {id: user.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ user.nickname }}</a></td>
+                    <td>
+                        {% if 'ROLE_ADMIN' not in user.roles%}
+                            {% if user.isBlocked %}
+                            <a href="{{ url('user_toggle_block', {id: user.id}) }}" class="btn btn-secondary">{{ 'action.unblock'|trans }}</a>
+                            {% else %}
+                            <a href="{{ url('user_toggle_block', {id: user.id}) }}" class="btn btn-secondary">{{ 'action.block'|trans }}</a>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if 'ROLE_ADMIN' in user.roles %}
+                            <a href="{{ url('remove_admin', {id: user.id}) }}" class="btn btn-danger">{{ 'action.remove_admin'|trans }}</a>
+                        {% else %}
+                            <a href="{{ url('set_admin', {id: user.id}) }}" class="btn btn-primary">{{ 'action.make_admin'|trans }}</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="navigation text-center">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+    {% else %}
+        <p>
+            {{ 'message.empty_list'|trans }}
+        </p>
+    {% endif %}
+{% endblock %}

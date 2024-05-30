@@ -3,6 +3,7 @@
 namespace App\Security\Voter;
 
 use App\Entity\Report;
+use App\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -46,12 +47,13 @@ class ReportVoter extends Voter
      * Checks if user can edit report.
      *
      * @param Report          $report Report entity
-     * @param UserInterface $user User
+     * @param User $user User
      *
      * @return bool Result
      */
-    private function canEdit(Report $report, UserInterface $user): bool
+    private function canEdit(Report $report, User $user): bool
     {
+        if($user->isBlocked()) return false;
         return ($report->getAuthor() === $user || $this->security->isGranted('ROLE_ADMIN'));
     }
 
@@ -72,12 +74,13 @@ class ReportVoter extends Voter
      * Checks if user can delete report.
      *
      * @param Report          $report Report entity
-     * @param UserInterface $user User
+     * @param User $user User
      *
      * @return bool Result
      */
-    private function canDelete(Report $report, UserInterface $user): bool
+    private function canDelete(Report $report, User $user): bool
     {
+        if($user->isBlocked()) return false;
         return ($report->getAuthor() === $user || $this->security->isGranted('ROLE_ADMIN'));
     }
 }
