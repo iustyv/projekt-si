@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{  project.name|default('message.project_not_found'|trans) }}
+{% endblock %}
+
+{% block body %}
+    <h1>{{  project.name|default('message.project_not_found'|trans) }}</h1>
+    {% if project is defined and project is not null %}
+        <dl class="dl-horizontal">
+            <dt>{{ 'label.id'|trans }}</dt>
+            <dd>{{ project.id }}</dd>
+            <dt>{{ 'label.created_at'|trans }}</dt>
+            <dd>{{ project.createdAt|format_date('long') }}</dd>
+            <dt>{{ 'label.updated_at'|trans }}</dt>
+            <dd>{{ project.updatedAt|format_date('long') }}</dd>
+        </dl>
+    {% else %}
+        <p>
+            {{ 'message.record_not_found'|trans }}
+        </p>
+    {% endif %}
+{% endblock %}

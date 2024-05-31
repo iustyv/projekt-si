@@ -14,7 +14,6 @@ parameters:
 
 {% block body %}
     <h1>{{ page_title }}</h1>
-    <p>{{ 'message.fill_out_required'|trans }}</p>
     {{ form_start(form) }}
     {#{% if false == form.vars.valid %}
           {% include 'default/_single_alert_message.html.twig' with {
@@ -23,9 +22,11 @@ parameters:
         }%}
     {% endif %} TODO add flash messages #}
     {{ form_widget(form) }}
+    <p class="text-secondary">{{ 'message.fill_out_required'|trans }}</p>
     <div class="form-group row float-sm-right">
         <input type="submit" value="{{ submit_label }}" class="btn btn-primary"/>
     </div>
+
     {% if back_to_list_path|default(false) %}
         <div class="form-group row float-sm-left">
             <a href="{{ url(back_to_list_path) }}" class="btn btn-link">

@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ 'label.projects'|trans }}
+{% endblock %}
+
+{% block body %}
+    <h1 class="my-3">{{ 'label.projects'|trans }}</h1>
+    {% if pagination is defined and pagination.items|length %}
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.project'|trans, 'project.name') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for project in pagination.items %}
+                <tr class="rounded">
+                    <td><a href="{{ url('project_show', {id: project.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ project.name }}</a></td>
+                    <td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="navigation text-center">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+    {% else %}
+        <p>
+            {{ 'message.empty_list'|trans }}
+        </p>
+    {% endif %}
+{% endblock %}

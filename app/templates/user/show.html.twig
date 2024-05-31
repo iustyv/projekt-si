@@ -1,12 +1,18 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    {{ 'label.my_account'|trans }}
+    {{ 'label.manage_account'|trans }}
 {% endblock %}
 
 {% block body %}
-    <h1>{{ 'label.my_account'|trans }}</h1>
-    {% if user is defined and user|length %}
+    {% if user is defined and user is not null %}
+    <h1>
+        {% if app.user.id == user.id %}
+            {{ 'label.my_account'|trans }}
+        {% else %}
+            {{ 'label.manage_account %username%'|trans({'%username%': user.nickname|default('')}) }}
+        {% endif %}
+    </h1>
 
     <dl class="dl-horizontal mt-4">
         <dt>{{ 'label.nickname'|trans }}</dt>
