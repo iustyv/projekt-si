@@ -3,6 +3,7 @@
 namespace App\Security\Voter;
 
 use App\Entity\Comment;
+use App\Entity\Enum\ReportStatus;
 use App\Entity\Report;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -15,14 +16,14 @@ class CommentVoter extends Voter
     {
     }
 
-    public const EDIT = 'EDIT';
-    private const DELETE = 'DELETE';
+    public const EDIT_COMMENT = 'EDIT_COMMENT';
+    private const DELETE_COMMENT = 'DELETE_COMMENT';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, [self::EDIT, self::DELETE])
+        return in_array($attribute, [self::EDIT_COMMENT, self::DELETE_COMMENT])
             && $subject instanceof Comment;
     }
 
@@ -35,8 +36,8 @@ class CommentVoter extends Voter
         }
 
         return match ($attribute) {
-            self::EDIT => $this->canEdit($subject, $user),
-            self::DELETE => $this->canDelete($subject, $user),
+            self::EDIT_COMMENT => $this->canEdit($subject, $user),
+            self::DELETE_COMMENT => $this->canDelete($subject, $user),
             default => false,
         };
     }
@@ -51,6 +52,7 @@ class CommentVoter extends Voter
      */
     private function canEdit(Comment $comment, UserInterface $user): bool
     {
+        if ($comment->getReport()->getStatus() === ReportStatus::STATUS_ARCHIVED) return false;
         return ($comment->getAuthor() === $user || $this->security->isGranted('ROLE_ADMIN'));
     }
 
@@ -64,6 +66,8 @@ class CommentVoter extends Voter
      */
     private function canDelete(Comment $comment, UserInterface $user): bool
     {
-        return ($comment->getAuthor() === $user || $this->security->isGranted('ROLE_ADMIN'));
+        if ($this->security->isGranted('ROLE_ADMIN')) return true;
+        if ($comment->getReport()->getStatus() === ReportStatus::STATUS_ARCHIVED) return false;
+        return ($comment->getAuthor() === $user);
     }
 }

@@ -3,7 +3,7 @@
  * Comment Controller.
  */
 
-namespace public;
+namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Entity\Report;
@@ -44,9 +44,8 @@ class CommentController extends AbstractController
     #[Route('/create/{report_id}', name: 'comment_create', requirements: ['report_id' => '[1-9]\d*'], methods: 'GET|POST')]
     public function create(Request $request, Report $report): Response
     {
-        if(!$this->isGranted('IS_AUTHENTICATED_FULLY'))
-        {
-            return $this->redirectToRoute('app_login');
+        if (!$this->isGranted('COMMENT', $report)) {
+            return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
         }
 
         $comment = new Comment();
@@ -86,8 +85,7 @@ class CommentController extends AbstractController
     {
         $report = $comment->getReport();
 
-        if(!$this->isGranted('EDIT', $comment))
-        {
+        if (!$this->isGranted('COMMENT_EDIT', $comment)) {
             return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
         }
 
@@ -131,7 +129,7 @@ class CommentController extends AbstractController
     {
         $report = $comment->getReport();
 
-        if(!$this->isGranted('DELETE', $comment))
+        if(!$this->isGranted('DELETE_COMMENT', $comment))
         {
             return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
         }
@@ -164,27 +162,4 @@ class CommentController extends AbstractController
      *
      * @return Response HTTP response
      */
-    /*#[Route('/{id}/edit', name: 'comment_edit', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
-    public function edit(Request $request, Comment $comment): Response
-    {
-        $form = $this->createForm(
-            CommentType::class,
-            $comment,
-            [
-                'method' => 'PUT',
-                'action' => $this->generateUrl('comment_edit', ['id' => $comment->getId()]),
-            ]
-        );
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->commentService->save($comment);
-
-            $this->addFlash('success', $this->translator->trans('message.edited_successfully'));
-
-            return $this->redirectToRoute('report_show', ['id' => $comment->getReport()->getId()]);
-        }
-
-        return $this->render('comment/edit.html.twig', ['form' => $form->createView(), 'comment' => $comment]);
-    }*/
 }

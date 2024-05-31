@@ -14,14 +14,14 @@ class UserVoter extends Voter
     {
     }
 
-    public const EDIT = 'EDIT';
-    private const DELETE = 'DELETE';
+    public const EDIT_USER = 'EDIT_USER';
+    private const DELETE_USER = 'DELETE_USER';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, [self::EDIT, self::DELETE])
+        return in_array($attribute, [self::EDIT_USER, self::DELETE_USER])
             && $subject instanceof User;
     }
 
@@ -34,8 +34,8 @@ class UserVoter extends Voter
         }
 
         return match ($attribute) {
-            self::EDIT => $this->canEdit($subject, $user),
-            self::DELETE => $this->canDelete($subject, $user),
+            self::EDIT_USER => $this->canEdit($subject, $user),
+            self::DELETE_USER => $this->canDelete($subject, $user),
             default => false,
         };
     }

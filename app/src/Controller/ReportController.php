@@ -6,6 +6,7 @@
 namespace App\Controller;
 
 use App\Dto\ReportListInputFiltersDto;
+use App\Entity\Enum\ReportStatus;
 use App\Resolver\ReportListInputFiltersDtoResolver;
 use App\Entity\Report;
 use App\Entity\User;
@@ -50,6 +51,27 @@ class ReportController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         $pagination = $this->reportService->getPaginatedList(
+            $filters,
+            //$user,
+            $page
+        );
+
+        return $this->render('report/index.html.twig', ['pagination' => $pagination]);
+    }
+
+    /**
+     * Show archived reports.
+     *
+     * @param int $page Page
+     *
+     * @return Response HTTP Response
+     */
+    #[Route('/archived', name: 'report_archived', methods: 'GET')]
+    public function show_archived(#[MapQueryString(resolver: ReportListInputFiltersDtoResolver::class)] ReportListInputFiltersDto $filters, #[MapQueryParameter] int $page = 1): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $pagination = $this->reportService->getPaginatedListOfArchived(
             $filters,
             //$user,
             $page
@@ -122,9 +144,8 @@ class ReportController extends AbstractController
     #[Route('/{id}/edit', name: 'report_edit', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
     public function edit(Request $request, Report $report): Response
     {
-        if(!$this->isGranted('EDIT', $report))
-        {
-            return $this->redirectToRoute('report_index'); // TODO report_show (??)
+        if(!$this->isGranted('EDIT_REPORT', $report)) {
+            return $this->redirectToRoute('report_show', ['id' => $report->getId()]); // TODO report_show (??)
         }
 
         $form = $this->createForm(
@@ -159,6 +180,10 @@ class ReportController extends AbstractController
     #[Route('/{id}/delete', name: 'report_delete', requirements: ['id' => '[1-9]\d*'], methods: 'GET|DELETE')]
     public function delete(Request $request, Report $report): Response
     {
+        if(!$this->isGranted('DELETE_REPORT', $report)) {
+            return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
+        }
+
         $form = $this->createForm(ReportType::class, $report, [
             'method' => 'DELETE',
             'action' => $this->generateUrl('report_delete', ['id' => $report->getId()]),
@@ -174,5 +199,24 @@ class ReportController extends AbstractController
         }
 
         return $this->render('report/delete.html.twig', ['form' => $form->createView(), 'report' => $report,]);
+    }
+
+    #[Route('/{id}/toggle_archive', name: 'report_toggle_archive', requirements: ['id' => '[1-9]\d*'], methods: 'GET|DELETE')]
+    public function toggle_archive(Request $request, Report $report): Response
+    {
+        if(!$this->isGranted('TOGGLE_ARCHIVE', $report)) {
+            return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
+        }
+
+        $this->reportService->toggle_archive($report);
+
+        if ($report->getStatus() === ReportStatus::STATUS_ARCHIVED) {
+            $this->addFlash('success', $this->translator->trans('message.archived_successfully'));
+        }
+        else {
+            $this->addFlash('success', $this->translator->trans('message.unarchived_successfully'));
+        }
+
+        return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
     }
 }

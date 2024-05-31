@@ -2,6 +2,7 @@
 
 namespace App\Security\Voter;
 
+use App\Entity\Enum\ReportStatus;
 use App\Entity\Report;
 use App\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -15,15 +16,17 @@ class ReportVoter extends Voter
     {
     }
 
-    public const EDIT = 'EDIT';
-    public const VIEW = 'VIEW';
-    private const DELETE = 'DELETE';
+    public const EDIT_REPORT = 'EDIT_REPORT';
+    public const VIEW_REPORT = 'VIEW_REPORT';
+    private const DELETE_REPORT = 'DELETE_REPORT';
+    private const COMMENT = 'COMMENT';
+    private const TOGGLE_ARCHIVE = 'TOGGLE_ARCHIVE';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, [self::EDIT, self::VIEW, self::DELETE])
+        return in_array($attribute, [self::EDIT_REPORT, self::VIEW_REPORT, self::DELETE_REPORT, self::COMMENT, self::TOGGLE_ARCHIVE])
             && $subject instanceof Report;
     }
 
@@ -36,9 +39,11 @@ class ReportVoter extends Voter
         }
 
         return match ($attribute) {
-            self::EDIT => $this->canEdit($subject, $user),
-            self::VIEW => $this->canView($subject, $user),
-            self::DELETE => $this->canDelete($subject, $user),
+            self::EDIT_REPORT => $this->canEdit($subject, $user),
+            self::VIEW_REPORT => $this->canView($subject, $user),
+            self::DELETE_REPORT => $this->canDelete($subject, $user),
+            self::COMMENT => $this->canComment($subject, $user),
+            self::TOGGLE_ARCHIVE => $this->canToggleArchive($subject, $user),
             default => false,
         };
     }
@@ -53,8 +58,9 @@ class ReportVoter extends Voter
      */
     private function canEdit(Report $report, User $user): bool
     {
-        if($user->isBlocked()) return false;
-        return ($report->getAuthor() === $user || $this->security->isGranted('ROLE_ADMIN'));
+        if ($report->getStatus() === ReportStatus::STATUS_ARCHIVED) return false;
+        if ($user->isBlocked()) return false;
+        return ($user === $report->getAuthor() || $this->security->isGranted('ROLE_ADMIN'));
     }
 
     /**
@@ -80,7 +86,27 @@ class ReportVoter extends Voter
      */
     private function canDelete(Report $report, User $user): bool
     {
-        if($user->isBlocked()) return false;
-        return ($report->getAuthor() === $user || $this->security->isGranted('ROLE_ADMIN'));
+        if ($this->security->isGranted('ROLE_ADMIN')) return true;
+        if($user->isBlocked() || $report->getStatus() === ReportStatus::STATUS_ARCHIVED) return false;
+        return ($report->getAuthor() === $user);
+    }
+
+    private function canComment(Report $report, User $user): bool
+    {
+        return ($this->canDelete($report, $user));
+    }
+
+    /**
+     * Checks if user can archive report.
+     *
+     * @param Report          $report Report entity
+     * @param UserInterface $user User
+     *
+     * @return bool Result
+     */
+    private function canToggleArchive(Report $report, UserInterface $user): bool
+    {
+        if ($user->isBlocked()) return false;
+        return ($user === $report->getAuthor() || $this->security->isGranted('ROLE_ADMIN'));
     }
 }

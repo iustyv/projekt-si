@@ -32,14 +32,22 @@
             {% endfor %}
         </dd>
     </dl>
-
-    <a href="{{ url('comment_create', {report_id: report.id}) }}" class="btn btn-primary">{{ 'action.comment'|trans }}</a>
+    {% if report.status.label != 'label.archived' and not app.user.isBlocked %}
+        <a href="{{ url('comment_create', {report_id: report.id}) }}" class="btn btn-primary">{{ 'action.comment'|trans }}</a>
+    {% endif %}
 
     {% if is_granted('EDIT', report) %}
         <a href="{{ url('report_edit', {id: report.id}) }}" class="btn btn-primary">{{ 'action.edit'|trans }}</a>
     {% endif %}
     {% if is_granted('DELETE', report) %}
         <a href="{{ url('report_delete', {id: report.id}) }}" class="btn btn-danger float-right">{{ 'action.delete'|trans }}</a>
+    {% endif %}
+    {% if is_granted('TOGGLE_ARCHIVE', report) %}
+        {% if report.status.label == 'label.archived' %}
+            <a href="{{ url('report_toggle_archive', {id: report.id}) }}" class="btn btn-secondary float-right">{{ 'action.unarchive'|trans }}</a>
+        {% else %}
+            <a href="{{ url('report_toggle_archive', {id: report.id}) }}" class="btn btn-secondary float-right">{{ 'action.archive'|trans }}</a>
+        {% endif %}
     {% endif %}
 
     <div class="mt-5">

@@ -52,7 +52,26 @@ class ReportService implements ReportServiceInterface
         $filters = $this->prepareFilters($filters);
 
         return $this->paginator->paginate(
-            $this->reportRepository->queryAll($filters),
+            $this->reportRepository->queryActive($filters),
+            //$this->reportRepository->queryByAuthor($user, $filters),
+            $page ?? 1,
+            self::PAGINATOR_ITEMS_PER_PAGE
+        );
+    }
+
+    /**
+     * Get paginated list of archived reports.
+     *
+     * @param int|null $page Page number
+     *
+     * @return PaginationInterface<string, mixed> Paginated list
+     */
+    public function getPaginatedListOfArchived(ReportListInputFiltersDto $filters, ?int $page = 1): PaginationInterface
+    {
+        $filters = $this->prepareFilters($filters);
+
+        return $this->paginator->paginate(
+            $this->reportRepository->queryArchived($filters),
             //$this->reportRepository->queryByAuthor($user, $filters),
             $page ?? 1,
             self::PAGINATOR_ITEMS_PER_PAGE
@@ -77,6 +96,18 @@ class ReportService implements ReportServiceInterface
     public function delete(Report $report): void
     {
         $this->reportRepository->delete($report);
+    }
+
+    /**
+     * Archive report.
+     *
+     * @param Report $report
+     */
+    public function toggle_archive(Report $report): void
+    {
+        $status = $report->getStatus() === ReportStatus::STATUS_ARCHIVED ? ReportStatus::STATUS_COMPLETED : ReportStatus::STATUS_ARCHIVED;
+        $report->setStatus($status);
+        $this->save($report);
     }
 
     /**

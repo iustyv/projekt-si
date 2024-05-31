@@ -42,9 +42,9 @@ class ReportRepository extends ServiceEntityRepository
      *
      * @return QueryBuilder Query builder
      */
-    public function queryAll(ReportListFiltersDto $filters): QueryBuilder
+    public function queryAll(): QueryBuilder
     {
-        $queryBuilder = $this->getOrCreateQueryBuilder()
+        return $this->getOrCreateQueryBuilder()
             ->select(
                 'partial report.{id, createdAt, updatedAt, title, status, author}',
                 'partial category.{id, title}',
@@ -53,6 +53,34 @@ class ReportRepository extends ServiceEntityRepository
             ->join('report.category', 'category')
             ->leftJoin('report.tags', 'tags')
             ->orderBy('report.updatedAt', 'DESC');
+
+        //return $this->applyFiltersToList($queryBuilder, $filters);
+    }
+
+    /**
+     * Query active records.
+     *
+     * @return QueryBuilder Query builder
+     */
+    public function queryActive(ReportListFiltersDto $filters): QueryBuilder
+    {
+        $queryBuilder = $this->queryAll()
+            ->andWhere('report.status != :status')
+            ->setParameter('status', ReportStatus::STATUS_ARCHIVED);
+
+        return $this->applyFiltersToList($queryBuilder, $filters);
+    }
+
+    /**
+     * Query archived records.
+     *
+     * @return QueryBuilder Query builder
+     */
+    public function queryArchived(ReportListFiltersDto $filters): QueryBuilder
+    {
+        $queryBuilder = $this->queryAll()
+            ->andWhere('report.status = :status')
+            ->setParameter('status', ReportStatus::STATUS_ARCHIVED);
 
         return $this->applyFiltersToList($queryBuilder, $filters);
     }
