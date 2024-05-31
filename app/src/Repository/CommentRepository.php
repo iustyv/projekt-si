@@ -53,6 +53,18 @@ class CommentRepository extends ServiceEntityRepository
     }
 
     /**
+     * Delete entity.
+     *
+     * @param Comment $comment Comment entity
+     */
+    public function delete(Comment $comment): void
+    {
+        assert($this->_em instanceof EntityManager);
+        $this->_em->remove($comment);
+        $this->_em->flush();
+    }
+
+    /**
      * Get or create new query builder.
      *
      * @param QueryBuilder|null $queryBuilder Query builder

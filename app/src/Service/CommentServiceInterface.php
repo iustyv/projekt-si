@@ -31,5 +31,7 @@ interface CommentServiceInterface
      * @param Report $report Report entity
      *
      */
-    public function save(Comment $comment, Report $report): void;
+    public function save(Comment $comment): void;
+
+    public function delete(Comment $comment): void;
 }
