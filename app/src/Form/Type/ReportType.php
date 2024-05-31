@@ -13,6 +13,9 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -42,8 +45,6 @@ class ReportType extends AbstractType
         $title = $this->translator->trans('label.title').' *';
         $description = $this->translator->trans('label.description').' *';
         $category = $this->translator->trans('label.category').' *';
-
-        $invalidFormatMessage = $this->translator->trans('message.tag_invalid_format');
 
         $builder
             ->add(
@@ -94,6 +95,17 @@ class ReportType extends AbstractType
         $builder->get('tags')->addModelTransformer(
             $this->tagsDataTransformer
         );
+
+        $builder->get('tags')->addEventListener(FormEvents::PRE_SUBMIT, function(FormEvent $event){
+            $tagsFormField = $event->getForm();
+            $tagsFieldValue = $event->getData();
+
+            if (!empty($tagsFieldValue)) {
+                if (!preg_match_all('/^[a-zA-Z0-9]+(,\s*[a-zA-Z0-9]+)*$/', $tagsFieldValue)) {
+                    $tagsFormField->addError(new FormError($this->translator->trans('message.tag_invalid_format')));
+                }
+            }
+        });
     }
 
     /**
