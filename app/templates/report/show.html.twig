@@ -7,7 +7,7 @@
 {% block body %}
     <h1>{{ report.title|default('message.report_not_found'|trans) }}</h1>
     {% if report is defined and report|length %}
-    <p class="fs-6 mt-3">{{ report.description }}</p>
+    <p class="fs-6 mt-3">{{ report.description|markdown_to_html }}</p>
     <dl class="dl-horizontal mt-4">
         <dt>{{ 'label.id'|trans }}</dt>
         <dd>{{ report.id }}</dd>
@@ -66,7 +66,7 @@
                 <div class="pb-1">
                     <span class="fw-bold">{{ comment.author.nickname }}</span> &bull; <span>{{ comment.createdAt|format_date('long') }}</span>
                 </div>
-                <div>{{ comment.content }}</div>
+                <div>{{ comment.content|markdown_to_html }}</div>
                 {% if is_granted('EDIT_COMMENT', comment) and is_granted('DELETE_COMMENT', comment) %}
                     <div class="btn-group">
                         <a href="{{ url('comment_edit', {id: comment.id}) }}" class="btn btn-outline-primary">{{ 'action.edit'|trans }}</a>
