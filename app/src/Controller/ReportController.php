@@ -6,7 +6,9 @@
 namespace App\Controller;
 
 use App\Dto\ReportListInputFiltersDto;
+use App\Entity\Comment;
 use App\Entity\Enum\ReportStatus;
+use App\Form\Type\CommentType;
 use App\Resolver\ReportListInputFiltersDtoResolver;
 use App\Entity\Report;
 use App\Entity\User;
@@ -218,5 +220,36 @@ class ReportController extends AbstractController
         }
 
         return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
+    }
+
+    #[Route('/{id}/comment', name: 'report_comment', requirements: ['id' => '[1-9]\d*'], methods: 'GET|POST')]
+    public function comment(Request $request, Report $report): Response
+    {
+        if (!$this->isGranted('COMMENT', $report)) {
+            return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
+        }
+
+        $comment = new Comment();
+        $user = $this->getUser();
+        $comment->setAuthor($user);
+        $comment->setReport($report);
+
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->commentService->save($comment);
+
+            $this->addFlash('success', $this->translator->trans('message.created_successfully'));
+
+            return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
+        }
+
+        return $this->render('report/show.html.twig',
+            [
+                'form' => $form->createView(),
+                'report' => $report,
+                'comments'=> $this->commentService->getPaginatedList($report)
+            ]);
     }
 }

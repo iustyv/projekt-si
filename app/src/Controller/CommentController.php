@@ -19,7 +19,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * Class CommentController.
  */
 
-//#[Route('/report/{id}/comment', requirements: ['id' => '[1-9]\d*'], methods: 'GET')]
 #[Route('/comment')]
 class CommentController extends AbstractController
 {
@@ -31,45 +30,6 @@ class CommentController extends AbstractController
      */
     public function __construct(private readonly CommentServiceInterface $commentService, private readonly TranslatorInterface $translator)
     {
-    }
-
-    /**
-     * Create action.
-     *
-     * @param Request $request HTTP request
-     *
-     * @return Response HTTP response
-     */
-    // FIXME Cannot autowire argument $report of "App\Controller\CommentController::create()": it needs an instance of "App\Entity\Report" but this type has been excluded in "config/services.yaml".
-    #[Route('/create/{report_id}', name: 'comment_create', requirements: ['report_id' => '[1-9]\d*'], methods: 'GET|POST')]
-    public function create(Request $request, Report $report): Response
-    {
-        if (!$this->isGranted('COMMENT', $report)) {
-            return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
-        }
-
-        $comment = new Comment();
-        $user = $this->getUser();
-        $comment->setAuthor($user);
-        $comment->setReport($report);
-
-        $form = $this->createForm(CommentType::class, $comment);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->commentService->save($comment);
-
-            $this->addFlash('success', $this->translator->trans('message.created_successfully'));
-
-            return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
-        }
-
-        return $this->render('report/show.html.twig',
-            [
-                'form' => $form->createView(),
-                'report' => $report,
-                'comments'=> $this->commentService->getPaginatedList($report)
-        ]);
     }
 
     /**
@@ -85,7 +45,7 @@ class CommentController extends AbstractController
     {
         $report = $comment->getReport();
 
-        if (!$this->isGranted('COMMENT_EDIT', $comment)) {
+        if (!$this->isGranted('EDIT_COMMENT', $comment)) {
             return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
         }
 
