@@ -104,7 +104,7 @@ class UserController extends AbstractController
     #[Route('/{id}/nick', name: 'nick_edit', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
     public function nick_edit(Request $request, User $user): Response
     {
-        if(!$this->isGranted('EDIT', $user))
+        if(!$this->isGranted('EDIT_USER', $user))
         {
             return $this->redirectToRoute('index');
         }
@@ -120,12 +120,14 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $currentPassword = $form->get('password')->getData();
-            if(!$this->passwordHasher->isPasswordValid($user, $currentPassword))
-            {
-                $this->addFlash('error', $this->translator->trans('message.error_password'));
+            if(!$this->isGranted('ROLE_ADMIN')) {
+                $currentPassword = $form->get('password')->getData();
+                if(!$this->passwordHasher->isPasswordValid($user, $currentPassword))
+                {
+                    $this->addFlash('error', $this->translator->trans('message.error_password'));
 
-                return $this->redirectToRoute('nick_edit', ['id' => $user->getId()]);
+                    return $this->redirectToRoute('nick_edit', ['id' => $user->getId()]);
+                }
             }
 
             $this->userService->save($user);
@@ -149,8 +151,7 @@ class UserController extends AbstractController
     #[Route('/{id}/pass', name: 'pass_edit', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
     public function pass_edit(Request $request, User $user): Response
     {
-        if(!$this->isGranted('EDIT', $user))
-        {
+        if(!$this->isGranted('EDIT_USER', $user)) {
             return $this->redirectToRoute('index');
         }
 
@@ -165,12 +166,14 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $currentPassword = $form->get('current_password')->getData();
-            if(!$this->passwordHasher->isPasswordValid($user, $currentPassword))
-            {
-                $this->addFlash('error', $this->translator->trans('message.error_password'));
+            if (!$this->isGranted('ROLE_ADMIN')) {
+                $currentPassword = $form->get('current_password')->getData();
+                if(!$this->passwordHasher->isPasswordValid($user, $currentPassword))
+                {
+                    $this->addFlash('error', $this->translator->trans('message.error_password'));
 
-                return $this->redirectToRoute('pass_edit', ['id' => $user->getId()]);
+                    return $this->redirectToRoute('pass_edit', ['id' => $user->getId()]);
+                }
             }
 
             $newPassword = $form->get('password')->getData();

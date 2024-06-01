@@ -7,6 +7,7 @@
 namespace App\Form\Type\User;
 
 use App\Entity\User;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -19,7 +20,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class UserNicknameType extends AbstractType
 {
-    public function __construct(private readonly TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator, private readonly Security $security)
     {
     }
 
@@ -36,16 +37,17 @@ class UserNicknameType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add(
+        $builder->add(
                 'nickname',
                 TextType::class,
                 [
                     'label' => 'label.nickname',
                     'required' => true
                 ]
-            )
-            ->add(
+            );
+
+        if(!$this->security->isGranted('ROLE_ADMIN')) {
+            $builder->add(
                 'password',
                 PasswordType::class,
                 [
@@ -54,6 +56,7 @@ class UserNicknameType extends AbstractType
                     'required' => true,
                 ]
             );
+        }
     }
 
     /**

@@ -7,6 +7,7 @@
 namespace App\Form\Type\User;
 
 use App\Entity\User;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -19,7 +20,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class UserPasswordType extends AbstractType
 {
-    public function __construct(private readonly TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator, private readonly Security $security)
     {
     }
 
@@ -36,28 +37,30 @@ class UserPasswordType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add(
-            'current_password',
-            PasswordType::class,
+        if(!$this->security->isGranted('ROLE_ADMIN')) {
+            $builder->add(
+                'current_password',
+                PasswordType::class,
                 [
                     'mapped' => false,
                     'label' => 'label.authenticate_password',
                     'required' => true,
                 ]
-            )
-            ->add(
-                'password',
-                RepeatedType::class,
-                [
-                    'type' => PasswordType::class,
-                    'mapped' => false,
-                    'first_options' => ['label' => 'label.new_password'],
-                    'second_options' => ['label' => 'label.repeat_password'],
-                    'invalid_message' => $this->translator->trans('message.invalid_password'),
-                    'required' => true,
-                ]
             );
+        }
+
+        $builder->add(
+            'password',
+            RepeatedType::class,
+            [
+                'type' => PasswordType::class,
+                'mapped' => false,
+                'first_options' => ['label' => 'label.new_password'],
+                'second_options' => ['label' => 'label.repeat_password'],
+                'invalid_message' => $this->translator->trans('message.invalid_password'),
+                'required' => true,
+            ]
+        );
     }
 
     /**
