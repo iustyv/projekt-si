@@ -95,4 +95,14 @@ class UserService implements UserServiceInterface
         return ($user !== $this->security->getUser());
     }
 
+    public function findOneByUsername(string $username): ?User
+    {
+        return $this->userRepository->findOneByUsername($username);
+    }
+
+    public function addRole(User $user, string $role): void
+    {
+        $user->addRole($role);
+    }
+
 }

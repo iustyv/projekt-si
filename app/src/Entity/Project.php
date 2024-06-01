@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Enum\UserRole;
 use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -117,6 +118,8 @@ class Project
     public function setManager(?User $manager): void
     {
         $this->manager = $manager;
+        $manager->addRole(UserROLE::ROLE_PROJECT_MANAGER->value);
+        $this->addMember($manager);
     }
 
     public function getMembers(): Collection
@@ -128,6 +131,13 @@ class Project
     {
         if (!$this->members->contains($member)) {
             $this->members->add($member);
+        }
+    }
+
+    public function addMembers(array $members): void
+    {
+        foreach ($members as $member) {
+            $this->addMember($member);
         }
     }
 

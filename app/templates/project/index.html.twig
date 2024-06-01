@@ -23,6 +23,8 @@
             </tbody>
         </table>
 
+
+
         <div class="navigation text-center">
             {{ knp_pagination_render(pagination) }}
         </div>
@@ -30,5 +32,9 @@
         <p>
             {{ 'message.empty_list'|trans }}
         </p>
+    {% endif %}
+
+    {% if is_granted('CREATE_PROJECT') %}
+        <a href="{{ url('project_create') }}" class="btn btn-primary">{{ 'action.create'|trans }}</a>
     {% endif %}
 {% endblock %}

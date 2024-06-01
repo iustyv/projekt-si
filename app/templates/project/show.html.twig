@@ -8,6 +8,8 @@
     <h1>{{  project.name|default('message.project_not_found'|trans) }}</h1>
     {% if project is defined and project is not null %}
         <dl class="dl-horizontal">
+            <dt>{{ 'label.project_manager'|trans }}</dt>
+            <dd>{{ project.manager.nickname }}</dd>
             <dt>{{ 'label.id'|trans }}</dt>
             <dd>{{ project.id }}</dd>
             <dt>{{ 'label.created_at'|trans }}</dt>
@@ -15,6 +17,25 @@
             <dt>{{ 'label.updated_at'|trans }}</dt>
             <dd>{{ project.updatedAt|format_date('long') }}</dd>
         </dl>
+
+        {% if project.members is defined and project.members|length %}
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th class="knp-th">{{ 'label.member'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for member in project.members %}
+                    <tr>
+                        <td><a href="{{ url('user_show', {id: member.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ member.nickname }}</a></td>
+                        <td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
     {% else %}
         <p>
             {{ 'message.record_not_found'|trans }}

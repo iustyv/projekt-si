@@ -12,6 +12,7 @@ enum UserRole: string
 {
     case ROLE_USER = 'ROLE_USER';
     case ROLE_ADMIN = 'ROLE_ADMIN';
+    case ROLE_PROJECT_MANAGER = 'ROLE_PROJECT_MANAGER';
 
     /**
      * Get the role label.
@@ -23,6 +24,7 @@ enum UserRole: string
         return match ($this) {
             UserRole::ROLE_USER => 'label.role_user',
             UserRole::ROLE_ADMIN => 'label.role_admin',
+            UserRole::ROLE_PROJECT_MANAGER => 'label.role_project_manager',
         };
     }
 }

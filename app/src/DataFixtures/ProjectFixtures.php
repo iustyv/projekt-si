@@ -5,8 +5,10 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Enum\UserRole;
 use App\Entity\Project;
 use App\Entity\User;
+use App\Service\UserServiceInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
 /**
@@ -39,8 +41,8 @@ class ProjectFixtures extends AbstractBaseFixtures implements DependentFixtureIn
             /** @var User $manager User entity */
             $manager = $this->getRandomReference('users');
             $project->setManager($manager);
+            $manager->addRole(UserRole::ROLE_PROJECT_MANAGER->value);
             $project->addMember($manager);
-            // TODO how to add ROLE_PROJECT_MANAGER
 
             $tagNum = $this->faker->numberBetween(1, 10);
             for($j = 0; $j < $tagNum; ++$j) {
