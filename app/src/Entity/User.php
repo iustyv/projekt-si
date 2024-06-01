@@ -40,7 +40,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 40, unique: true)]
     #[Assert\NotBlank]
     #[Assert\Type('string')]
-    #[Assert\Regex(pattern: '/^[a-zA-Z0-9]+$/', message: 'message.field_alphanum')]
+    #[Assert\Regex(pattern: '/^[a-zA-Z0-9.]+$/', message: 'message.field_alphanum')]
     #[Assert\Length(min: 3, max: 40)]
     private ?string $nickname = null;
 
@@ -165,6 +165,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setRoles(array $roles): void
     {
         $this->roles = $roles;
+    }
+
+    public function addRole(string $role): void
+    {
+        if (!in_array($role, $this->roles, true)){
+            $this->roles[] = $role;
+        }
     }
 
     /**

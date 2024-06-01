@@ -52,7 +52,7 @@
             </div>
         {% endfor %}
 
-        {% if not app.user.isBlocked %}
+        {% if is_granted('CREATE_REPORT') %}
             <a href="{{ url('report_create') }}" class="btn btn-primary my-2">{{ 'action.create'|trans }}</a>
         {% endif %}
 

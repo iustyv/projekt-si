@@ -6,10 +6,12 @@
 namespace App\Form\Type;
 
 use App\Entity\Category;
+use App\Entity\Enum\ReportStatus;
 use App\Entity\Report;
 use App\Form\DataTransformer\TagsDataTransformer;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -80,6 +82,18 @@ class ReportType extends AbstractType
                     'required' => true,
                     'placeholder' => 'label.choose_category',
                     'label_attr' => ['class' => 'fw-bold']
+                ]
+            )
+            ->add(
+                'status',
+                ChoiceType::class,
+                [
+                    'required' => true,
+                    'choices' => [
+                        ReportStatus::STATUS_PENDING->label() => ReportStatus::STATUS_PENDING,
+                        ReportStatus::STATUS_IN_PROGRESS->label() => ReportStatus::STATUS_IN_PROGRESS,
+                        ReportStatus::STATUS_COMPLETED->label() => ReportStatus::STATUS_COMPLETED,
+                    ]
                 ]
             )
             ->add(

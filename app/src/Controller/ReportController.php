@@ -108,9 +108,8 @@ class ReportController extends AbstractController
     #[Route('/create', name: 'report_create', methods: 'GET|POST')]
     public function create(Request $request): Response
     {
-        if(!$this->isGranted('IS_AUTHENTICATED_FULLY'))
-        {
-            return $this->redirectToRoute('app_login');
+        if(!$this->isGranted('CREATE_REPORT')) {
+            return $this->redirectToRoute('index');
         }
 
         $report = new Report();
@@ -147,7 +146,7 @@ class ReportController extends AbstractController
     public function edit(Request $request, Report $report): Response
     {
         if(!$this->isGranted('EDIT_REPORT', $report)) {
-            return $this->redirectToRoute('report_show', ['id' => $report->getId()]); // TODO report_show (??)
+            return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
         }
 
         $form = $this->createForm(

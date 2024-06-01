@@ -18,16 +18,18 @@ class ReportVoter extends Voter
 
     public const EDIT_REPORT = 'EDIT_REPORT';
     public const VIEW_REPORT = 'VIEW_REPORT';
+    public const CREATE_REPORT = 'CREATE_REPORT';
     private const DELETE_REPORT = 'DELETE_REPORT';
     private const COMMENT = 'COMMENT';
     private const TOGGLE_ARCHIVE = 'TOGGLE_ARCHIVE';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        // replace with your own logic
-        // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, [self::EDIT_REPORT, self::VIEW_REPORT, self::DELETE_REPORT, self::COMMENT, self::TOGGLE_ARCHIVE])
-            && $subject instanceof Report;
+        if (!in_array($attribute, [self::CREATE_REPORT, self::EDIT_REPORT, self::VIEW_REPORT, self::DELETE_REPORT, self::COMMENT, self::TOGGLE_ARCHIVE])) return false;
+
+        if ($attribute === self::CREATE_REPORT) return true;
+
+        return $subject instanceof Report;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
@@ -39,6 +41,7 @@ class ReportVoter extends Voter
         }
 
         return match ($attribute) {
+            self::CREATE_REPORT => $this->canCreate($user),
             self::EDIT_REPORT => $this->canEdit($subject, $user),
             self::VIEW_REPORT => $this->canView($subject, $user),
             self::DELETE_REPORT => $this->canDelete($subject, $user),
@@ -46,6 +49,19 @@ class ReportVoter extends Voter
             self::TOGGLE_ARCHIVE => $this->canToggleArchive($subject, $user),
             default => false,
         };
+    }
+
+    /**
+     * Checks if user can create report.
+     *
+     * @param User $user User
+     *
+     * @return bool Result
+     */
+    private function canCreate(UserInterface $user): bool
+    {
+        if ($user->isBlocked()) return false;
+        return ($this->security->isGranted('IS_AUTHENTICATED_REMEMBERED'));
     }
 
     /**

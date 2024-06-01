@@ -7,7 +7,7 @@
 {% block body %}
     <h1>{{ report.title|default('message.report_not_found'|trans) }}</h1>
     {% if report is defined and report|length %}
-    <p class="fs-6 mt-3">{{ report.description|markdown_to_html }}</p>
+    <p class="fs-6 mt-3 border rounded">{{ report.description|markdown_to_html }}</p>
     <dl class="dl-horizontal mt-4">
         <dt>{{ 'label.id'|trans }}</dt>
         <dd>{{ report.id }}</dd>
@@ -32,7 +32,7 @@
             {% endfor %}
         </dd>
     </dl>
-    {% if (report.status.label != 'label.archived' and not app.user.isBlocked) or is_granted('ROLE_ADMIN') %}
+    {% if is_granted('COMMENT') %}
         <a href="{{ url('report_comment', {id: report.id}) }}" class="btn btn-primary">{{ 'action.comment'|trans }}</a>
     {% endif %}
 
