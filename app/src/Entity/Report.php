@@ -112,6 +112,9 @@ class Report
     #[Assert\Type(ReportStatus::class)]
     private ReportStatus $status = ReportStatus::STATUS_PENDING;
 
+    #[ORM\OneToOne(mappedBy: 'report', cascade: ['persist', 'remove'])]
+    private ?Attachment $attachment = null;
+
     /**
      * Constructor.
      */
@@ -300,5 +303,22 @@ class Report
     public function setStatus(ReportStatus $status): void
     {
         $this->status = $status;
+    }
+
+    public function getAttachment(): ?Attachment
+    {
+        return $this->attachment;
+    }
+
+    public function setAttachment(Attachment $attachment): static
+    {
+        // set the owning side of the relation if necessary
+        if ($attachment->getReport() !== $this) {
+            $attachment->setReport($this);
+        }
+
+        $this->attachment = $attachment;
+
+        return $this;
     }
 }

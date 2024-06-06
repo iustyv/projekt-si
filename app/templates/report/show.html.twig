@@ -32,7 +32,15 @@
             {% endfor %}
         </dd>
     </dl>
-    {% if is_granted('COMMENT') %}
+
+
+    {% if report.attachment.filename is defined and report.attachment.filename|length %}
+        <div class="my-3"> {# TODO css for size #}
+            <img src="{{ asset(attachments_directory~report.attachment.filename) }}">
+        </div>
+    {% endif %}
+
+    {% if is_granted('COMMENT', report) %}
         <a href="{{ url('report_comment', {id: report.id}) }}" class="btn btn-primary">{{ 'action.comment'|trans }}</a>
     {% endif %}
 
