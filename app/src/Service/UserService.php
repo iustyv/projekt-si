@@ -105,4 +105,9 @@ class UserService implements UserServiceInterface
         $user->addRole($role);
     }
 
+    public function toggleBlock(User $user): void
+    {
+        $user->setIsBlocked(!$user->isBlocked());
+    }
+
 }

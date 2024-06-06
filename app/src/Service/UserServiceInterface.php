@@ -58,4 +58,6 @@ interface UserServiceInterface
     public function findOneByUsername(string $username): ?User;
 
     public function addRole(User $user, string $role): void;
+
+    public function toggleBlock(User $user): void;
 }

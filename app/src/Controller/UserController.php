@@ -10,6 +10,7 @@ use App\Entity\User;
 use App\Form\Type\User\UserNicknameType;
 use App\Form\Type\User\UserPasswordType;
 use App\Form\Type\User\UserRegistrationType;
+use App\Form\Type\User\UserSubmitType;
 use App\Service\UserServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -196,17 +197,35 @@ class UserController extends AbstractController
      * @return Response HTTP response
      */
     #[Route('/{id}/toggle_block', name: 'user_toggle_block', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
-    public function user_toggle_block(User $user): Response
+    public function user_toggle_block(Request $request, User $user): Response
     {
-        if(!$this->isGranted('ROLE_ADMIN'))
-        {
+        if(!$this->isGranted('ROLE_ADMIN') || $user->hasRole(UserRole::ROLE_ADMIN->value)) {
             return $this->redirectToRoute('index');
         }
 
-        $user->setIsBlocked(!$user->isBlocked());
-        $this->userService->save($user);
+        $form = $this->createForm(
+            UserSubmitType::class,
+            $user,
+            [
+                'method' => 'PUT',
+                'action' => $this->generateUrl('user_toggle_block', ['id' => $user->getId()]),
+            ]
+        );
+        $form->handleRequest($request);
 
-        return $this->redirectToRoute('user_index');
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->userService->toggleBlock($user);
+            $this->userService->save($user);
+
+            $this->addFlash('success', $this->translator->trans('message.changed_successfully'));
+
+            return $this->redirectToRoute('user_index');
+        }
+
+        return $this->render('user/submit.html.twig', [
+            'form' => $form->createView(),
+            'title' => 'action.toggle_block'
+        ]);
     }
 
     /**
@@ -217,17 +236,35 @@ class UserController extends AbstractController
      * @return Response HTTP response
      */
     #[Route('/{id}/set_admin', name: 'set_admin', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
-    public function set_admin(User $user): Response
+    public function set_admin(Request $request, User $user): Response
     {
-        if(!$this->isGranted('ROLE_ADMIN'))
-        {
+        if(!$this->isGranted('ROLE_ADMIN') || $user->isBlocked()) {
             return $this->redirectToRoute('index');
         }
 
-        $user->setRoles([UserRole::ROLE_USER->value, UserRole::ROLE_ADMIN->value]);
-        $this->userService->save($user);
+        $form = $this->createForm(
+            UserSubmitType::class,
+            $user,
+            [
+                'method' => 'PUT',
+                'action' => $this->generateUrl('set_admin', ['id' => $user->getId()]),
+            ]
+        );
+        $form->handleRequest($request);
 
-        return $this->redirectToRoute('user_index');
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->userService->addRole($user, UserRole::ROLE_ADMIN->value);
+            $this->userService->save($user);
+
+            $this->addFlash('success', $this->translator->trans('message.changed_successfully'));
+
+            return $this->redirectToRoute('user_index');
+        }
+
+        return $this->render('user/submit.html.twig', [
+            'form' => $form->createView(),
+            'title' => 'action.set_admin'
+        ]);
     }
 
     /**
@@ -238,22 +275,39 @@ class UserController extends AbstractController
      * @return Response HTTP response
      */
     #[Route('/{id}/remove_admin', name: 'remove_admin', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
-    public function remove_admin(User $user): Response
+    public function remove_admin(Request $request, User $user): Response
     {
-        if(!$this->isGranted('ROLE_ADMIN'))
-        {
+        if(!$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('index');
         }
 
-        if(!$this->userService->adminCanBeDeleted($user))
-        {
+        if(!$this->userService->adminCanBeDeleted($user)) {
             $this->addFlash('warning', $this->translator->trans('message.cannot_remove_admin'));
 
             return $this->redirectToRoute('user_index');
         }
 
-        $this->userService->removeAdmin($user);
+        $form = $this->createForm(
+            UserSubmitType::class,
+            $user,
+            [
+                'method' => 'PUT',
+                'action' => $this->generateUrl('remove_admin', ['id' => $user->getId()]),
+            ]
+        );
+        $form->handleRequest($request);
 
-        return $this->redirectToRoute('user_index');
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->userService->removeAdmin($user);
+
+            $this->addFlash('success', $this->translator->trans('message.changed_successfully'));
+
+            return $this->redirectToRoute('user_index');
+        }
+
+        return $this->render('user/submit.html.twig', [
+            'form' => $form->createView(),
+            'title' => 'action.remove_admin'
+        ]);
     }
 }

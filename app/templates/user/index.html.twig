@@ -30,7 +30,9 @@
                         {% if 'ROLE_ADMIN' in user.roles %}
                             <a href="{{ url('remove_admin', {id: user.id}) }}" class="btn btn-danger">{{ 'action.remove_admin'|trans }}</a>
                         {% else %}
-                            <a href="{{ url('set_admin', {id: user.id}) }}" class="btn btn-primary">{{ 'action.make_admin'|trans }}</a>
+                            {% if not user.isBlocked %}
+                                <a href="{{ url('set_admin', {id: user.id}) }}" class="btn btn-primary">{{ 'action.make_admin'|trans }}</a>
+                            {% endif %}
                         {% endif %}
                     </td>
                 </tr>
