@@ -136,9 +136,8 @@ class ReportController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UploadedFile $file */
             $file = $form->get('file')->getData();
-            if (null !== $file)
-            {
-                $report->setAttachment($this->attachmentService->create($file, $report));
+            if (null !== $file) {
+                $this->attachmentService->create($file, $report);
             }
             $this->reportService->save($report);
 
@@ -172,6 +171,7 @@ class ReportController extends AbstractController
             $report,
             [
                 'projects' => $projects,
+                'attachment_exists' => $report->getAttachment(),
                 'method' => 'PUT',
                 'action' => $this->generateUrl('report_edit', ['id' => $report->getId()]),
             ]
@@ -179,6 +179,14 @@ class ReportController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile $file */
+            $file = $form->get('file')->getData();
+            if (null !== $file) {
+                $this->attachmentService->update($file, $report);
+            }
+            else if ($form->get('delete_file')->getData()) {
+                $this->attachmentService->delete($report);
+            }
             $this->reportService->save($report);
 
             $this->addFlash('success', $this->translator->trans('message.edited_successfully'));

@@ -8,6 +8,7 @@ namespace App\Service;
 use App\Entity\Attachment;
 use App\Entity\Report;
 use App\Repository\AttachmentRepository;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -22,7 +23,7 @@ class AttachmentService implements AttachmentServiceInterface
      * @param AttachmentRepository           $attachmentRepository  Attachment repository
      * @param FileUploadServiceInterface $fileUploadService File upload service
      */
-    public function __construct(private readonly string $targetDirectory, private readonly AttachmentRepository $attachmentRepository, private readonly FileUploadServiceInterface $fileUploadService)
+    public function __construct(private readonly string $targetDirectory, private readonly AttachmentRepository $attachmentRepository, private readonly FileUploadServiceInterface $fileUploadService, private readonly Filesystem $filesystem)
     {
     }
 
@@ -37,12 +38,42 @@ class AttachmentService implements AttachmentServiceInterface
     {
         $attachmentFilename = $this->fileUploadService->upload($uploadedFile);
 
-        $attachment = new Attachment();
-        $attachment->setReport($report);
+        if ($report->getAttachment() === null) {
+            $attachment = new Attachment();
+            $attachment->setReport($report);
+        }
+        else {
+            $attachment = $report->getAttachment();
+        }
+
         $attachment->setFilename($attachmentFilename);
+        $report->setAttachment($attachment);
 
         $this->attachmentRepository->save($attachment);
 
         return $attachment;
+    }
+
+    public function update(UploadedFile $uploadedFile, Report $report): void
+    {
+        if ($report->getAttachment() !== null)
+        {
+            $filename = $report->getAttachment()->getFilename();
+            $this->filesystem->remove(
+                $this->targetDirectory.'/'.$filename
+            );
+        }
+        $this->create($uploadedFile, $report);
+    }
+
+    public function delete(Report $report): void
+    {
+        if ($report->getAttachment() === null) return;
+        $filename = $report->getAttachment()->getFilename();
+        $this->filesystem->remove(
+            $this->targetDirectory.'/'.$filename
+        );
+        $this->attachmentRepository->delete($report->getAttachment());
+        $report->setAttachment(null);
     }
 }

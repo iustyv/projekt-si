@@ -17,6 +17,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -108,6 +109,7 @@ class ReportType extends AbstractType
                 'project',
                 EntityType::class,
                 [
+                    'label' => 'label.project',
                     'class' => Project::class,
                     'choices' => $options['projects'],
                     'choice_label' => 'name',
@@ -121,7 +123,7 @@ class ReportType extends AbstractType
                 [
                     'required' => false,
                     'label' => 'label.assigned_to',
-                    'attr' => ['placeholder' => 'label.assigned_to'],
+                    'attr' => ['placeholder' => 'label.choose_assigned_to'],
                 ]
             )
         ;
@@ -156,6 +158,18 @@ class ReportType extends AbstractType
                     ),
                 ]
             );
+        if ($options['attachment_exists']) {
+            $builder
+                ->add(
+                'delete_file',
+                CheckboxType::class,
+                [
+                    'label' => 'label.delete_file',
+                    'required' => false,
+                    'mapped' => false,
+                ]
+            );
+        }
 
         $builder->get('tags')->addModelTransformer(
             $this->tagsDataTransformer
@@ -205,6 +219,7 @@ class ReportType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Report::class,
             'projects' => [],
+            'attachment_exists' => false,
         ]);
     }
 

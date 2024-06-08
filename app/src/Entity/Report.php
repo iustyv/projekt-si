@@ -315,16 +315,14 @@ class Report
         return $this->attachment;
     }
 
-    public function setAttachment(Attachment $attachment): static
+    public function setAttachment(?Attachment $attachment): void
     {
         // set the owning side of the relation if necessary
-        if ($attachment->getReport() !== $this) {
+        if (null !== $attachment && $attachment->getReport() !== $this) {
             $attachment->setReport($this);
         }
 
         $this->attachment = $attachment;
-
-        return $this;
     }
 
     public function getAssignedTo(): ?User
@@ -332,10 +330,8 @@ class Report
         return $this->assignedTo;
     }
 
-    public function setAssignedTo(?User $assignedTo): static
+    public function setAssignedTo(?User $assignedTo): void
     {
         $this->assignedTo = $assignedTo;
-
-        return $this;
     }
 }

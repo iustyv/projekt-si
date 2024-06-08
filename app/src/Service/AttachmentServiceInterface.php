@@ -22,4 +22,7 @@ interface AttachmentServiceInterface
      * @param Report         $report         Report entity
      */
     public function create(UploadedFile $uploadedFile, Report $report): Attachment;
+    public function update(UploadedFile $uploadedFile, Report $report): void;
+
+    public function delete(Report $report): void;
 }

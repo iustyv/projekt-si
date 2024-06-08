@@ -24,6 +24,13 @@ class AttachmentRepository extends ServiceEntityRepository
         $this->_em->flush();
     }
 
+    public function delete(Attachment $attachment): void
+    {
+        assert($this->_em instanceof EntityManager);
+        $this->_em->remove($attachment);
+        $this->_em->flush();
+    }
+
     //    /**
     //     * @return Attachment[] Returns an array of Attachment objects
     //     */
