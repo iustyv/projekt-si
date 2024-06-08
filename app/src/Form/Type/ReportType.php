@@ -7,9 +7,15 @@ namespace App\Form\Type;
 
 use App\Entity\Category;
 use App\Entity\Enum\ReportStatus;
+use App\Entity\Project;
 use App\Entity\Report;
+use App\Form\DataTransformer\MembersDataTransformer;
 use App\Form\DataTransformer\TagsDataTransformer;
+use App\Form\DataTransformer\UserDataTransformer;
+use App\Service\UserServiceInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -29,7 +35,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ReportType extends AbstractType
 {
-    public function __construct(private readonly TranslatorInterface $translator, private readonly TagsDataTransformer $tagsDataTransformer)
+    public function __construct(private readonly TranslatorInterface $translator, private readonly TagsDataTransformer $tagsDataTransformer,  private readonly Security $security, private readonly UserServiceInterface $userService, private readonly UserDataTransformer $userDataTransformer)
     {
     }
 
@@ -99,6 +105,28 @@ class ReportType extends AbstractType
                 ]
             )
             ->add(
+                'project',
+                EntityType::class,
+                [
+                    'class' => Project::class,
+                    'choices' => $options['projects'],
+                    'choice_label' => 'name',
+                    'placeholder' => 'label.choose_project',
+                    'required' => false
+                ]
+            )
+            ->add(
+                'assignedTo',
+                TextType::class,
+                [
+                    'required' => false,
+                    'label' => 'label.assigned_to',
+                    'attr' => ['placeholder' => 'label.assigned_to'],
+                ]
+            )
+        ;
+        $builder
+            ->add(
                 'tags',
                 TextType::class,
                 [
@@ -143,6 +171,28 @@ class ReportType extends AbstractType
                 }
             }
         });
+
+        $builder->get('assignedTo')->addModelTransformer(
+            $this->userDataTransformer
+        );
+
+        $builder->get('assignedTo')->addEventListener(FormEvents::PRE_SUBMIT, function(FormEvent $event) {
+            $assignedToFormField = $event->getForm();
+            $assignedToFieldValue = $event->getData();
+            $project = $assignedToFormField->getParent()->get('project')->getData();
+
+            if (!empty($assignedToFieldValue)) {
+                if (!preg_match_all('/^[a-zA-Z0-9.]+$/', $assignedToFieldValue)) {
+                    $assignedToFormField->addError(new FormError($this->translator->trans('message.assigned_to_invalid_format')));
+                }
+                else {
+                    $user = $this->userService->findOneByUsername($assignedToFieldValue);
+                    if (!in_array($user, $project->getMembers()->toArray())) {
+                        $assignedToFormField->addError(new FormError($this->translator->trans('message.cannot_assign_report')));
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -152,7 +202,10 @@ class ReportType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(['data_class' => Report::class]);
+        $resolver->setDefaults([
+            'data_class' => Report::class,
+            'projects' => [],
+        ]);
     }
 
     /**

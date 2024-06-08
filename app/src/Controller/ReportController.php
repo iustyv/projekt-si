@@ -13,9 +13,14 @@ use App\Resolver\ReportListInputFiltersDtoResolver;
 use App\Entity\Report;
 use App\Entity\User;
 use App\Form\Type\ReportType;
+use App\Service\AttachmentService;
+use App\Service\AttachmentServiceInterface;
 use App\Service\CommentServiceInterface;
+use App\Service\ProjectServiceInterface;
 use App\Service\ReportServiceInterface;
+use App\Service\UserServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
@@ -36,7 +41,7 @@ class ReportController extends AbstractController
      * @param CommentServiceInterface $commentService Comment service interface
      * @param TranslatorInterface $translator Translator interface
      */
-    public function __construct(private readonly ReportServiceInterface $reportService, private readonly CommentServiceInterface $commentService, private readonly TranslatorInterface $translator)
+    public function __construct(private readonly ReportServiceInterface $reportService, private readonly CommentServiceInterface $commentService, private readonly AttachmentServiceInterface $attachmentService, private readonly TranslatorInterface $translator, private readonly ProjectServiceInterface $projectService)
     {
     }
 
@@ -116,14 +121,25 @@ class ReportController extends AbstractController
         $user = $this->getUser();
         $report->setAuthor($user);
 
+        $projects = $this->projectService->getUserProjects($user);
+
         $form = $this->createForm(
             ReportType::class,
             $report,
-            ['action' => $this->generateUrl('report_create')]
+            [
+                'projects' => $projects,
+                'action' => $this->generateUrl('report_create')
+            ],
         );
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile $file */
+            $file = $form->get('file')->getData();
+            if (null !== $file)
+            {
+                $report->setAttachment($this->attachmentService->create($file, $report));
+            }
             $this->reportService->save($report);
 
             $this->addFlash('success', $this->translator->trans('message.created_successfully'));
@@ -149,10 +165,13 @@ class ReportController extends AbstractController
             return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
         }
 
+        $projects = $this->projectService->getUserProjects($report->getAuthor());
+
         $form = $this->createForm(
             ReportType::class,
             $report,
             [
+                'projects' => $projects,
                 'method' => 'PUT',
                 'action' => $this->generateUrl('report_edit', ['id' => $report->getId()]),
             ]

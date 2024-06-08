@@ -115,6 +115,11 @@ class Report
     #[ORM\OneToOne(mappedBy: 'report', cascade: ['persist', 'remove'])]
     private ?Attachment $attachment = null;
 
+    #[ORM\ManyToOne(targetEntity: User::class, fetch: 'EXTRA_LAZY')]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Assert\Type(User::class)]
+    private ?User $assignedTo = null;
+
     /**
      * Constructor.
      */
@@ -318,6 +323,18 @@ class Report
         }
 
         $this->attachment = $attachment;
+
+        return $this;
+    }
+
+    public function getAssignedTo(): ?User
+    {
+        return $this->assignedTo;
+    }
+
+    public function setAssignedTo(?User $assignedTo): static
+    {
+        $this->assignedTo = $assignedTo;
 
         return $this;
     }

@@ -41,4 +41,8 @@ interface ProjectServiceInterface
      * @param Project $project
      */
     public function delete(Project $project): void;
+
+    public function findOneById(int $id): ?Project;
+
+    public function getUserProjects(User $user): array;
 }

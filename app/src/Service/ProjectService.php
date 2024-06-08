@@ -69,4 +69,16 @@ class ProjectService implements ProjectServiceInterface
     {
         $this->projectRepository->delete($project);
     }
+
+    public function findOneById(int $id): ?Project
+    {
+        return $this->projectRepository->findOneById($id);
+    }
+
+    public function getUserProjects(User $user): array
+    {
+        return $this->projectRepository->queryByMember($user)
+            ->getQuery()
+            ->getResult();
+    }
 }
