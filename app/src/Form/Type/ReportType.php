@@ -53,31 +53,25 @@ class ReportType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $title = $this->translator->trans('label.title').' *';
-        $description = $this->translator->trans('label.description').' *';
-        $category = $this->translator->trans('label.category').' *';
-
         $builder
             ->add(
             'title',
             TextType::class,
             [
-                'label' => $title,
+                'label' => 'label.title',
                 'required' => true,
                 'attr' => ['max_length' => 64],
-                'label_attr' => ['class' => 'fw-bold'],
             ])
             ->add(
                 'description',
                 TextareaType::class,
                 [
-                    'label' => $description,
+                    'label' => 'label.description',
                     'required' => true,
                     'attr' => [
                         'max_length' => 500,
                         'rows' => 6
                     ],
-                    'label_attr' => ['class' => 'fw-bold']
                 ])
             ->add(
                 'category',
@@ -87,16 +81,16 @@ class ReportType extends AbstractType
                     'choice_label' => function ($category): string {
                         return $category->getTitle();
                     },
-                    'label' => $category,
+                    'label' => 'label.category',
                     'required' => true,
                     'placeholder' => 'label.choose_category',
-                    'label_attr' => ['class' => 'fw-bold']
                 ]
             )
             ->add(
                 'status',
                 ChoiceType::class,
                 [
+                    'label' => 'label.status',
                     'required' => true,
                     'choices' => [
                         ReportStatus::STATUS_PENDING->label() => ReportStatus::STATUS_PENDING,

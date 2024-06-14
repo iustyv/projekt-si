@@ -17,3 +17,11 @@ textarea {
 .form-block div {
     display: block;
 }
+
+.required {
+    font-weight: bold;
+}
+
+.required::after {
+    content: " *";
+}

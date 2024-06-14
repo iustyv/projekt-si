@@ -39,14 +39,12 @@ class ProjectType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $name = $this->translator->trans('label.title').' *';
-
         $builder
             ->add(
             'name',
             TextType::class,
             [
-                'label' => $name,
+                'label' => 'label.project_name',
                 'required' => true,
                 'attr' => ['max_length' => 64],
                 'label_attr' => ['class' => 'fw-bold'],

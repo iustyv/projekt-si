@@ -35,13 +35,11 @@ class CategoryType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $title = $this->translator->trans('label.title').' *';
-
         $builder->add(
             'title',
             TextType::class,
             [
-                'label' => $title,
+                'label' => 'label.title',
                 'required' => true,
                 'attr' => ['max_length' => 64],
                 'label_attr' => ['class' => 'fw-bold'],
