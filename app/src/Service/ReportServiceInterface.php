@@ -7,6 +7,7 @@ namespace App\Service;
 
 use App\Dto\ReportListInputFiltersDto;
 use App\Entity\Report;
+use App\Entity\User;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 
 /**
@@ -46,10 +47,13 @@ interface ReportServiceInterface
      */
     public function delete(Report $report): void;
 
+    public function deleteByAuthor(User $user): void;
+
     /**
      * Toggle archive report.
      *
      * @param Report $report
      */
     public function toggle_archive(Report $report): void;
+    //public function getSearchQuery(Request $request);
 }

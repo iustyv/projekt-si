@@ -7,6 +7,7 @@ namespace App\Service;
 
 use App\Entity\Comment;
 use App\Entity\Report;
+use App\Entity\User;
 use App\Repository\CommentRepository;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -72,5 +73,35 @@ class CommentService implements CommentServiceInterface
     public function delete(Comment $comment): void
     {
         $this->commentRepository->delete($comment);
+    }
+
+    /**
+     * Delete comments by report.
+     *
+     * @param Report $report Report entity
+     *
+     * @return void
+     */
+    public function deleteByReport(Report $report): void
+    {
+        $comments = $this->commentRepository->findBy(['report' => $report]);
+        foreach ($comments as $comment) {
+            $this->commentRepository->delete($comment);
+        }
+    }
+
+    /**
+     * Delete comments by author.
+     *
+     * @param User $author User entity
+     *
+     * @return void
+     */
+    public function deleteByAuthor(User $author): void
+    {
+        $comments = $this->commentRepository->findBy(['author' => $author]);
+        foreach ($comments as $comment) {
+            $this->commentRepository->delete($comment);
+        }
     }
 }

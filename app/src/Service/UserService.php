@@ -7,7 +7,9 @@ namespace App\Service;
 
 use App\Entity\Enum\UserRole;
 use App\Entity\User;
+use App\Repository\ProjectRepository;
 use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -23,9 +25,9 @@ class UserService implements UserServiceInterface
     /**
      * Constructor.
      *
-     * @param UserRepository   $userRepository User repository
+     * @param UserRepository $userRepository User repository
      */
-    public function __construct(private readonly UserRepository $userRepository, private readonly PaginatorInterface $paginator, private readonly Security $security)
+    public function __construct(private readonly UserRepository $userRepository, private readonly PaginatorInterface $paginator, private readonly Security $security, private readonly ReportServiceInterface $reportService, private readonly ProjectRepository $projectRepository, private readonly CommentServiceInterface $commentService)
     {
     }
 
@@ -39,7 +41,7 @@ class UserService implements UserServiceInterface
     /**
      * Get paginated list.
      *
-     * @param int|null $page   Page number
+     * @param int|null $page Page number
      *
      * @return PaginationInterface<string, mixed> Paginated list
      */
@@ -63,12 +65,44 @@ class UserService implements UserServiceInterface
     }
 
     /**
+     * Checks if user can be deleted.
+     *
+     * @param User $user User entity
+     *
+     * @return bool Result
+     */
+    public function userCanBeDeleted(User $user): bool
+    {
+        try {
+            $result = $this->projectRepository->countByManager($user);
+
+            return !($result > 0);
+        } catch (NoResultException|NonUniqueResultException) {
+            return false;
+        }
+    }
+
+    /**
+     * Checks if user is signed in.
+     *
+     * @param User $user User entity
+     *
+     * @return bool Result
+     */
+    public function isSignedIn(User $user): bool
+    {
+        return ($user->getId() === $this->security->getUser()->getId());
+    }
+
+    /**
      * Delete entity.
      *
      * @param User $user User entity
      */
     public function delete(User $user): void
     {
+        $this->commentService->deleteByAuthor($user);
+        $this->reportService->deleteByAuthor($user);
         $this->userRepository->delete($user);
     }
 
@@ -109,5 +143,4 @@ class UserService implements UserServiceInterface
     {
         $user->setIsBlocked(!$user->isBlocked());
     }
-
 }

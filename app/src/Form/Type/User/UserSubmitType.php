@@ -42,7 +42,8 @@ class UserSubmitType extends AbstractType
             TextType::class,
             [
                 'label' => 'label.nickname',
-                'required' => true,
+                'disabled' => true,
+                'required' => false,
                 'attr' => [
                     'readonly' => true,
                 ],

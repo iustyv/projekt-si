@@ -36,7 +36,7 @@ class ReportService implements ReportServiceInterface
      * @param ReportRepository   $reportRepository Report repository
      * @param PaginatorInterface $paginator        Paginator
      */
-    public function __construct(private readonly ReportRepository $reportRepository, private readonly PaginatorInterface $paginator, private readonly CategoryServiceInterface $categoryService, private readonly TagServiceInterface $tagService)
+    public function __construct(private readonly ReportRepository $reportRepository, private readonly PaginatorInterface $paginator, private readonly CategoryServiceInterface $categoryService, private readonly TagServiceInterface $tagService, private readonly ProjectServiceInterface $projectService, private readonly CommentServiceInterface $commentService)
     {
     }
 
@@ -52,7 +52,8 @@ class ReportService implements ReportServiceInterface
         $filters = $this->prepareFilters($filters);
 
         return $this->paginator->paginate(
-            $this->reportRepository->queryActive($filters),
+            //$this->reportRepository->queryActive($filters),
+            $this->reportRepository->queryAll($filters),
             //$this->reportRepository->queryByAuthor($user, $filters),
             $page ?? 1,
             self::PAGINATOR_ITEMS_PER_PAGE
@@ -95,7 +96,16 @@ class ReportService implements ReportServiceInterface
      */
     public function delete(Report $report): void
     {
+        $this->commentService->deleteByReport($report);
         $this->reportRepository->delete($report);
+    }
+
+    public function deleteByAuthor(User $user): void
+    {
+        $reports = $this->reportRepository->findBy(['author' => $user]);
+        foreach ($reports as $report) {
+            $this->reportRepository->delete($report);
+        }
     }
 
     /**

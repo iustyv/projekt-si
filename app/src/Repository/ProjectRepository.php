@@ -32,7 +32,7 @@ class ProjectRepository extends ServiceEntityRepository
     /**
      * Query projects user is a member of.
      *
-     * @param UserInterface      $user    User entity
+     * @param UserInterface $user User entity
      *
      * @return QueryBuilder Query builder
      */
@@ -70,6 +70,17 @@ class ProjectRepository extends ServiceEntityRepository
             ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function countByManager(User $user): int
+    {
+        $qb = $this->getOrCreateQueryBuilder();
+
+        return $qb->select($qb->expr()->countDistinct('project.id'))
+            ->where('project.manager = :manager')
+            ->setParameter(':manager', $user)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     /**

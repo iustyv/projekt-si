@@ -7,6 +7,7 @@ namespace App\Service;
 
 use App\Entity\Comment;
 use App\Entity\Report;
+use App\Entity\User;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 
 /**
@@ -28,10 +29,28 @@ interface CommentServiceInterface
      * Save entity.
      *
      * @param Comment $comment Comment entity
-     * @param Report $report Report entity
+     * @param Report  $report  Report entity
      *
      */
     public function save(Comment $comment): void;
 
     public function delete(Comment $comment): void;
+
+    /**
+     * Delete comments by report.
+     *
+     * @param Report $report Report entity
+     *
+     * @return void
+     */
+    public function deleteByReport(Report $report): void;
+
+    /**
+     * Delete comments by author.
+     *
+     * @param User $author User entity
+     *
+     * @return void
+     */
+    public function deleteByAuthor(User $author): void;
 }
