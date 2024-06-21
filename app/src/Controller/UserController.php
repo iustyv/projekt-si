@@ -7,6 +7,7 @@ namespace App\Controller;
 
 use App\Entity\Enum\UserRole;
 use App\Entity\User;
+use App\Form\Type\User\UserEmailType;
 use App\Form\Type\User\UserNicknameType;
 use App\Form\Type\User\UserPasswordType;
 use App\Form\Type\User\UserRegistrationType;
@@ -40,7 +41,7 @@ class UserController extends AbstractController
     #[Route(name: 'user_index', methods: 'GET')]
     public function index(#[MapQueryParameter] int $page = 1): Response
     {
-        if(!$this->isGranted('ROLE_ADMIN')) {
+        if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('index');
         }
         $pagination = $this->userService->getPaginatedList($page);
@@ -65,8 +66,7 @@ class UserController extends AbstractController
     #[Route('/create', name: 'user_create', methods: 'GET|POST')]
     public function create(Request $request): Response
     {
-        if($this->isGranted('IS_AUTHENTICATED_FULLY'))
-        {
+        if ($this->isGranted('IS_AUTHENTICATED_FULLY')) {
             return $this->redirectToRoute('index');
         }
 
@@ -97,16 +97,15 @@ class UserController extends AbstractController
     /**
      * Edit action.
      *
-     * @param Request  $request  HTTP request
-     * @param User $user User entity
+     * @param Request $request HTTP request
+     * @param User    $user    User entity
      *
      * @return Response HTTP response
      */
     #[Route('/{id}/nick', name: 'nick_edit', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
     public function nick_edit(Request $request, User $user): Response
     {
-        if(!$this->isGranted('EDIT_USER', $user))
-        {
+        if (!$this->isGranted('EDIT_USER', $user)) {
             return $this->redirectToRoute('index');
         }
 
@@ -121,10 +120,9 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if(!$this->isGranted('ROLE_ADMIN')) {
+            if (!$this->isGranted('ROLE_ADMIN')) {
                 $currentPassword = $form->get('password')->getData();
-                if(!$this->passwordHasher->isPasswordValid($user, $currentPassword))
-                {
+                if (!$this->passwordHasher->isPasswordValid($user, $currentPassword)) {
                     $this->addFlash('error', $this->translator->trans('message.error_password'));
 
                     return $this->redirectToRoute('nick_edit', ['id' => $user->getId()]);
@@ -141,18 +139,55 @@ class UserController extends AbstractController
         return $this->render('user/edit_nick.html.twig', ['form' => $form->createView(), 'user' => $user]);
     }
 
+    #[Route('/{id}/email', name: 'email_edit', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
+    public function email_edit(Request $request, User $user): Response
+    {
+        if (!$this->isGranted('EDIT_USER', $user)) {
+            return $this->redirectToRoute('index');
+        }
+
+        $form = $this->createForm(
+            UserEmailType::class,
+            $user,
+            [
+                'method' => 'PUT',
+                'action' => $this->generateUrl('email_edit', ['id' => $user->getId()]),
+            ]
+        );
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            if (!$this->isGranted('ROLE_ADMIN')) {
+                $currentPassword = $form->get('password')->getData();
+                if (!$this->passwordHasher->isPasswordValid($user, $currentPassword)) {
+                    $this->addFlash('error', $this->translator->trans('message.error_password'));
+
+                    return $this->redirectToRoute('email_edit', ['id' => $user->getId()]);
+                }
+            }
+
+            $this->userService->save($user);
+
+            $this->addFlash('success', $this->translator->trans('message.edited_successfully'));
+
+            return $this->redirectToRoute('index');
+        }
+
+        return $this->render('user/edit_email.html.twig', ['form' => $form->createView(), 'user' => $user]);
+    }
+
     /**
      * Edit password.
      *
      * @param Request $request HTTP Request
-     * @param User $user User entity
+     * @param User    $user    User entity
      *
      * @return Response HTTP response
      */
     #[Route('/{id}/pass', name: 'pass_edit', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
     public function pass_edit(Request $request, User $user): Response
     {
-        if(!$this->isGranted('EDIT_USER', $user)) {
+        if (!$this->isGranted('EDIT_USER', $user)) {
             return $this->redirectToRoute('index');
         }
 
@@ -169,8 +204,7 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             if (!$this->isGranted('ROLE_ADMIN')) {
                 $currentPassword = $form->get('current_password')->getData();
-                if(!$this->passwordHasher->isPasswordValid($user, $currentPassword))
-                {
+                if (!$this->passwordHasher->isPasswordValid($user, $currentPassword)) {
                     $this->addFlash('error', $this->translator->trans('message.error_password'));
 
                     return $this->redirectToRoute('pass_edit', ['id' => $user->getId()]);
@@ -199,7 +233,7 @@ class UserController extends AbstractController
     #[Route('/{id}/toggle_block', name: 'user_toggle_block', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
     public function user_toggle_block(Request $request, User $user): Response
     {
-        if(!$this->isGranted('ROLE_ADMIN') || $user->hasRole(UserRole::ROLE_ADMIN->value)) {
+        if (!$this->isGranted('ROLE_ADMIN') || $user->hasRole(UserRole::ROLE_ADMIN->value)) {
             return $this->redirectToRoute('index');
         }
 
@@ -224,7 +258,7 @@ class UserController extends AbstractController
 
         return $this->render('user/submit.html.twig', [
             'form' => $form->createView(),
-            'title' => 'action.toggle_block'
+            'title' => 'action.toggle_block',
         ]);
     }
 
@@ -238,7 +272,7 @@ class UserController extends AbstractController
     #[Route('/{id}/set_admin', name: 'set_admin', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
     public function set_admin(Request $request, User $user): Response
     {
-        if(!$this->isGranted('ROLE_ADMIN') || $user->isBlocked()) {
+        if (!$this->isGranted('ROLE_ADMIN') || $user->isBlocked()) {
             return $this->redirectToRoute('index');
         }
 
@@ -263,7 +297,7 @@ class UserController extends AbstractController
 
         return $this->render('user/submit.html.twig', [
             'form' => $form->createView(),
-            'title' => 'action.set_admin'
+            'title' => 'action.set_admin',
         ]);
     }
 
@@ -277,11 +311,11 @@ class UserController extends AbstractController
     #[Route('/{id}/remove_admin', name: 'remove_admin', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
     public function remove_admin(Request $request, User $user): Response
     {
-        if(!$this->isGranted('ROLE_ADMIN')) {
+        if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('index');
         }
 
-        if(!$this->userService->adminCanBeDeleted($user)) {
+        if (!$this->userService->adminCanBeDeleted($user)) {
             $this->addFlash('warning', $this->translator->trans('message.cannot_remove_admin'));
 
             return $this->redirectToRoute('user_index');
@@ -307,7 +341,7 @@ class UserController extends AbstractController
 
         return $this->render('user/submit.html.twig', [
             'form' => $form->createView(),
-            'title' => 'action.remove_admin'
+            'title' => 'action.remove_admin',
         ]);
     }
 }
