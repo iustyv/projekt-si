@@ -6,9 +6,12 @@
 namespace App\Form\Type;
 
 use App\Entity\Project;
+use App\Entity\User;
 use App\Form\DataTransformer\MembersDataTransformer;
 use App\Repository\ProjectRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormError;
@@ -39,26 +42,31 @@ class ProjectType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add(
-            'name',
-            TextType::class,
-            [
-                'label' => 'label.project_name',
-                'required' => true,
-                'attr' => ['max_length' => 64],
-                'label_attr' => ['class' => 'fw-bold'],
-            ])
-            ->add(
-                'members',
-                TextType::class,
-                [
-                    'required' => false,
-                    'mapped' => false,
-                    'label' => 'label.members'
-                ]
-            )
-        ;
+        if($options['include_name']) {
+            $builder
+                ->add(
+                    'name',
+                    TextType::class,
+                    [
+                        'label' => 'label.project_name',
+                        'required' => true,
+                        'attr' => ['max_length' => 64],
+                        'label_attr' => ['class' => 'fw-bold'],
+                    ]);
+        }
+
+        if($options['include_members']) {
+            $builder
+                ->add(
+                    'members',
+                    TextType::class,
+                    [
+                        'required' => false,
+                        'mapped' => false,
+                        'label' => 'label.members'
+                    ]
+                );
+        }
 
         $builder->get('members')->addModelTransformer(
             $this->membersDataTransformer
@@ -83,7 +91,11 @@ class ProjectType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(['data_class' => Project::class]);
+        $resolver->setDefaults([
+            'data_class' => Project::class,
+            'include_name' => true,
+            'include_members' => true,
+        ]);
     }
 
     /**

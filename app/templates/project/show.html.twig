@@ -35,6 +35,10 @@
                 </tbody>
             </table>
         {% endif %}
+        <a href="{{ url('report_index', {projectId: project.id}) }}" class="btn btn-secondary">{{ 'action.reports_from_project'|trans }}</a>
+        {% if is_granted('EDIT_PROJECT', project) %}
+            <a href="{{ url('project_members_add', {id: project.id}) }}" class="btn btn-primary my-2">{{ 'action.add_members'|trans }}</a>
+        {% endif %}
 
     {% else %}
         <p>

@@ -105,4 +105,36 @@ class ProjectController extends AbstractController
 
         return $this->render('project/create.html.twig', ['form' => $form->createView()]);
     }
+
+    #[Route('{id}/members_add', name: 'project_members_add', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
+    public function membersAdd(Request $request, Project $project): Response
+    {
+        if (!$this->isGranted('EDIT_PROJECT', $project)){
+            return $this->redirectToRoute('project_show', ['id' => $project->getId()]);
+        }
+
+        $form = $this->createForm(
+            ProjectType::class,
+            $project,
+            [
+                'include_name' => false,
+                'method' => 'PUT',
+                'action' => $this->generateUrl('project_members_add', ['id' => $project->getId()])
+            ]
+        );
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $newMembers = $form->get('members')->getData();
+            $project->addMembers($newMembers);
+
+            $this->projectService->save($project);
+
+            $this->addFlash('success', $this->translator->trans('message.edited_successfully'));
+
+            return $this->redirectToRoute('project_index');
+        }
+
+        return $this->render('project/edit.html.twig', ['form' => $form->createView()]);
+    }
 }
