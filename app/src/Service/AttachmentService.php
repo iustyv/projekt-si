@@ -10,18 +10,19 @@ use App\Entity\Report;
 use App\Repository\AttachmentRepository;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * Class Attachment service.
+ * Class AttachmentService.
  */
 class AttachmentService implements AttachmentServiceInterface
 {
     /**
      * Constructor.
      *
+     * @param string $targetDirectory Target directory
      * @param AttachmentRepository           $attachmentRepository  Attachment repository
      * @param FileUploadServiceInterface $fileUploadService File upload service
+     * @param Filesystem $filesystem Filesystem
      */
     public function __construct(private readonly string $targetDirectory, private readonly AttachmentRepository $attachmentRepository, private readonly FileUploadServiceInterface $fileUploadService, private readonly Filesystem $filesystem)
     {
@@ -31,10 +32,11 @@ class AttachmentService implements AttachmentServiceInterface
      * Create attachment.
      *
      * @param UploadedFile  $uploadedFile Uploaded file
-     * @param Attachment        $attachment       Attachment entity
      * @param Report $report         Report entity
+     *
+     * @return void
      */
-    public function create(UploadedFile $uploadedFile, Report $report): Attachment
+    public function create(UploadedFile $uploadedFile, Report $report): void
     {
         $attachmentFilename = $this->fileUploadService->upload($uploadedFile);
 
@@ -50,10 +52,16 @@ class AttachmentService implements AttachmentServiceInterface
         $report->setAttachment($attachment);
 
         $this->attachmentRepository->save($attachment);
-
-        return $attachment;
     }
 
+    /**
+     * Update attachment.
+     *
+     * @param UploadedFile $uploadedFile Uploaded file
+     * @param Report $report Report entity
+     *
+     * @return void
+     */
     public function update(UploadedFile $uploadedFile, Report $report): void
     {
         if ($report->getAttachment() !== null)
@@ -66,6 +74,13 @@ class AttachmentService implements AttachmentServiceInterface
         $this->create($uploadedFile, $report);
     }
 
+    /**
+     * Delete attachment.
+     *
+     * @param Report $report Report entity
+     *
+     * @return void
+     */
     public function delete(Report $report): void
     {
         if ($report->getAttachment() === null) return;

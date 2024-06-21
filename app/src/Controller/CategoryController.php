@@ -7,7 +7,6 @@ namespace App\Controller;
 
 use App\Entity\Category;
 use App\Form\Type\CategoryType;
-use App\Repository\CategoryRepository;
 use App\Service\CategoryServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -50,16 +49,13 @@ class CategoryController extends AbstractController
      * Show action.
      *
      * @param Category $category Category entity
-     * @param int    $page   Page number
      *
      * @return Response HTTP Response
      */
     #[Route('/{id}', name: 'category_show', requirements: ['id' => '[1-9]\d*'], methods: 'GET')]
-    public function show(Category $category, #[MapQueryParameter] int $page = 1): Response
+    public function show(Category $category): Response
     {
-        $reports = $this->categoryService->getPaginatedListOfReports($category, $page);
-
-        return $this->render('category/show.html.twig', ['category' => $category, 'reports' => $reports]);
+        return $this->render('category/show.html.twig', ['category' => $category]);
     }
 
     /**

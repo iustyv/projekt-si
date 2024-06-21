@@ -6,7 +6,6 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
-use App\Entity\Report;
 use App\Form\Type\CommentType;
 use App\Service\CommentServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -113,13 +112,4 @@ class CommentController extends AbstractController
             'report' => $report,
             'comments'=> $this->commentService->getPaginatedList($report)]);
     }
-
-    /**
-     * Edit action.
-     *
-     * @param Request  $request  HTTP request
-     * @param Comment $comment Comment entity
-     *
-     * @return Response HTTP response
-     */
 }

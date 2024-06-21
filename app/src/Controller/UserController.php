@@ -27,6 +27,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 #[Route('/user')]
 class UserController extends AbstractController
 {
+    /**
+     * Constructor.
+     *
+     * @param TranslatorInterface $translator Translator interface
+     * @param UserPasswordHasherInterface $passwordHasher PasswordHasher interface
+     * @param UserServiceInterface $userService User service interface
+     */
     public function __construct(private readonly TranslatorInterface $translator, private readonly UserPasswordHasherInterface $passwordHasher, private readonly UserServiceInterface $userService)
     {
     }
@@ -49,6 +56,13 @@ class UserController extends AbstractController
         return $this->render('user/index.html.twig', ['pagination' => $pagination]);
     }
 
+    /**
+     * Show action.
+     *
+     * @param User|null $user User entity
+     *
+     * @return Response HTTP Response
+     */
     #[Route('/{id}', name: 'user_show', requirements: ['id' => '[1-9]\d*'], methods: 'GET')]
     public function show(?User $user = null): Response
     {
@@ -95,7 +109,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * Edit action.
+     * Edit nickname.
      *
      * @param Request $request HTTP request
      * @param User    $user    User entity
@@ -139,6 +153,14 @@ class UserController extends AbstractController
         return $this->render('user/edit_nick.html.twig', ['form' => $form->createView(), 'user' => $user]);
     }
 
+    /**
+     * Edit email.
+     *
+     * @param Request $request HTTP Request
+     * @param User $user User entity
+     *
+     * @return Response HTTP Response
+     */
     #[Route('/{id}/email', name: 'email_edit', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
     public function email_edit(Request $request, User $user): Response
     {

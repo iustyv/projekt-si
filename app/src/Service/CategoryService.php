@@ -11,7 +11,6 @@ use App\Repository\CategoryRepository;
 use App\Repository\ReportRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use Doctrine\ORM\ORMException;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 
@@ -79,6 +78,8 @@ class CategoryService implements CategoryServiceInterface
      * Save entity.
      *
      * @param Category $category Category entity
+     *
+     * @return void
      */
     public function save(Category $category): void
     {
@@ -89,6 +90,8 @@ class CategoryService implements CategoryServiceInterface
      * Delete entity.
      *
      * @param Category $category
+     *
+     * @return void
      */
     public function delete(Category $category): void
     {

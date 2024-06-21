@@ -5,7 +5,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Enum\UserRole;
 use App\Entity\Project;
 use App\Entity\User;
 use App\Form\Type\ProjectType;
@@ -30,7 +29,7 @@ class ProjectController extends AbstractController
      * @param ProjectServiceInterface $projectService Project service interface
      * @param TranslatorInterface $translator Translator interface
      */
-    public function __construct(private readonly ProjectServiceInterface $projectService, private readonly TranslatorInterface $translator, private readonly UserServiceInterface $userService)
+    public function __construct(private readonly ProjectServiceInterface $projectService, private readonly TranslatorInterface $translator)
     {
     }
 
@@ -106,6 +105,14 @@ class ProjectController extends AbstractController
         return $this->render('project/create.html.twig', ['form' => $form->createView()]);
     }
 
+    /**
+     * Add members to project.
+     *
+     * @param Request $request HTTP Request
+     * @param Project $project Project entity
+     *
+     * @return Response HTTP Response
+     */
     #[Route('{id}/members_add', name: 'project_members_add', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
     public function membersAdd(Request $request, Project $project): Response
     {
