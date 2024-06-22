@@ -6,7 +6,22 @@
 
 {% block body %}
     <h1 class="mt-3 mb-4">{{ 'label.reports'|trans }}</h1>
-    <div class="d-flex justify-content-between">
+
+    <div>
+        {% if form is defined and form is not null %}
+            {% include 'default/_trial_form.html.twig' with {
+                form: form,
+                submit_label: 'action.search'|trans,
+            } %}
+        {% endif %}
+    </div>
+
+    {% set categoryId = filters.categoryId %}
+    {% set statusId = filters.statusId %}
+    {% set tagId = filters.tagId %}
+    {% set search = filters.search %}
+
+    <div class="d-flex justify-content-between mt-4">
         <div class="btn-group">
             <button type="button" class="btn btn-outline-primary knp-th">{{ knp_pagination_sortable(pagination, 'label.title'|trans, 'report.title') }}</button>
             <button type="button" class="btn btn-outline-primary knp-th">{{ knp_pagination_sortable(pagination, 'label.category'|trans, 'category.title') }}</button>
@@ -14,11 +29,7 @@
             <button type="button" class="btn btn-outline-primary knp-th">{{ knp_pagination_sortable(pagination, 'label.updated_at'|trans, 'report.updatedAt') }}</button>
             <a href="{{ url('report_index') }}" class="btn btn-outline-secondary float-right">{{ 'action.clear_filters'|trans }}</a>
         </div>
-        {% if app.request.pathInfo starts with '/report/archived' %}
-            <a href="{{ url('report_index') }}" class="btn btn-secondary">{{ 'action.show_active'|trans }}</a>
-        {% else %}
-            <a href="{{ url('report_archived') }}" class="btn btn-secondary">{{ 'action.show_archived'|trans }}</a>
-        {% endif %}
+
     </div>
 
     {% if pagination is defined and pagination.items|length %}
@@ -30,13 +41,13 @@
                     <div>
                         <div>
                             <span class="fw-bold">{{ 'label.category'|trans }}</span>
-                            <a class="text-primary text-decoration-none" href="{{ url('report_index', {'categoryId' : report.category.id}) }}" title="{{ report.category.title }}">{{ report.category.title }}</a>
+                            <a class="text-primary text-decoration-none" href="{{ url('report_index', {'categoryId' : report.category.id, 'statusId': statusId, 'tagId': tagId, 'search': search}) }}" title="{{ report.category.title }}">{{ report.category.title }}</a>
                         </div>
                         <div>
                             <span class="fw-bold pr-4">{{ 'label.tags'|trans }}</span>
                             <span>
                                 {% for tag in report.tags %}
-                                <a href="{{ url('report_index', {'tagId' : tag.id}) }}" title="{{ tag.title }}" class="text-primary text-decoration-none">{{ tag.title }}</a>{% if not loop.last %}, {% endif %}
+                                <a href="{{ url('report_index', {'tagId' : tag.id, 'categoryId': categoryId, 'statusId': statusId, 'search': search}) }}" title="{{ tag.title }}" class="text-primary text-decoration-none">{{ tag.title }}</a>{% if not loop.last %}, {% endif %}
                                 {% endfor %}</span>
                         </div>
                     </div>
@@ -46,7 +57,7 @@
                     <div>{{ 'label.updated_at'|trans }} {{ report.updatedAt|format_date('long') }}</div>
                     <div class="mt-3">
                         <span class="fw-bold">{{ 'label.status'|trans }}</span>
-                        <a class="text-primary text-decoration-none" href="{{ url('report_index', {'statusId' : report.status.value}) }}" title="{{ report.status.label|trans }}">{{ report.status.label|trans }}</a>
+                        <a class="text-primary text-decoration-none" href="{{ url('report_index', {'statusId' : report.status.value, 'categoryId': categoryId, 'tagId': tagId, 'search': search}) }}" title="{{ report.status.label|trans }}">{{ report.status.label|trans }}</a>
                     </div>
                 </div>
             </div>

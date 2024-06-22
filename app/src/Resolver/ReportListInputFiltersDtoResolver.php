@@ -34,7 +34,9 @@ class ReportListInputFiltersDtoResolver implements ValueResolverInterface
         $categoryId = $request->query->get('categoryId');
         $tagId = $request->query->get('tagId');
         $statusId = $request->query->get('statusId');
+        $projectId = $request->query->get('projectId');
+        $search = $request->query->get('search');
 
-        return [new ReportListInputFiltersDto($categoryId, $tagId, $statusId)];
+        return [new ReportListInputFiltersDto($search, $categoryId, $tagId, $statusId, $projectId)];
     }
 }

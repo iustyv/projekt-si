@@ -16,6 +16,7 @@ textarea {
 
 .form-block div {
     display: block;
+    width: inherit;
 }
 
 .required {

@@ -130,9 +130,11 @@ class ReportService implements ReportServiceInterface
     private function prepareFilters(ReportListInputFiltersDto $filters): ReportListFiltersDto
     {
         return new ReportListFiltersDto(
+            $filters->search ?? null,
             null !== $filters->categoryId ? $this->categoryService->findOneById($filters->categoryId) : null,
             null !== $filters->tagId ? $this->tagService->findOneById($filters->tagId) : null,
-            ReportStatus::tryFrom($filters->statusId)
+            ReportStatus::tryFrom($filters->statusId),
+            null !== $filters->projectId ? $this->projectService->findOneById($filters->projectId) : null,
         );
     }
 }
