@@ -9,16 +9,15 @@ use App\Dto\ReportListInputFiltersDto;
 use App\Entity\Comment;
 use App\Entity\Enum\ReportStatus;
 use App\Form\Type\CommentType;
+use App\Form\Type\ReportSearchType;
 use App\Resolver\ReportListInputFiltersDtoResolver;
 use App\Entity\Report;
 use App\Entity\User;
 use App\Form\Type\ReportType;
-use App\Service\AttachmentService;
 use App\Service\AttachmentServiceInterface;
 use App\Service\CommentServiceInterface;
 use App\Service\ProjectServiceInterface;
 use App\Service\ReportServiceInterface;
-use App\Service\UserServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -53,8 +52,24 @@ class ReportController extends AbstractController
      * @return Response HTTP Response
      */
     #[Route(name: 'report_index', methods: 'GET')]
-    public function index(#[MapQueryString(resolver: ReportListInputFiltersDtoResolver::class)] ReportListInputFiltersDto $filters, #[MapQueryParameter] int $page = 1): Response
+    public function index(Request $request, #[MapQueryString(resolver: ReportListInputFiltersDtoResolver::class)] ReportListInputFiltersDto $filters, #[MapQueryParameter] int $page = 1): Response
     {
+        $form = $this->createForm(
+            ReportSearchType::class,
+            null,
+            [
+                'method' => 'GET',
+            ]
+        );
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $search = $form->get('search')->getData();
+
+            $filters = new ReportListInputFiltersDto($search);
+        }
+
         /** @var User $user */
         $user = $this->getUser();
         $pagination = $this->reportService->getPaginatedList(
@@ -63,7 +78,10 @@ class ReportController extends AbstractController
             $page
         );
 
-        return $this->render('report/index.html.twig', ['pagination' => $pagination]);
+        return $this->render('report/index.html.twig', ['pagination' => $pagination,
+            'form' => $form->createView(),
+            'filters' => $filters,
+        ]);
     }
 
     /**
