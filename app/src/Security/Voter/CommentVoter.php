@@ -1,29 +1,40 @@
 <?php
+/**
+ * Comment voter.
+ */
 
 namespace App\Security\Voter;
 
 use App\Entity\Comment;
 use App\Entity\Enum\ReportStatus;
-use App\Entity\Report;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+/**
+ * Class CommentVoter.
+ */
 class CommentVoter extends Voter
 {
+    /**
+     * Constructor.
+     *
+     * @param Security $security Security
+     */
     public function __construct(private readonly Security $security)
     {
     }
 
-    public const EDIT_COMMENT = 'EDIT_COMMENT';
-    private const DELETE_COMMENT = 'DELETE_COMMENT';
+
+    public const EDIT = 'EDIT';
+    private const DELETE = 'DELETE';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, [self::EDIT_COMMENT, self::DELETE_COMMENT])
+        return in_array($attribute, [self::EDIT, self::DELETE])
             && $subject instanceof Comment;
     }
 
@@ -36,8 +47,8 @@ class CommentVoter extends Voter
         }
 
         return match ($attribute) {
-            self::EDIT_COMMENT => $this->canEdit($subject, $user),
-            self::DELETE_COMMENT => $this->canDelete($subject, $user),
+            self::EDIT => $this->canEdit($subject, $user),
+            self::DELETE => $this->canDelete($subject, $user),
             default => false,
         };
     }

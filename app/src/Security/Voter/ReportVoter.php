@@ -16,16 +16,16 @@ class ReportVoter extends Voter
     {
     }
 
-    public const EDIT_REPORT = 'EDIT_REPORT';
-    public const VIEW_REPORT = 'VIEW_REPORT';
+    public const EDIT = 'EDIT';
+    public const VIEW = 'VIEW';
     public const CREATE_REPORT = 'CREATE_REPORT';
-    private const DELETE_REPORT = 'DELETE_REPORT';
+    private const DELETE = 'DELETE';
     private const COMMENT = 'COMMENT';
     private const TOGGLE_ARCHIVE = 'TOGGLE_ARCHIVE';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        if (!in_array($attribute, [self::CREATE_REPORT, self::EDIT_REPORT, self::VIEW_REPORT, self::DELETE_REPORT, self::COMMENT, self::TOGGLE_ARCHIVE])) return false;
+        if (!in_array($attribute, [self::CREATE_REPORT, self::EDIT, self::VIEW, self::DELETE, self::COMMENT, self::TOGGLE_ARCHIVE])) return false;
 
         if ($attribute === self::CREATE_REPORT) return true;
 
@@ -35,6 +35,10 @@ class ReportVoter extends Voter
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
+
+        if ($attribute === self::VIEW) {
+            return $this->canView($subject, $user);
+        }
         // if the user is anonymous, do not grant access
         if (!$user instanceof UserInterface) {
             return false;
@@ -42,9 +46,8 @@ class ReportVoter extends Voter
 
         return match ($attribute) {
             self::CREATE_REPORT => $this->canCreate($user),
-            self::EDIT_REPORT => $this->canEdit($subject, $user),
-            self::VIEW_REPORT => $this->canView($subject, $user),
-            self::DELETE_REPORT => $this->canDelete($subject, $user),
+            self::EDIT => $this->canEdit($subject, $user),
+            self::DELETE => $this->canDelete($subject, $user),
             self::COMMENT => $this->canComment($subject, $user),
             self::TOGGLE_ARCHIVE => $this->canToggleArchive($subject, $user),
             default => false,
@@ -61,7 +64,7 @@ class ReportVoter extends Voter
     private function canCreate(UserInterface $user): bool
     {
         if ($user->isBlocked()) return false;
-        return ($this->security->isGranted('IS_AUTHENTICATED_REMEMBERED'));
+        return ($this->security->isGranted('IS_AUTHENTICATED'));
     }
 
     /**
@@ -87,9 +90,13 @@ class ReportVoter extends Voter
      *
      * @return bool Result
      */
-    private function canView(Report $report, UserInterface $user): bool
+    private function canView(Report $report, ?UserInterface $user): bool
     {
-        return ($report->getAuthor() === $user || $this->security->isGranted('ROLE_ADMIN'));
+        if($this->security->isGranted('ROLE_ADMIN')) return true;
+
+        $project = $report->getProject();
+        if(null === $project) return true;
+        return ($this->security->isGranted('IS_AUTHENTICATED') && $project->isMemeber($user));
     }
 
     /**
@@ -103,13 +110,17 @@ class ReportVoter extends Voter
     private function canDelete(Report $report, User $user): bool
     {
         if ($this->security->isGranted('ROLE_ADMIN')) return true;
+
         if($user->isBlocked() || $report->getStatus() === ReportStatus::STATUS_ARCHIVED) return false;
         return ($report->getAuthor() === $user);
     }
 
     private function canComment(Report $report, User $user): bool
     {
-        return ($this->canDelete($report, $user));
+        if ($this->security->isGranted('ROLE_ADMIN')) return true;
+
+        if($user->isBlocked() || $report->getStatus() === ReportStatus::STATUS_ARCHIVED) return false;
+        return ($this->security->isGranted('IS_AUTHENTICATED'));
     }
 
     /**

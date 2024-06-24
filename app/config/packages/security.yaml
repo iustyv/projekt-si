@@ -47,10 +47,13 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/, roles: PUBLIC_ACCESS}
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/report, roles: PUBLIC_ACCESS }
+        - { path: ^/tag, roles: PUBLIC_ACCESS }
+        - { path: ^/category, roles: PUBLIC_ACCESS }
         - { path: ^/user/create, roles: PUBLIC_ACCESS }
-        - { path: ^/, roles: ROLE_USER }
+        - { path: ^/project, roles: IS_AUTHENTICATED }
 
 when@test:
     security:
