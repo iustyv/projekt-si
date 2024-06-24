@@ -18,11 +18,6 @@ class Attachment
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\OneToOne(inversedBy: 'attachment', targetEntity: Report::class, cascade: ['persist', 'remove'], fetch: 'EXTRA_LAZY')]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Assert\Type(Report::class)]
-    private ?Report $report = null;
-
     #[ORM\Column(type: 'string', length: 191)]
     #[Assert\Type('string')]
     private ?string $filename = null;
@@ -30,16 +25,6 @@ class Attachment
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getReport(): ?Report
-    {
-        return $this->report;
-    }
-
-    public function setReport(Report $report): void
-    {
-        $this->report = $report;
     }
 
     public function getFilename(): ?string

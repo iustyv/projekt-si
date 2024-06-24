@@ -56,7 +56,7 @@ class Report
     #[ORM\Column(type: 'string', length: 64)]
     #[Assert\Type('string')]
     #[Assert\NotBlank]
-    #[Assert\Length(min: 1, max: 64)]
+    #[Assert\Length(min: 3, max: 64)]
     private ?string $title = null;
 
     /**
@@ -65,7 +65,7 @@ class Report
     #[ORM\Column(type: 'string', length: 512)]
     #[Assert\Type('string')]
     #[Assert\NotBlank]
-    #[Assert\Length(min: 1, max: 512)]
+    #[Assert\Length(min: 3, max: 512)]
     private ?string $description = null;
 
     /**
@@ -112,7 +112,8 @@ class Report
     #[Assert\Type(ReportStatus::class)]
     private ReportStatus $status = ReportStatus::STATUS_PENDING;
 
-    #[ORM\OneToOne(mappedBy: 'report', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: Attachment::class, fetch: 'EXTRA_LAZY')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Attachment $attachment = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, fetch: 'EXTRA_LAZY')]
@@ -317,11 +318,6 @@ class Report
 
     public function setAttachment(?Attachment $attachment): void
     {
-        // set the owning side of the relation if necessary
-        if (null !== $attachment && $attachment->getReport() !== $this) {
-            $attachment->setReport($this);
-        }
-
         $this->attachment = $attachment;
     }
 

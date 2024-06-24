@@ -42,7 +42,6 @@ class AttachmentService implements AttachmentServiceInterface
 
         if ($report->getAttachment() === null) {
             $attachment = new Attachment();
-            $attachment->setReport($report);
         }
         else {
             $attachment = $report->getAttachment();
@@ -83,12 +82,14 @@ class AttachmentService implements AttachmentServiceInterface
      */
     public function delete(Report $report): void
     {
-        if ($report->getAttachment() === null) return;
-        $filename = $report->getAttachment()->getFilename();
+        $attachment = $report->getAttachment();
+        if ($attachment === null) return;
+        $filename = $attachment->getFilename();
         $this->filesystem->remove(
             $this->targetDirectory.'/'.$filename
         );
-        $this->attachmentRepository->delete($report->getAttachment());
         $report->setAttachment(null);
+        $this->attachmentRepository->delete($attachment);
+
     }
 }
