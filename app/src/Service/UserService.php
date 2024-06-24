@@ -82,6 +82,10 @@ class UserService implements UserServiceInterface
      */
     public function userCanBeDeleted(User $user): bool
     {
+        if ($this->security->isGranted('ROLE_ADMIN') && !$this->adminCanBeDeleted($user)) {
+            return false;
+        }
+
         try {
             $result = $this->projectRepository->countByManager($user);
 

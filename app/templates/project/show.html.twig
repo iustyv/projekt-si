@@ -41,7 +41,16 @@
         <a href="{{ url('report_index', {projectId: project.id}) }}" class="btn btn-secondary">{{ 'action.reports_from_project'|trans }}</a>
 
         {% if is_granted('EDIT', project) %}
-            <a href="{{ url('project_members_add', {id: project.id}) }}" class="btn btn-primary my-2">{{ 'action.add_members'|trans }}</a>
+            <div class="dropdown">
+                <button class="btn btn-primary my-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ 'action.edit'|trans }}
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{{ url('project_members_add', {id: project.id}) }}">{{ 'action.add_members'|trans }}</a></li>
+                    <li><a class="dropdown-item" href="{{ url('project_edit_manager', {id: project.id}) }}">{{ 'action.edit_project_manager'|trans }}</a></li>
+                    <li><a class="dropdown-item" href="{{ url('project_edit', {id: project.id}) }}">{{ 'action.edit_name'|trans }}</a></li>
+                </ul>
+            </div>
         {% endif %}
 
     {% else %}

@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Service\UserServiceInterface;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Form\DataTransformerInterface;
+use Symfony\Component\Form\Exception\TransformationFailedException;
 
 /**
  * Class MembersDataTransformer.
@@ -39,7 +40,7 @@ class MembersDataTransformer implements DataTransformerInterface
             return '';
         }
 
-        $tagTitles = [];
+        $members = [];
 
         foreach ($value as $member) {
             $members[] = $member->getNickname();
@@ -72,7 +73,7 @@ class MembersDataTransformer implements DataTransformerInterface
 
             $member = $this->userService->findOneByUsername($username);
             if (!$member instanceof User) {
-                continue;
+                throw new TransformationFailedException('message.user_does_not_exist');
             }
 
             $members[] = $member;

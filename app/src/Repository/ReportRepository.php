@@ -62,7 +62,7 @@ class ReportRepository extends ServiceEntityRepository
             )
             ->join('report.category', 'category')
             ->leftJoin('report.tags', 'tags')
-            ->leftJoin('report.author', 'author')
+            ->join('report.author', 'author')
             ->leftJoin('report.project', 'project')
             ->orderBy('report.updatedAt', 'DESC');
     }

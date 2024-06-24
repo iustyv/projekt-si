@@ -6,6 +6,9 @@
 
 {% block body %}
     <h1 class="my-3">{{ 'label.projects'|trans }}</h1>
+    {% if is_granted('CREATE_REPORT') %}
+        <a href="{{ url('project_create') }}" class="btn btn-primary my-2">{{ 'action.create'|trans }}</a>
+    {% endif %}
     {% if pagination is defined and pagination.items|length %}
         <div class="d-flex justify-content-between">
             <div class="dropdown">
@@ -18,9 +21,7 @@
                     <li class="dropdown-item knp-th">{{ knp_pagination_sortable(pagination, 'label.updated_at'|trans, 'project.updatedAt') }}</li>
                 </ul>
             </div>
-            {% if is_granted('CREATE_REPORT') %}
-                <a href="{{ url('project_create') }}" class="btn btn-primary my-2">{{ 'action.create'|trans }}</a>
-            {% endif %}
+
         </div>
         {% for project in pagination.items %}
             <div class="d-flex justify-content-between border rounded py-3 px-4 mb-2">
@@ -46,9 +47,5 @@
         <p>
             {{ 'message.empty_list'|trans }}
         </p>
-    {% endif %}
-
-    {% if is_granted('CREATE_PROJECT') %}
-        <a href="{{ url('project_create') }}" class="btn btn-primary">{{ 'action.create'|trans }}</a>
     {% endif %}
 {% endblock %}

@@ -385,10 +385,14 @@ class UserController extends AbstractController
         }
 
         if (!$this->userService->userCanBeDeleted($user)) {
-            $this->addFlash(
-                'warning',
-                $this->translator->trans('message.user_manages_projects')
-            );
+            if ($this->isGranted('ROLE_ADMIN')) {
+                $this->addFlash('warning', $this->translator->trans('message.cannot_remove_admin'));
+            } else {
+                $this->addFlash(
+                    'warning',
+                    $this->translator->trans('message.user_manages_projects')
+                );
+            }
 
             return $this->redirectToRoute('user_show', ['id' => $user->getId()]);
         }
@@ -413,7 +417,7 @@ class UserController extends AbstractController
 
         return $this->render('user/submit.html.twig', [
             'form' => $form->createView(),
-            'title' => 'action.delete_%username%_account',
+            'title' => 'action.delete_user',
         ]);
     }
 }

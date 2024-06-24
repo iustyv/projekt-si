@@ -182,4 +182,44 @@ class ProjectController extends AbstractController
 
         return $this->render('project/edit.html.twig', ['form' => $form->createView()]);
     }
+
+    /**
+     * Edit project.
+     *
+     * @param Request $request HTTP Request
+     * @param Project $project Project entity
+     *
+     * @return Response HTTP Response
+     */
+    #[Route('/{id}/edit_manager', name: 'project_edit_manager', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
+    public function editManager(Request $request, Project $project): Response
+    {
+        if (!$this->isGranted('EDIT', $project)) {
+            return $this->redirectToRoute('project_show', ['id' => $project->getId()]);
+        }
+
+        $form = $this->createForm(
+            ProjectType::class,
+            $project,
+            [
+                'include_name' => false,
+                'include_members' => false,
+                'include_manager' => true,
+                'members' => $project->getMembers(),
+                'method' => 'PUT',
+                'action' => $this->generateUrl('project_edit_manager', ['id' => $project->getId()]),
+            ]
+        );
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->projectService->save($project);
+
+            $this->addFlash('success', $this->translator->trans('message.edited_successfully'));
+
+            return $this->redirectToRoute('project_show', ['id' => $project->getId()]);
+        }
+
+        return $this->render('project/edit.html.twig', ['form' => $form->createView()]);
+    }
 }

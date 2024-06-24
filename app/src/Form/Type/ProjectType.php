@@ -6,8 +6,12 @@
 namespace App\Form\Type;
 
 use App\Entity\Project;
+use App\Entity\User;
 use App\Form\DataTransformer\MembersDataTransformer;
+use App\Service\UserServiceInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormError;
@@ -26,8 +30,9 @@ class ProjectType extends AbstractType
      *
      * @param TranslatorInterface    $translator             Translator interface
      * @param MembersDataTransformer $membersDataTransformer Members data transformer
+     * @param UserServiceInterface   $userService            User service interface
      */
-    public function __construct(private readonly TranslatorInterface $translator, private readonly MembersDataTransformer $membersDataTransformer)
+    public function __construct(private readonly TranslatorInterface $translator, private readonly MembersDataTransformer $membersDataTransformer, private readonly UserServiceInterface $userService)
     {
     }
 
@@ -58,6 +63,21 @@ class ProjectType extends AbstractType
                 );
         }
 
+        if ($options['include_manager']) {
+            $builder
+                ->add(
+                    'manager',
+                    EntityType::class,
+                    [
+                        'label' => 'label.project_manager',
+                        'class' => User::class,
+                        'choices' => $options['members'],
+                        'choice_label' => 'nickname',
+                        'required' => true,
+                    ]
+                );
+        }
+
         if ($options['include_members']) {
             $builder
                 ->add(
@@ -83,6 +103,18 @@ class ProjectType extends AbstractType
                     $membersFormField->addError(new FormError($this->translator->trans('message.members_invalid_format')));
                 }
             });
+
+            $builder->get('members')->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
+                $membersFormField = $event->getForm();
+                $membersFieldValue = $event->getData();
+
+                try {
+                    $this->membersDataTransformer->reverseTransform($membersFieldValue);
+                } catch (TransformationFailedException $exception) {
+                    $error = $exception->getMessage();
+                    $membersFormField->addError(new FormError($this->translator->trans($error)));
+                }
+            });
         }
     }
 
@@ -97,6 +129,8 @@ class ProjectType extends AbstractType
             'data_class' => Project::class,
             'include_name' => true,
             'include_members' => true,
+            'include_manager' => false,
+            'members' => [],
         ]);
     }
 
