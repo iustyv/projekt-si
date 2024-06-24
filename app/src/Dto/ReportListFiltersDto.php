@@ -22,7 +22,7 @@ class ReportListFiltersDto
      * @param Tag|null      $tag        Tag entity
      * @param ReportStatus|null    $reportStatus Report status
      */
-    public function __construct(public readonly ?string $search, public readonly ?Category $category, public readonly ?Tag $tag, public readonly ?ReportStatus $reportStatus, public readonly ?Project $project)
+    public function __construct(public readonly ?string $search, public readonly ?Category $category, public readonly ?Tag $tag, public readonly ?ReportStatus $reportStatus, public readonly ?Project $project, public readonly ?bool $unassigned, public readonly ?bool $assigned, public readonly ?bool $adminAssigned)
     {
     }
 }

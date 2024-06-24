@@ -33,6 +33,11 @@ class CommentRepository extends ServiceEntityRepository
     public function findByReport(Report $report): array
     {
         return $this->getOrCreateQueryBuilder()
+            ->select(
+                'partial comment.{id, createdAt, author, content}',
+                'partial author.{id, nickname}'
+            )
+            ->join('comment.author', 'author')
             ->andWhere('comment.report = :report')
             ->setParameter('report', $report)
             ->orderBy('comment.createdAt', 'DESC')

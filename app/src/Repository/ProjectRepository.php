@@ -26,6 +26,11 @@ class ProjectRepository extends ServiceEntityRepository
     public function queryAll(): QueryBuilder
     {
         return $this->getOrCreateQueryBuilder()
+            ->select(
+                'partial project.{id, name, createdAt, updatedAt, manager}',
+                'partial manager.{id, nickname}',
+            )
+            ->join('project.manager', 'manager')
             ->orderBy('project.updatedAt', 'DESC');
     }
 

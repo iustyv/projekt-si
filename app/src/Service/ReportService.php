@@ -13,6 +13,7 @@ use App\Entity\User;
 use App\Repository\ReportRepository;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * Class ReportService.
@@ -28,7 +29,7 @@ class ReportService implements ReportServiceInterface
      *
      * @constant int
      */
-    private const PAGINATOR_ITEMS_PER_PAGE = 6;
+    private const PAGINATOR_ITEMS_PER_PAGE = 10;
 
     /**
      * Constructor.
@@ -47,33 +48,13 @@ class ReportService implements ReportServiceInterface
      *
      * @return PaginationInterface<string, mixed> Paginated list
      */
-    public function getPaginatedList(ReportListInputFiltersDto $filters, ?int $page = 1): PaginationInterface //TODO add user filter
+    public function getPaginatedList(?User $user, ReportListInputFiltersDto $filters, ?int $page = 1): PaginationInterface
     {
         $filters = $this->prepareFilters($filters);
+        $projects = $this->projectService->getUserProjects($user);
 
         return $this->paginator->paginate(
-            //$this->reportRepository->queryActive($filters),
-            $this->reportRepository->queryAll($filters),
-            //$this->reportRepository->queryByAuthor($user, $filters),
-            $page ?? 1,
-            self::PAGINATOR_ITEMS_PER_PAGE
-        );
-    }
-
-    /**
-     * Get paginated list of archived reports.
-     *
-     * @param int|null $page Page number
-     *
-     * @return PaginationInterface<string, mixed> Paginated list
-     */
-    public function getPaginatedListOfArchived(ReportListInputFiltersDto $filters, ?int $page = 1): PaginationInterface
-    {
-        $filters = $this->prepareFilters($filters);
-
-        return $this->paginator->paginate(
-            $this->reportRepository->queryArchived($filters),
-            //$this->reportRepository->queryByAuthor($user, $filters),
+            $this->reportRepository->queryAccessible($projects, $filters),
             $page ?? 1,
             self::PAGINATOR_ITEMS_PER_PAGE
         );
@@ -135,6 +116,9 @@ class ReportService implements ReportServiceInterface
             null !== $filters->tagId ? $this->tagService->findOneById($filters->tagId) : null,
             ReportStatus::tryFrom($filters->statusId),
             null !== $filters->projectId ? $this->projectService->findOneById($filters->projectId) : null,
+            $filters->unassigned ?? false,
+            $filters->assigned ?? false,
+            $filters->adminAssigned ?? false,
         );
     }
 }

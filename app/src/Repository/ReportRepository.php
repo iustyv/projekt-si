@@ -8,14 +8,17 @@ namespace App\Repository;
 use App\Dto\ReportListFiltersDto;
 use App\Entity\Category;
 use App\Entity\Enum\ReportStatus;
+use App\Entity\Project;
 use App\Entity\Report;
 use App\Entity\Tag;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -32,7 +35,7 @@ class ReportRepository extends ServiceEntityRepository
      *
      * @param ManagerRegistry $registry Manager registry
      */
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private readonly Security $security)
     {
         parent::__construct($registry, Report::class);
     }
@@ -46,49 +49,36 @@ class ReportRepository extends ServiceEntityRepository
     {
         return $this->getOrCreateQueryBuilder()
             ->select(
-                'partial report.{id, createdAt, updatedAt, title, status, author}',
+                'partial report.{id, createdAt, updatedAt, title, status, author, project}',
                 'partial category.{id, title}',
-                'partial tags.{id, title}'
+                'partial tags.{id, title}',
+                'partial author.{id, nickname}',
+                'partial project.{id, name}',
             )
             ->join('report.category', 'category')
             ->leftJoin('report.tags', 'tags')
+            ->leftJoin('report.author', 'author')
+            ->leftJoin('report.project', 'project')
             ->orderBy('report.updatedAt', 'DESC');
-
-        //return $this->applyFiltersToList($queryBuilder, $filters);
     }
 
-    /**
-     * Query active records.
-     *
-     * @return QueryBuilder Query builder
-     */
-    public function queryActive(ReportListFiltersDto $filters): QueryBuilder
+    public function queryAccessible(?array $projects, ReportListFiltersDto $filters):QueryBuilder
     {
-        $queryBuilder = $this->queryAll()
-            ->andWhere('report.status != :status')
-            ->setParameter('status', ReportStatus::STATUS_ARCHIVED);
+        $queryBuilder = $this->queryAll($filters);
 
-        return $this->applyFiltersToList($queryBuilder, $filters);
-    }
+        if(!$this->security->isGranted('ROLE_ADMIN')) {
+            $queryBuilder = $queryBuilder
+                ->andWhere('report.project IS NULL OR report.project IN (:projects)')
+                ->setParameter('projects', $projects);
+        }
 
-    /**
-     * Query archived records.
-     *
-     * @return QueryBuilder Query builder
-     */
-    public function queryArchived(ReportListFiltersDto $filters): QueryBuilder
-    {
-        $queryBuilder = $this->queryAll()
-            ->andWhere('report.status = :status')
-            ->setParameter('status', ReportStatus::STATUS_ARCHIVED);
-
-        return $this->applyFiltersToList($queryBuilder, $filters);
+        return $this->applyFiltersToList($queryBuilder, $filters, $projects);
     }
 
     /**
      * Query tasks by author.
      *
-     * @param UserInterface      $user    User entity
+     * @param UserInterface        $user    User entity
      * @param ReportListFiltersDto $filters Filters
      *
      * @return QueryBuilder Query builder
@@ -166,7 +156,7 @@ class ReportRepository extends ServiceEntityRepository
      *
      * @return QueryBuilder Query builder
      */
-    private function applyFiltersToList(QueryBuilder $queryBuilder, ReportListFiltersDto $filters): QueryBuilder
+    private function applyFiltersToList(QueryBuilder $queryBuilder, ReportListFiltersDto $filters, ?array $projects): QueryBuilder
     {
         if ($filters->category instanceof Category) {
             $queryBuilder->andWhere('category = :category')
@@ -179,8 +169,36 @@ class ReportRepository extends ServiceEntityRepository
         }
 
         if ($filters->reportStatus instanceof ReportStatus) {
-            $queryBuilder->andWhere('report.status = :status')
-                ->setParameter('status', $filters->reportStatus->value, Types::INTEGER);
+            $queryBuilder->andWhere('report.status = :status_filter')
+                ->setParameter('status_filter', $filters->reportStatus->value, Types::INTEGER);
+        }
+
+        if ($filters->project instanceof Project) {
+            if ($this->security->isGranted('VIEW', $filters->project)) {
+                $queryBuilder->andWhere('report.project = :project')
+                ->setParameter('project', $filters->project);
+            }
+        }
+
+        if (is_string($filters->search)) {
+            $queryBuilder->andWhere('report.title LIKE :search')
+                ->setParameter('search', '%'.$filters->search.'%');
+        }
+
+        if($filters->unassigned) {
+            $queryBuilder->andWhere('report.project IS NULL');
+        }
+
+        if($filters->assigned) {
+            $queryBuilder->andWhere('report.project IN (:projects)')
+            ->setParameter('projects', $projects);
+        }
+
+        if($this->security->isGranted('ROLE_ADMIN')) {
+            if($filters->adminAssigned) {
+                $queryBuilder->andWhere('report.project NOT IN (:projects)')
+                    ->setParameter('projects', $projects);
+            }
         }
 
         return $queryBuilder;

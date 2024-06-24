@@ -36,7 +36,10 @@ class ReportListInputFiltersDtoResolver implements ValueResolverInterface
         $statusId = $request->query->get('statusId');
         $projectId = $request->query->get('projectId');
         $search = $request->query->get('search');
+        $unassigned = $request->query->get('unassigned');
+        $assigned = $request->query->get('assigned');
+        $adminAssigned = $request->query->get('adminAssigned');
 
-        return [new ReportListInputFiltersDto($search, $categoryId, $tagId, $statusId, $projectId)];
+        return [new ReportListInputFiltersDto($search, $categoryId, $tagId, $statusId, $projectId, $unassigned, $assigned, $adminAssigned)];
     }
 }
