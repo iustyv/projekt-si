@@ -7,12 +7,12 @@ parameters:
 #}
 
 {{ form_start(form) }}
-    {#{% if false == form.vars.valid %}
+    {% if false == form.vars.valid %}
           {% include 'default/_single_alert_message.html.twig' with {
             type: 'danger',
             message: 'message.form_error'|trans,
         }%}
-    {% endif %} TODO add flash messages #}
+    {% endif %}
 <div class="form-block">
 {{ form_widget(form) }}
     {#  <div class="form-group row float-sm-right">#}

@@ -7,17 +7,32 @@
 {% block body %}
     <h1 class="my-3">{{ 'label.tags'|trans }}</h1>
     {% if pagination is defined and pagination.items|length %}
-        <table class="table table-striped">
+        <div class="d-flex">
+            <div class="dropdown my-2">
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ 'action.order_by'|trans }}
+                </button>
+                <ul class="dropdown-menu">
+                    <li class="dropdown-item knp-th">{{ knp_pagination_sortable(pagination, 'label.category_name'|trans, 'tag.title') }}</li>
+                    <li class="dropdown-item knp-th">{{ knp_pagination_sortable(pagination, 'label.created_at'|trans, 'tag.createdAt') }}</li>
+                    <li class="dropdown-item knp-th">{{ knp_pagination_sortable(pagination, 'label.updated_at'|trans, 'tag.updatedAt') }}</li>
+                </ul>
+            </div>
+            {% if is_granted('CREATE_REPORT') %}
+                <a href="{{ url('tag_create') }}" class="btn btn-primary my-2">{{ 'action.create'|trans }}</a>
+            {% endif %}
+        </div>
+        <table class="table w-70">
             <thead>
             <tr>
-                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.title'|trans, 'tag.title') }}</th>
-                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.created_at'|trans, 'tag.createdAt') }}</th>
-                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.updated_at'|trans, 'tag.updatedAt') }}</th>
+                <th class="knp-th">{{ 'label.title'|trans }}</th>
+                <th class="knp-th">{{ 'label.created_at'|trans }}</th>
+                <th class="knp-th">{{ 'label.updated_at'|trans }}</th>
             </tr>
             </thead>
             <tbody>
             {% for tag in pagination.items %}
-                <tr class="rounded">
+                <tr>
                     <td><a href="{{ url('tag_show', {id: tag.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ tag.title }}</a></td>
                     <td>{{ tag.createdAt|format_date('long') }}</td>
                     <td>{{ tag.updatedAt|format_date('long') }}</td>
@@ -25,7 +40,6 @@
             {% endfor %}
             </tbody>
         </table>
-        <a href="{{ url('tag_create') }}" class="btn btn-primary my-2">{{ 'action.create'|trans }}</a>
 
         <div class="navigation text-center">
             {{ knp_pagination_render(pagination) }}

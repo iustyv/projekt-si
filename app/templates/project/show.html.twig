@@ -5,38 +5,42 @@
 {% endblock %}
 
 {% block body %}
-    <h1>{{  project.name|default('message.project_not_found'|trans) }}</h1>
     {% if project is defined and project is not null %}
-        <dl class="dl-horizontal">
-            <dt>{{ 'label.project_manager'|trans }}</dt>
-            <dd>{{ project.manager.nickname }}</dd>
-            <dt>{{ 'label.id'|trans }}</dt>
-            <dd>{{ project.id }}</dd>
-            <dt>{{ 'label.created_at'|trans }}</dt>
-            <dd>{{ project.createdAt|format_date('long') }}</dd>
-            <dt>{{ 'label.updated_at'|trans }}</dt>
-            <dd>{{ project.updatedAt|format_date('long') }}</dd>
-        </dl>
+        <div class="text-muted h5">
+            {{ 'title.project_view'|trans({'%id%' : project.id | default('')}) }}
+        </div>
+        <h1>{{  project.name|default('message.project_not_found'|trans) }}</h1>
+
+        <h2 class="h5 mt-5">{{ 'label.details'|trans }}</h2>
+        <ul class="list-unstyled w-25 mb-5">
+            <li class="d-flex justify-content-between border-bottom border-secondary px-2 py-2">
+                <span class="fw-bold">{{ 'label.project_manager'|trans }}</span>
+                <span>{{ project.manager.nickname }}</span>
+            </li>
+            <li class="d-flex justify-content-between border-bottom border-secondary px-2 py-2">
+                <span class="fw-bold">{{ 'label.created_at'|trans }}</span>
+                <span>{{ project.createdAt|format_date('long') }}</span>
+            </li>
+            <li class="d-flex justify-content-between border-bottom border-secondary px-2 py-2">
+                <span class="fw-bold">{{ 'label.updated_at'|trans }}</span>
+                <span>{{ project.updatedAt|format_date('long') }}</span>
+            </li>
+        </ul>
 
         {% if project.members is defined and project.members|length %}
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th class="knp-th">{{ 'label.member'|trans }}</th>
-                </tr>
-                </thead>
-                <tbody>
+            <h2 class="h5 mt-5">{{ 'label.members'|trans }}</h2>
+            <ul class="list-unstyled w-15 mb-5">
                 {% for member in project.members %}
-                    <tr>
-                        <td><a href="{{ url('user_show', {id: member.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ member.nickname }}</a></td>
-                        <td>
-                    </tr>
+                <li class="d-flex justify-content-between {% if not loop.last %} border-bottom border-secondary {% endif %} px-2 py-2">
+                    <a href="{{ url('user_show', {id: member.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ member.nickname }}</a>
+                </li>
                 {% endfor %}
-                </tbody>
-            </table>
+            </ul>
         {% endif %}
+
         <a href="{{ url('report_index', {projectId: project.id}) }}" class="btn btn-secondary">{{ 'action.reports_from_project'|trans }}</a>
-        {% if is_granted('EDIT_PROJECT', project) %}
+
+        {% if is_granted('EDIT', project) %}
             <a href="{{ url('project_members_add', {id: project.id}) }}" class="btn btn-primary my-2">{{ 'action.add_members'|trans }}</a>
         {% endif %}
 

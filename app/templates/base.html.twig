@@ -12,19 +12,11 @@
         <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
     {% endblock %}
 </head>
-<body data-bs-theme="dark">
-{% include 'navigation.html.twig' %}
+<body data-bs-theme="dark" class="m-3">
+{% include 'default/_nav.html.twig' %}
 <main role="main" class="container-fluid">
-    {#{% include 'default/_nav.html.twig' %}#}
-    {# % include 'default/_flash_messages.html.twig' %}#}
     <div class="container-fluid">
-        {% for type, messages in app.session.flashBag.all %}
-            {% for message in messages %}
-                <div class="alert alert-{{ type }} width-fit" role="alert">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endfor %}
+        {% include 'default/_flash_messages.html.twig' %}
         {% block body %}{% endblock %}
     </div>
 </main>

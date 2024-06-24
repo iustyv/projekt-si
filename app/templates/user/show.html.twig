@@ -6,8 +6,13 @@
 
 {% block body %}
     {% if user is defined and user is not null %}
+
+        <div class="text-muted h5">
+            {{ 'title.user_view'|trans({'%id%' : user.id | default('')}) }}
+        </div>
+
     <h1>
-        {% if is_granted('EDIT_USER', user) %}
+        {% if is_granted('EDIT', user) %}
             {% if app.user.id == user.id %}
                 {{ 'label.my_account'|trans }}
             {% else %}
@@ -21,13 +26,11 @@
     <dl class="dl-horizontal mt-4">
         <dt>{{ 'label.nickname'|trans }}</dt>
         <dd>{{ user.nickname }}</dd>
-        <dt>{{ 'label.id'|trans }}</dt>
-        <dd>{{ user.id }}</dd>
         <dt>{{ 'label.email'|trans }}</dt>
         <dd>{{ user.email }}</dd>
     </dl>
 
-    {% if is_granted('EDIT_USER', user) %}
+    {% if is_granted('EDIT', user) %}
         <div class="dropdown">
             <button class="btn btn-primary my-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 {{ 'action.change'|trans }}
@@ -39,7 +42,7 @@
             </ul>
         </div>
     {% endif %}
-      {% if is_granted('DELETE_USER', user) %}
+      {% if is_granted('DELETE', user) %}
         <a href="{{ url('user_delete', {id: user.id}) }}" class="btn btn-danger">{{ 'action.delete_user'|trans }}</a>
       {% endif %}
     {% endif %}

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %}{{ 'action.sign_in'|trans }}{% endblock %}
 
 {% block body %}
 <form method="post">
@@ -8,16 +8,10 @@
         <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}
 
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
-        </div>
-    {% endif %}
-
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-    <label for="inputEmail">Email</label>
+    <h1 class="h3 mb-3 font-weight-normal">{{ 'action.sign_in'|trans }}</h1>
+    <label for="inputEmail">{{ 'label.email'|trans }}</label>
     <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Password</label>
+    <label for="inputPassword">{{ 'label.password'|trans }}</label>
     <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
 
     <input type="hidden" name="_csrf_token"
@@ -26,14 +20,14 @@
 
     <div class="checkbox mb-3">
         <label>
-            <input type="checkbox" name="_remember_me"> Remember me
+            <input type="checkbox" name="_remember_me"> {{ 'label.remember_me'|trans }}
         </label>
     </div>
 
     <button class="btn btn-primary" type="submit">
-        Sign in
+        {{ 'action.sign_in'|trans }}
     </button>
 </form>
 
-<a href="{{ url('user_create') }}">{{ 'action.create_user'|trans }}</a>
+<p class="mt-3">{{ 'label.dont_have_an_account'|trans }} <a href="{{ url('user_create') }}" class="text-decoration-none">{{ 'action.sign_up'|trans }}</a></p>
 {% endblock %}

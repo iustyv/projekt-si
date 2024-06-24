@@ -5,16 +5,25 @@
 {% endblock %}
 
 {% block body %}
-    <h1>{{  tag.title|default('message.tag_not_found'|trans) }}</h1>
+
     {% if tag is defined and tag|length %}
-        <dl class="dl-horizontal">
-            <dt>{{ 'label.id'|trans }}</dt>
-            <dd>{{ tag.id }}</dd>
-            <dt>{{ 'label.created_at'|trans }}</dt>
-            <dd>{{ tag.createdAt|format_date('long') }}</dd>
-            <dt>{{ 'label.updated_at'|trans }}</dt>
-            <dd>{{ tag.updatedAt|format_date('long') }}</dd>
-        </dl>
+        <div class="text-muted h5">
+            {{ 'title.tag_view'|trans({'%id%' : tag.id | default('')}) }}
+        </div>
+
+        <h1>{{  tag.title|default('message.tag_not_found'|trans) }}</h1>
+
+        <h2 class="h5 mt-5">{{ 'label.details'|trans }}</h2>
+        <ul class="list-unstyled w-25 mb-5">
+            <li class="d-flex justify-content-between border-bottom border-secondary px-2 py-2">
+                <span class="fw-bold">{{ 'label.created_at'|trans }}</span>
+                <span>{{ tag.createdAt|format_date('long') }}</span>
+            </li>
+            <li class="d-flex justify-content-between border-bottom border-secondary px-2 py-2">
+                <span class="fw-bold">{{ 'label.updated_at'|trans }}</span>
+                <span>{{ tag.updatedAt|format_date('long') }}</span>
+            </li>
+        </ul>
 
         {% if is_granted('ROLE_ADMIN') %}
             <div class="mb-5">

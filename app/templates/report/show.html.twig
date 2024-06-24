@@ -5,38 +5,53 @@
 {% endblock %}
 
 {% block body %}
-    <h1>{{ report.title|default('message.report_not_found'|trans) }}</h1>
-    {% if report is defined and report|length %}
-    <p class="fs-6 mt-3 border rounded">{{ report.description|markdown_to_html }}</p>
-    <dl class="dl-horizontal mt-4">
-        <dt>{{ 'label.id'|trans }}</dt>
-        <dd>{{ report.id }}</dd>
-        <dt>{{ 'label.category'|trans }}</dt>
-        <dd><a href="{{ url('category_show', {id: report.category.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ report.category.title }}</a></dd>
-        <dt>{{ 'label.author'|trans }}</dt>
-        <dd>{{ report.author.nickname }}</dd>
-        {% if report.project is defined and report.project is not null%}
-            <dt>{{ 'label.project'|trans }}</dt>
-            <dd>{{ report.project.name }}</dd>
-        {% endif %}
-        <dt>{{ 'label.status'|trans }}</dt>
-        <dd>{{ report.status.label|trans }}</dd>
-        <dt>{{ 'label.created_at'|trans }}</dt>
-        <dd>{{ report.createdAt|format_date('long') }}</dd>
-        <dt>{{ 'label.updated_at'|trans }}</dt>
-        <dd>{{ report.updatedAt|format_date('long') }}</dd>
-        <dt>{{ 'label.tags'|trans }}</dt>
-        <dd>
-            {% for tag in report.tags %}
-                {{ tag.title }}{% if not loop.last %}, {% endif %}
-            {% endfor %}
-        </dd>
-    </dl>
+    {% if report is defined and report is not null %}
+        <div class="text-muted h5">
+            {% if report.project is defined and report.project is not null %}
+            <span>{{ report.project.name }}</span><span class="px-3">/</span>
+            {% endif %}
+            <span>{{ 'title.report_view'|trans({'%id%' : report.id | default('')}) }}</span>
+        </div>
 
+        <h1 class="mb-4">{{ report.title|default('message.report_not_found'|trans) }}</h1>
 
-    {% if report.attachment.filename is defined and report.attachment.filename|length %}
-        <div class="my-3"> {# TODO css for size #}
-            <img src="{{ asset(attachments_directory~report.attachment.filename) }}">
+        <div class="w-70">
+            <p>{{ report.createdAt|format_date('long') }} <span class="text-muted">({{ 'label.updated_at'|trans }}: {{ report.updatedAt|format_date('long') }})</span></p>
+            <p class="fs-6 mt-3 border rounded">{{ report.description|markdown_to_html }}</p>
+        </div>
+        <h2 class="h5 mt-5">{{ 'label.details'|trans }}</h2>
+        <ul class="list-unstyled w-25 mb-5">
+            <li class="d-flex justify-content-between border-bottom border-secondary px-2 py-2">
+                <span class="fw-bold">{{ 'label.author'|trans }}</span>
+                <span>{{ report.author.nickname }}</span>
+            </li>
+            {% if report.assignedTo is defined and report.assignedTo is not null %}
+                <li class="d-flex justify-content-between border-bottom border-secondary px-2 py-2">
+                    <span class="fw-bold">{{ 'label.assigned_to'|trans }}</span>
+                    <span>{{ report.assignedTo.nickname }}</span>
+                </li>
+            {% endif %}
+            <li class="d-flex justify-content-between border-bottom border-secondary px-2 py-2">
+                <span class="fw-bold">{{ 'label.category'|trans }}</span>
+                <a href="{{ url('category_show', {id: report.category.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ report.category.title }}</a>
+            </li>
+            <li class="d-flex justify-content-between border-bottom border-secondary px-2 py-2">
+                <span class="fw-bold">{{ 'label.status'|trans }}</span>
+                <span>{{ report.status.label|trans }}</span>
+            </li>
+            <li class="d-flex justify-content-between px-2 py-2">
+                <span class="fw-bold">{{ 'label.tags'|trans }}</span>
+                <span>
+                    {% for tag in report.tags %}
+                        {{ tag.title }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </span>
+            </li>
+        </ul>
+
+    {% if report.attachment.filename is defined and report.attachment.filename is not null %}
+        <div class="my-3 attachment">
+            <img src="{{ asset(attachments_directory~report.attachment.filename) }}" alt="">
         </div>
     {% endif %}
 
@@ -44,10 +59,10 @@
         <a href="{{ url('report_comment', {id: report.id}) }}" class="btn btn-primary">{{ 'action.comment'|trans }}</a>
     {% endif %}
 
-    {% if is_granted('EDIT_REPORT', report) %}
+    {% if is_granted('EDIT', report) %}
         <a href="{{ url('report_edit', {id: report.id}) }}" class="btn btn-primary">{{ 'action.edit'|trans }}</a>
     {% endif %}
-    {% if is_granted('DELETE_REPORT', report) %}
+    {% if is_granted('DELETE', report) %}
         <a href="{{ url('report_delete', {id: report.id}) }}" class="btn btn-danger float-right">{{ 'action.delete'|trans }}</a>
     {% endif %}
     {% if is_granted('TOGGLE_ARCHIVE', report) %}
@@ -59,23 +74,23 @@
     {% endif %}
 
     <div class="mt-5">
-    {% if form is defined and form|length %}
-        {% include 'default/_trial_form.html.twig' with {
+    {% if form is defined and form is not null %}
+        {% include 'default/_partial_form.html.twig' with {
             form: form,
             submit_label: 'action.create'|trans,
             cancel_path: path('report_show', {id :report.id})
         } %}
     {% endif %}
 
+        <p class="h5 mt-3">{{ 'label.comments'|trans }}</p>
     {% if comments is defined and comments.items|length %}
-            <p class="h5 mt-3">{{ 'label.comments'|trans }}</p>
             {% for comment in comments.items %}
             <div class="border rounded p-3 mb-2">
                 <div class="pb-1">
                     <span class="fw-bold">{{ comment.author.nickname }}</span> &bull; <span>{{ comment.createdAt|format_date('long') }}</span>
                 </div>
                 <div>{{ comment.content|markdown_to_html }}</div>
-                {% if is_granted('EDIT_COMMENT', comment) and is_granted('DELETE_COMMENT', comment) %}
+                {% if is_granted('EDIT', comment) and is_granted('DELETE', comment) %}
                     <div class="btn-group">
                         <a href="{{ url('comment_edit', {id: comment.id}) }}" class="btn btn-outline-primary">{{ 'action.edit'|trans }}</a>
                         <a href="{{ url('comment_delete', {id: comment.id}) }}" class="btn btn-outline-danger">{{ 'action.delete'|trans }}</a>
@@ -88,7 +103,7 @@
                 {{ knp_pagination_render(comments) }}
             </div>
     {% else %}
-        {{ 'message.empty_list'|trans }}
+        {{ 'message.no_comments'|trans }}
     {% endif %}
     </div>
     {% else %}

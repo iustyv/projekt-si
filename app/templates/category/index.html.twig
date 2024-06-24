@@ -7,25 +7,32 @@
 {% block body %}
     <h1 class="my-3">{{ 'label.categories'|trans }}</h1>
     {% if pagination is defined and pagination.items|length %}
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.title'|trans, 'category.title') }}</th>
-                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.created_at'|trans, 'category.createdAt') }}</th>
-                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.updated_at'|trans, 'category.updatedAt') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for category in pagination.items %}
-                <tr class="rounded">
-                    <td><a href="{{ url('category_show', {id: category.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ category.title }}</a></td>
-                    <td>{{ category.createdAt|format_date('long') }}</td>
-                    <td>{{ category.updatedAt|format_date('long') }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        <a href="{{ url('category_create') }}" class="btn btn-primary my-2">{{ 'action.create'|trans }}</a>
+        <div class="d-flex justify-content-between">
+            <div class="dropdown">
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ 'action.order_by'|trans }}
+                </button>
+                <ul class="dropdown-menu">
+                    <li class="dropdown-item knp-th">{{ knp_pagination_sortable(pagination, 'label.category_name'|trans, 'category.title') }}</li>
+                    <li class="dropdown-item knp-th">{{ knp_pagination_sortable(pagination, 'label.created_at'|trans, 'category.createdAt') }}</li>
+                    <li class="dropdown-item knp-th">{{ knp_pagination_sortable(pagination, 'label.updated_at'|trans, 'category.updatedAt') }}</li>
+                </ul>
+            </div>
+            {% if is_granted('CREATE_REPORT') %}
+                <a href="{{ url('category_create') }}" class="btn btn-primary my-2">{{ 'action.create'|trans }}</a>
+            {% endif %}
+        </div>
+        {% for category in pagination.items %}
+        <div class="d-flex justify-content-between border rounded py-3 px-4 mb-2">
+            <div class="pb-1">
+                <a href="{{ url('category_show', {id: category.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none fs-4">{{ category.title }}</a>
+                <div>
+                    <div>{{ 'label.created_at'|trans }} {{ category.createdAt|format_date('long') }}</div>
+                    <div>{{ 'label.updated_at'|trans }} {{ category.updatedAt|format_date('long') }}</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
 
         <div class="navigation text-center">
             {{ knp_pagination_render(pagination) }}

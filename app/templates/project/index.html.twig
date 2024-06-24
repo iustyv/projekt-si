@@ -7,22 +7,36 @@
 {% block body %}
     <h1 class="my-3">{{ 'label.projects'|trans }}</h1>
     {% if pagination is defined and pagination.items|length %}
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th class="knp-th">{{ knp_pagination_sortable(pagination, 'label.project'|trans, 'project.name') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for project in pagination.items %}
-                <tr class="rounded">
-                    <td><a href="{{ url('project_show', {id: project.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none">{{ project.name }}</a></td>
-                    <td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-
+        <div class="d-flex justify-content-between">
+            <div class="dropdown">
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ 'action.order_by'|trans }}
+                </button>
+                <ul class="dropdown-menu">
+                    <li class="dropdown-item knp-th">{{ knp_pagination_sortable(pagination, 'label.category_name'|trans, 'project.name') }}</li>
+                    <li class="dropdown-item knp-th">{{ knp_pagination_sortable(pagination, 'label.created_at'|trans, 'project.createdAt') }}</li>
+                    <li class="dropdown-item knp-th">{{ knp_pagination_sortable(pagination, 'label.updated_at'|trans, 'project.updatedAt') }}</li>
+                </ul>
+            </div>
+            {% if is_granted('CREATE_REPORT') %}
+                <a href="{{ url('project_create') }}" class="btn btn-primary my-2">{{ 'action.create'|trans }}</a>
+            {% endif %}
+        </div>
+        {% for project in pagination.items %}
+            <div class="d-flex justify-content-between border rounded py-3 px-4 mb-2">
+                <div>
+                    <a href="{{ url('project_show', {id: project.id}) }}" title="{{ 'action.view'|trans }}" class="text-decoration-none fs-4">{{ project.name }}</a>
+                    <div class="mt-3">
+                        <span class="fw-bold">{{ 'label.project_manager'|trans }}</span>
+                        <span>{{ project.manager.nickname }}</span>
+                    </div>
+                    <div>
+                        <span class="fw-bold">{{ 'label.created_at'|trans }}</span>
+                        <span>{{ project.createdAt|format_date('long') }}</span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
 
 
         <div class="navigation text-center">
