@@ -18,11 +18,13 @@ interface ReportServiceInterface
     /**
      * Get paginated list.
      *
-     * @param int $page Page number
+     * @param User|null                 $user    User entity
+     * @param ReportListInputFiltersDto $filters Raw filters from request
+     * @param int|null                  $page    Page number
      *
      * @return PaginationInterface<string, mixed> Paginated list
      */
-    public function getPaginatedList(User $user, ReportListInputFiltersDto $filters, ?int $page = 1): PaginationInterface;
+    public function getPaginatedList(?User $user, ReportListInputFiltersDto $filters, ?int $page = 1): PaginationInterface;
 
     /**
      * Save entity.
@@ -34,16 +36,21 @@ interface ReportServiceInterface
     /**
      * Delete entity.
      *
-     * @param Report $report
+     * @param Report $report Report entity
      */
     public function delete(Report $report): void;
 
+    /**
+     * Delete reports by one user.
+     *
+     * @param User $user User entity
+     */
     public function deleteByAuthor(User $user): void;
 
     /**
      * Toggle archive report.
      *
-     * @param Report $report
+     * @param Report $report Report entity
      */
-    public function toggle_archive(Report $report): void;
+    public function toggleArchive(Report $report): void;
 }

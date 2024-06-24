@@ -8,6 +8,7 @@ namespace App\Repository;
 use App\Entity\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -65,11 +66,11 @@ class CategoryRepository extends ServiceEntityRepository
     /**
      * Find category by id.
      *
-     * @param int $id
+     * @param int $id Id
      *
-     * @return Category|null
+     * @return Category|null Category entity
      *
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function findOneById(int $id): ?Category
     {

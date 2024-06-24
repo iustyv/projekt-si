@@ -13,14 +13,19 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class UserSubmitType.
  */
 class UserSubmitType extends AbstractType
 {
-    public function __construct(private readonly TranslatorInterface $translator, private readonly Security $security)
+    /**
+     * Constructor.
+     *
+     * @param Security $security Security
+     */
+    public function __construct(private readonly Security $security)
     {
     }
 
@@ -50,7 +55,20 @@ class UserSubmitType extends AbstractType
             ]
         );
 
-
+        if (!$this->security->isGranted('ROLE_ADMIN')) {
+            $builder->add(
+                'password',
+                PasswordType::class,
+                [
+                    'mapped' => false,
+                    'label' => 'label.authenticate_password',
+                    'required' => true,
+                    'constraints' => [
+                        new Assert\NotBlank(),
+                    ],
+                ]
+            );
+        }
     }
 
     /**

@@ -1,4 +1,7 @@
 <?php
+/**
+ * Tag service.
+ */
 
 namespace App\Service;
 
@@ -7,6 +10,9 @@ use App\Repository\TagRepository;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 
+/**
+ * Class TagService.
+ */
 class TagService implements TagServiceInterface
 {
     /**
@@ -19,8 +25,8 @@ class TagService implements TagServiceInterface
     /**
      * Constructor.
      *
-     * @param TagRepository   $tagRepository Tag repository
-     * @param PaginatorInterface $paginator        Paginator
+     * @param TagRepository      $tagRepository Tag repository
+     * @param PaginatorInterface $paginator     Paginator
      */
     public function __construct(private readonly TagRepository $tagRepository, private readonly PaginatorInterface $paginator)
     {
@@ -29,7 +35,7 @@ class TagService implements TagServiceInterface
     /**
      * Get paginated list.
      *
-     * @param int|null $page   Page number
+     * @param int|null $page Page number
      *
      * @return PaginationInterface<string, mixed> Paginated list
      */
@@ -81,7 +87,7 @@ class TagService implements TagServiceInterface
     /**
      * Delete entity.
      *
-     * @param Tag $tag
+     * @param Tag $tag Tag entity
      */
     public function delete(Tag $tag): void
     {

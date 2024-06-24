@@ -33,11 +33,12 @@ enum ReportStatus: int
     /**
      * Get random value.
      *
-     * @return self
+     * @return self Random value from enum
      */
-    public static function getRandomValue() : self
+    public static function getRandomValue(): self
     {
         $cases = self::cases();
+
         return $cases[array_rand($cases)];
     }
 }

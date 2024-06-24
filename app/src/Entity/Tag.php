@@ -49,7 +49,7 @@ class Tag
     /**
      * Title.
      */
-    #[ORM\Column(type:'string', length: 64)]
+    #[ORM\Column(type: 'string', length: 64)]
     #[Assert\Type('string')]
     #[Assert\NotBlank]
     #[Assert\Length(min: 3, max: 64)]
@@ -57,16 +57,17 @@ class Tag
 
     /**
      * Slug.
-     * @var string|null
      */
     #[ORM\Column(type: 'string', length: 64)]
     #[Assert\Type('string')]
     #[Assert\Length(min: 3, max: 64)]
     #[Gedmo\Slug(fields: ['title'])]
-    private ?string $slug;
+    private ?string $slug = null;
 
     /**
      * Getter for id.
+     *
+     * @return int|null Id
      */
     public function getId(): ?int
     {
@@ -75,6 +76,8 @@ class Tag
 
     /**
      * Getter for created at.
+     *
+     * @return \DateTimeImmutable|null Created at
      */
     public function getCreatedAt(): ?\DateTimeImmutable
     {
@@ -83,6 +86,8 @@ class Tag
 
     /**
      * Setter for created at.
+     *
+     * @param \DateTimeImmutable $createdAt Created at
      */
     public function setCreatedAt(\DateTimeImmutable $createdAt): void
     {
@@ -91,6 +96,8 @@ class Tag
 
     /**
      * Getter for updated at.
+     *
+     * @return \DateTimeImmutable|null Updated at
      */
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
@@ -99,6 +106,8 @@ class Tag
 
     /**
      * Setter for updated at.
+     *
+     * @param \DateTimeImmutable $updatedAt Updated at
      */
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): void
     {
@@ -107,6 +116,8 @@ class Tag
 
     /**
      * Getter for title.
+     *
+     * @return string|null Title
      */
     public function getTitle(): ?string
     {
@@ -115,6 +126,8 @@ class Tag
 
     /**
      * Setter for title.
+     *
+     * @param string $title Title
      */
     public function setTitle(string $title): void
     {

@@ -1,6 +1,6 @@
 <?php
 /**
- * Comment Controller.
+ * Comment controller.
  */
 
 namespace App\Controller;
@@ -17,7 +17,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * Class CommentController.
  */
-
 #[Route('/comment')]
 class CommentController extends AbstractController
 {
@@ -25,7 +24,7 @@ class CommentController extends AbstractController
      * Constructor.
      *
      * @param CommentServiceInterface $commentService Comment service interface
-     * @param TranslatorInterface $translator Translator interface
+     * @param TranslatorInterface     $translator     Translator interface
      */
     public function __construct(private readonly CommentServiceInterface $commentService, private readonly TranslatorInterface $translator)
     {
@@ -34,7 +33,7 @@ class CommentController extends AbstractController
     /**
      * Edit action.
      *
-     * @param Request  $request  HTTP request
+     * @param Request $request HTTP request
      * @param Comment $comment Comment entity
      *
      * @return Response HTTP response
@@ -44,7 +43,7 @@ class CommentController extends AbstractController
     {
         $report = $comment->getReport();
 
-        if (!$this->isGranted('EDIT_COMMENT', $comment)) {
+        if (!$this->isGranted('EDIT', $comment)) {
             return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
         }
 
@@ -69,16 +68,14 @@ class CommentController extends AbstractController
         return $this->render('report/show.html.twig', [
             'form' => $form->createView(),
             'report' => $report,
-            'comments'=> $this->commentService->getPaginatedList($report)
-            // FIXME optimize query
-            // TODO refactor comments (filters??)
+            'comments' => $this->commentService->getPaginatedList($report),
         ]);
     }
 
     /**
      * Delete action.
      *
-     * @param Request  $request  HTTP request
+     * @param Request $request HTTP request
      * @param Comment $comment Comment entity
      *
      * @return Response HTTP response
@@ -88,8 +85,7 @@ class CommentController extends AbstractController
     {
         $report = $comment->getReport();
 
-        if(!$this->isGranted('DELETE_COMMENT', $comment))
-        {
+        if (!$this->isGranted('DELETE', $comment)) {
             return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
         }
 
@@ -110,6 +106,6 @@ class CommentController extends AbstractController
         return $this->render('report/delete.html.twig', [
             'form' => $form->createView(),
             'report' => $report,
-            'comments'=> $this->commentService->getPaginatedList($report)]);
+            'comments' => $this->commentService->getPaginatedList($report), ]);
     }
 }

@@ -10,17 +10,15 @@ use App\Entity\Report;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
- * Class AttachmentServiceInterface.
+ * Interface AttachmentServiceInterface.
  */
 interface AttachmentServiceInterface
 {
     /**
      * Create attachment.
      *
-     * @param UploadedFile  $uploadedFile Uploaded file
-     * @param Report $report         Report entity
-     *
-     * @return void
+     * @param UploadedFile $uploadedFile Uploaded file
+     * @param Report       $report       Report entity
      */
     public function create(UploadedFile $uploadedFile, Report $report): void;
 
@@ -28,9 +26,7 @@ interface AttachmentServiceInterface
      * Update attachment.
      *
      * @param UploadedFile $uploadedFile Uploaded file
-     * @param Report $report Report entity
-     *
-     * @return void
+     * @param Report       $report       Report entity
      */
     public function update(UploadedFile $uploadedFile, Report $report): void;
 
@@ -38,8 +34,6 @@ interface AttachmentServiceInterface
      * Delete attachment.
      *
      * @param Report $report Report entity
-     *
-     * @return void
      */
     public function delete(Report $report): void;
 }

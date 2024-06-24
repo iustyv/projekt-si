@@ -1,4 +1,7 @@
 <?php
+/**
+ * Project entity.
+ */
 
 namespace App\Entity;
 
@@ -10,6 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Class Project.
+ */
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
 #[ORM\Table(name: 'projects')]
 class Project
@@ -75,58 +81,125 @@ class Project
         $this->members = new ArrayCollection();
     }
 
+    /**
+     * Getter for id.
+     *
+     * @return int|null Id
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * Getter for created at.
+     *
+     * @return \DateTimeImmutable|null Created at
+     */
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
+    /**
+     * Setter for created at.
+     *
+     * @param \DateTimeImmutable $createdAt Created at
+     */
     public function setCreatedAt(\DateTimeImmutable $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
+    /**
+     * Getter for updated at.
+     *
+     * @return \DateTimeImmutable|null Updated at
+     */
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
     }
 
+    /**
+     * Setter for updated at.
+     *
+     * @param \DateTimeImmutable $updatedAt Updated at
+     */
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
     }
 
+    /**
+     * Getter for name.
+     *
+     * @return string|null Name
+     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
+    /**
+     * Setter for name.
+     *
+     * @param string $name Name
+     */
     public function setName(string $name): void
     {
         $this->name = $name;
     }
 
+    /**
+     * Getter for manager.
+     *
+     * @return User|null Project manager
+     */
     public function getManager(): ?User
     {
         return $this->manager;
     }
 
+    /**
+     * Setter for manager.
+     *
+     * @param User|null $manager Project manager
+     */
     public function setManager(?User $manager): void
     {
         $this->manager = $manager;
-        $manager->addRole(UserROLE::ROLE_PROJECT_MANAGER->value);
+        $manager->addRole(UserRole::ROLE_PROJECT_MANAGER->value);
         $this->addMember($manager);
     }
 
+    /**
+     * Getter for members.
+     *
+     * @return Collection Members
+     */
     public function getMembers(): Collection
     {
         return $this->members;
     }
 
+    /**
+     * Checks if user is a member of the project.
+     *
+     * @param User $user User entity
+     *
+     * @return bool Result
+     */
+    public function isMemeber(User $user)
+    {
+        return $this->members->contains($user);
+    }
+
+    /**
+     * Add a member to project.
+     *
+     * @param User $member Member
+     */
     public function addMember(User $member): void
     {
         if (!$this->members->contains($member)) {
@@ -134,6 +207,11 @@ class Project
         }
     }
 
+    /**
+     * Add members to project.
+     *
+     * @param array $members Members
+     */
     public function addMembers(array $members): void
     {
         foreach ($members as $member) {
@@ -141,6 +219,11 @@ class Project
         }
     }
 
+    /**
+     * Remove member from project.
+     *
+     * @param User $member Member
+     */
     public function removeMember(User $member): void
     {
         $this->members->removeElement($member);

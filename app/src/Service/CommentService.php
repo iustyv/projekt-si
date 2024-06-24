@@ -68,7 +68,7 @@ class CommentService implements CommentServiceInterface
     /**
      * Delete entity.
      *
-     * @param Comment $comment
+     * @param Comment $comment Comment entity
      */
     public function delete(Comment $comment): void
     {
@@ -79,8 +79,6 @@ class CommentService implements CommentServiceInterface
      * Delete comments by report.
      *
      * @param Report $report Report entity
-     *
-     * @return void
      */
     public function deleteByReport(Report $report): void
     {
@@ -94,8 +92,6 @@ class CommentService implements CommentServiceInterface
      * Delete comments by author.
      *
      * @param User $author User entity
-     *
-     * @return void
      */
     public function deleteByAuthor(User $author): void
     {

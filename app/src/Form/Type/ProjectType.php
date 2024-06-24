@@ -6,12 +6,8 @@
 namespace App\Form\Type;
 
 use App\Entity\Project;
-use App\Entity\User;
 use App\Form\DataTransformer\MembersDataTransformer;
-use App\Repository\ProjectRepository;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormError;
@@ -25,6 +21,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class ProjectType extends AbstractType
 {
+    /**
+     * Constructor.
+     *
+     * @param TranslatorInterface    $translator             Translator interface
+     * @param MembersDataTransformer $membersDataTransformer Members data transformer
+     */
     public function __construct(private readonly TranslatorInterface $translator, private readonly MembersDataTransformer $membersDataTransformer)
     {
     }
@@ -42,7 +44,7 @@ class ProjectType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        if($options['include_name']) {
+        if ($options['include_name']) {
             $builder
                 ->add(
                     'name',
@@ -52,10 +54,11 @@ class ProjectType extends AbstractType
                         'required' => true,
                         'attr' => ['max_length' => 64],
                         'label_attr' => ['class' => 'fw-bold'],
-                    ]);
+                    ]
+                );
         }
 
-        if($options['include_members']) {
+        if ($options['include_members']) {
             $builder
                 ->add(
                     'members',
@@ -63,25 +66,24 @@ class ProjectType extends AbstractType
                     [
                         'required' => false,
                         'mapped' => false,
-                        'label' => 'label.members'
+                        'label' => 'label.members',
                     ]
                 );
         }
+        if ($builder->has('members')) {
+            $builder->get('members')->addModelTransformer(
+                $this->membersDataTransformer
+            );
 
-        $builder->get('members')->addModelTransformer(
-            $this->membersDataTransformer
-        );
+            $builder->get('members')->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
+                $membersFormField = $event->getForm();
+                $membersFieldValue = $event->getData();
 
-        $builder->get('members')->addEventListener(FormEvents::PRE_SUBMIT, function(FormEvent $event){
-            $membersFormField = $event->getForm();
-            $membersFieldValue = $event->getData();
-
-            if (!empty($membersFieldValue)) {
-                if (!preg_match_all('/^[a-zA-Z0-9.]+(,\s*[a-zA-Z0-9.]+)*$/', $membersFieldValue)) {
+                if (!empty($membersFieldValue) && !preg_match_all('/^[a-zA-Z0-9.]+(,\s*[a-zA-Z0-9.]+)*$/', $membersFieldValue)) {
                     $membersFormField->addError(new FormError($this->translator->trans('message.members_invalid_format')));
                 }
-            }
-        });
+            });
+        }
     }
 
     /**

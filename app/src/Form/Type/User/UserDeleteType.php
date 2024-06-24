@@ -11,6 +11,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class UserDeleteType.
@@ -38,6 +39,9 @@ class UserDeleteType extends AbstractType
                     'mapped' => false,
                     'label' => 'label.authenticate_password',
                     'required' => true,
+                    'constraints' => [
+                        new Assert\NotBlank(),
+                    ],
                 ]
             );
     }

@@ -9,11 +9,9 @@ use App\Entity\Category;
 use App\Entity\Enum\ReportStatus;
 use App\Entity\Project;
 use App\Entity\Report;
-use App\Form\DataTransformer\MembersDataTransformer;
 use App\Form\DataTransformer\TagsDataTransformer;
 use App\Form\DataTransformer\UserDataTransformer;
 use App\Service\UserServiceInterface;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
@@ -29,14 +27,22 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class ReportType.
  */
 class ReportType extends AbstractType
 {
-    public function __construct(private readonly TranslatorInterface $translator, private readonly TagsDataTransformer $tagsDataTransformer,  private readonly Security $security, private readonly UserServiceInterface $userService, private readonly UserDataTransformer $userDataTransformer)
+    /**
+     * Construct.
+     *
+     * @param TranslatorInterface  $translator          Translator interface
+     * @param TagsDataTransformer  $tagsDataTransformer Tags data transformer
+     * @param Security             $security            Security
+     * @param UserServiceInterface $userService         User service interface
+     * @param UserDataTransformer  $userDataTransformer User data transformer
+     */
+    public function __construct(private readonly TranslatorInterface $translator, private readonly TagsDataTransformer $tagsDataTransformer, private readonly Security $security, private readonly UserServiceInterface $userService, private readonly UserDataTransformer $userDataTransformer)
     {
     }
 
@@ -55,13 +61,14 @@ class ReportType extends AbstractType
     {
         $builder
             ->add(
-            'title',
-            TextType::class,
-            [
-                'label' => 'label.title',
-                'required' => true,
-                'attr' => ['max_length' => 64],
-            ])
+                'title',
+                TextType::class,
+                [
+                    'label' => 'label.title',
+                    'required' => true,
+                    'attr' => ['max_length' => 64],
+                ]
+            )
             ->add(
                 'description',
                 TextareaType::class,
@@ -70,17 +77,16 @@ class ReportType extends AbstractType
                     'required' => true,
                     'attr' => [
                         'max_length' => 500,
-                        'rows' => 6
+                        'rows' => 6,
                     ],
-                ])
+                ]
+            )
             ->add(
                 'category',
                 EntityType::class,
                 [
                     'class' => Category::class,
-                    'choice_label' => function ($category): string {
-                        return $category->getTitle();
-                    },
+                    'choice_label' => fn ($category): string => $category->getTitle(),
                     'label' => 'label.category',
                     'required' => true,
                     'placeholder' => 'label.choose_category',
@@ -96,7 +102,7 @@ class ReportType extends AbstractType
                         ReportStatus::STATUS_PENDING->label() => ReportStatus::STATUS_PENDING,
                         ReportStatus::STATUS_IN_PROGRESS->label() => ReportStatus::STATUS_IN_PROGRESS,
                         ReportStatus::STATUS_COMPLETED->label() => ReportStatus::STATUS_COMPLETED,
-                    ]
+                    ],
                 ]
             )
             ->add(
@@ -108,7 +114,7 @@ class ReportType extends AbstractType
                     'choices' => $options['projects'],
                     'choice_label' => 'name',
                     'placeholder' => 'label.choose_project',
-                    'required' => false
+                    'required' => false,
                 ]
             )
             ->add(
@@ -128,7 +134,7 @@ class ReportType extends AbstractType
                 [
                     'label' => 'label.tags',
                     'required' => false,
-                    'attr' => ['max_length' => 128]
+                    'attr' => ['max_length' => 128],
                 ]
             )
             ->add(
@@ -155,28 +161,26 @@ class ReportType extends AbstractType
         if ($options['attachment_exists']) {
             $builder
                 ->add(
-                'delete_file',
-                CheckboxType::class,
-                [
-                    'label' => 'label.delete_file',
-                    'required' => false,
-                    'mapped' => false,
-                ]
-            );
+                    'delete_file',
+                    CheckboxType::class,
+                    [
+                        'label' => 'action.delete_file',
+                        'required' => false,
+                        'mapped' => false,
+                    ]
+                );
         }
 
         $builder->get('tags')->addModelTransformer(
             $this->tagsDataTransformer
         );
 
-        $builder->get('tags')->addEventListener(FormEvents::PRE_SUBMIT, function(FormEvent $event){
+        $builder->get('tags')->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
             $tagsFormField = $event->getForm();
             $tagsFieldValue = $event->getData();
 
-            if (!empty($tagsFieldValue)) {
-                if (!preg_match_all('/^[a-zA-Z0-9]+(,\s*[a-zA-Z0-9]+)*$/', $tagsFieldValue)) {
-                    $tagsFormField->addError(new FormError($this->translator->trans('message.tag_invalid_format')));
-                }
+            if (!empty($tagsFieldValue) && !preg_match_all('/^[a-zA-Z0-9]+(,\s*[a-zA-Z0-9]+)*$/', $tagsFieldValue)) {
+                $tagsFormField->addError(new FormError($this->translator->trans('message.tag_invalid_format')));
             }
         });
 
@@ -184,7 +188,7 @@ class ReportType extends AbstractType
             $this->userDataTransformer
         );
 
-        $builder->get('assignedTo')->addEventListener(FormEvents::PRE_SUBMIT, function(FormEvent $event) {
+        $builder->get('assignedTo')->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
             $assignedToFormField = $event->getForm();
             $assignedToFieldValue = $event->getData();
             $project = $assignedToFormField->getParent()->get('project')->getData();
@@ -192,11 +196,12 @@ class ReportType extends AbstractType
             if (!empty($assignedToFieldValue)) {
                 if (!preg_match_all('/^[a-zA-Z0-9.]+$/', $assignedToFieldValue)) {
                     $assignedToFormField->addError(new FormError($this->translator->trans('message.assigned_to_invalid_format')));
-                }
-                else {
+                } else {
                     $user = $this->userService->findOneByUsername($assignedToFieldValue);
-                    if (!in_array($user, $project->getMembers()->toArray())) {
-                        $assignedToFormField->addError(new FormError($this->translator->trans('message.cannot_assign_report')));
+                    if (null === $project) {
+                        $assignedToFormField->addError(new FormError($this->translator->trans('message.cannot_assign_on_empty_project')));
+                    } elseif (!in_array($user, $project->getMembers()->toArray())) {
+                        $assignedToFormField->addError(new FormError($this->translator->trans('message.user_is_not_member')));
                     }
                 }
             }

@@ -5,24 +5,20 @@
 
 namespace App\Service;
 
-
 use App\Entity\Project;
 use App\Entity\User;
-use App\Repository\ProjectRepository;
-use App\Repository\ReportRepository;
 use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\PaginatorInterface;
 
 /**
- * Class ProjectServiceInterface.
+ * Interface ProjectServiceInterface.
  */
 interface ProjectServiceInterface
 {
     /**
      * Get paginated list.
      *
+     * @param User     $user User entity
      * @param int|null $page Page number
-     * @param User $user User entity
      *
      * @return PaginationInterface<string, mixed> Paginated list
      */
@@ -38,11 +34,33 @@ interface ProjectServiceInterface
     /**
      * Delete entity.
      *
-     * @param Project $project
+     * @param Project $project Project entity
      */
     public function delete(Project $project): void;
 
+    /**
+     * Find project by id.
+     *
+     * @param int $id Id
+     *
+     * @return Project|null Project entity
+     */
     public function findOneById(int $id): ?Project;
 
-    public function getUserProjects(User $user): array;
+    /**
+     * Get projects user is a member of.
+     *
+     * @param User|null $user User entity
+     *
+     * @return array Projects user is a member of
+     */
+    public function getUserProjects(?User $user): array;
+
+    /**
+     * Add members to project.
+     *
+     * @param Project $project    Project entity
+     * @param array   $newMembers Members to be added
+     */
+    public function addMembers(Project $project, array $newMembers): void;
 }

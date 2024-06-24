@@ -15,7 +15,11 @@ use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -34,6 +38,7 @@ class ReportRepository extends ServiceEntityRepository
      * Constructor.
      *
      * @param ManagerRegistry $registry Manager registry
+     * @param Security        $security Security
      */
     public function __construct(ManagerRegistry $registry, private readonly Security $security)
     {
@@ -62,11 +67,19 @@ class ReportRepository extends ServiceEntityRepository
             ->orderBy('report.updatedAt', 'DESC');
     }
 
-    public function queryAccessible(?array $projects, ReportListFiltersDto $filters):QueryBuilder
+    /**
+     * Query reports that user can access.
+     *
+     * @param array|null           $projects Projects user is a member of
+     * @param ReportListFiltersDto $filters  Filters
+     *
+     * @return QueryBuilder Query builder
+     */
+    public function queryAccessible(?array $projects, ReportListFiltersDto $filters): QueryBuilder
     {
-        $queryBuilder = $this->queryAll($filters);
+        $queryBuilder = $this->queryAll();
 
-        if(!$this->security->isGranted('ROLE_ADMIN')) {
+        if (!$this->security->isGranted('ROLE_ADMIN')) {
             $queryBuilder = $queryBuilder
                 ->andWhere('report.project IS NULL OR report.project IN (:projects)')
                 ->setParameter('projects', $projects);
@@ -85,7 +98,7 @@ class ReportRepository extends ServiceEntityRepository
      */
     public function queryByAuthor(UserInterface $user, ReportListFiltersDto $filters): QueryBuilder
     {
-        $queryBuilder = $this->queryAll($filters);
+        $queryBuilder = $this->queryAll();
 
         $queryBuilder->andWhere('report.author = :author')
             ->setParameter('author', $user);
@@ -129,6 +142,14 @@ class ReportRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    /**
+     * Save entity.
+     *
+     * @param Report $report Report entity
+     *
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
     public function save(Report $report): void
     {
         assert($this->_em instanceof EntityManager);
@@ -140,6 +161,8 @@ class ReportRepository extends ServiceEntityRepository
      * Delete entity.
      *
      * @param Report $report Report entity
+     *
+     * @throws ORMException
      */
     public function delete(Report $report): void
     {
@@ -151,8 +174,9 @@ class ReportRepository extends ServiceEntityRepository
     /**
      * Apply filters to paginated list.
      *
-     * @param QueryBuilder       $queryBuilder Query builder
-     * @param TaskListFiltersDto $filters      Filters
+     * @param QueryBuilder         $queryBuilder Query builder
+     * @param ReportListFiltersDto $filters      Filters
+     * @param array|null           $projects     Project user is a member of
      *
      * @return QueryBuilder Query builder
      */
@@ -173,11 +197,9 @@ class ReportRepository extends ServiceEntityRepository
                 ->setParameter('status_filter', $filters->reportStatus->value, Types::INTEGER);
         }
 
-        if ($filters->project instanceof Project) {
-            if ($this->security->isGranted('VIEW', $filters->project)) {
-                $queryBuilder->andWhere('report.project = :project')
-                ->setParameter('project', $filters->project);
-            }
+        if ($filters->project instanceof Project && $this->security->isGranted('VIEW', $filters->project)) {
+            $queryBuilder->andWhere('report.project = :project')
+            ->setParameter('project', $filters->project);
         }
 
         if (is_string($filters->search)) {
@@ -185,20 +207,18 @@ class ReportRepository extends ServiceEntityRepository
                 ->setParameter('search', '%'.$filters->search.'%');
         }
 
-        if($filters->unassigned) {
+        if ($filters->unassigned) {
             $queryBuilder->andWhere('report.project IS NULL');
         }
 
-        if($filters->assigned) {
+        if ($filters->assigned) {
             $queryBuilder->andWhere('report.project IN (:projects)')
             ->setParameter('projects', $projects);
         }
 
-        if($this->security->isGranted('ROLE_ADMIN')) {
-            if($filters->adminAssigned) {
-                $queryBuilder->andWhere('report.project NOT IN (:projects)')
-                    ->setParameter('projects', $projects);
-            }
+        if ($this->security->isGranted('ROLE_ADMIN') && $filters->adminAssigned) {
+            $queryBuilder->andWhere('report.project NOT IN (:projects)')
+                ->setParameter('projects', $projects);
         }
 
         return $queryBuilder;

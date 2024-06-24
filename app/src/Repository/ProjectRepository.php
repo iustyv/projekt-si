@@ -1,18 +1,32 @@
 <?php
+/**
+ * Project repository.
+ */
 
 namespace App\Repository;
 
 use App\Entity\Project;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Class ProjectRepository.
+ *
  * @extends ServiceEntityRepository<Project>
  */
 class ProjectRepository extends ServiceEntityRepository
 {
+    /**
+     * Constructor.
+     *
+     * @param ManagerRegistry $registry Manager registry
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Project::class);
@@ -37,7 +51,7 @@ class ProjectRepository extends ServiceEntityRepository
     /**
      * Query projects user is a member of.
      *
-     * @param UserInterface $user User entity
+     * @param User $user User entity
      *
      * @return QueryBuilder Query builder
      */
@@ -49,6 +63,13 @@ class ProjectRepository extends ServiceEntityRepository
             ->setParameter('user', $user);
     }
 
+    /**
+     * Save entity.
+     *
+     * @param Project $project project entity
+     *
+     * @throws ORMException
+     */
     public function save(Project $project): void
     {
         assert($this->_em instanceof EntityManager);
@@ -60,6 +81,8 @@ class ProjectRepository extends ServiceEntityRepository
      * Delete entity.
      *
      * @param Project $project Project entity
+     *
+     * @throws ORMException
      */
     public function delete(Project $project): void
     {
@@ -68,6 +91,15 @@ class ProjectRepository extends ServiceEntityRepository
         $this->_em->flush();
     }
 
+    /**
+     * Find project by id.
+     *
+     * @param int $id Id
+     *
+     * @return Project|null Project entity
+     *
+     * @throws NonUniqueResultException
+     */
     public function findOneById(int $id): ?Project
     {
         return $this->getOrCreateQueryBuilder()
@@ -77,6 +109,16 @@ class ProjectRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    /**
+     * Count projects user is a manager of.
+     *
+     * @param User $user user entity
+     *
+     * @return int Project count
+     *
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
     public function countByManager(User $user): int
     {
         $qb = $this->getOrCreateQueryBuilder();

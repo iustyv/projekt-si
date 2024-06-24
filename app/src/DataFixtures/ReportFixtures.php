@@ -23,11 +23,15 @@ class ReportFixtures extends AbstractBaseFixtures implements DependentFixtureInt
      */
     public function loadData(): void
     {
-        if (null === $this->manager || null === $this->faker) {
+        if (!$this->manager instanceof \Doctrine\Persistence\ObjectManager || !$this->faker instanceof \Faker\Generator) {
             return;
         }
 
-        $this->createMany(100, 'reports', function (int $i) {
+        $reportNumber = 200;
+
+        $this->createMany($reportNumber, 'reports', function (int $i) {
+            $reportsWithoutProject = 40;
+
             $report = new Report();
             $report->setTitle($this->faker->realTextBetween(20, 35));
             $report->setDescription($this->faker->realTextBetween(150, 500));
@@ -46,7 +50,7 @@ class ReportFixtures extends AbstractBaseFixtures implements DependentFixtureInt
             $report->setCategory($category);
 
             $tagNum = $this->faker->numberBetween(1, 6);
-            for($j=0; $j < $tagNum; ++$j) {
+            for ($j = 0; $j < $tagNum; ++$j) {
                 /** @var Tag $tag Tag entity */
                 $tag = $this->getRandomReference('tags');
                 $report->addTag($tag);
@@ -56,9 +60,11 @@ class ReportFixtures extends AbstractBaseFixtures implements DependentFixtureInt
             $author = $this->getRandomReference('users');
             $report->setAuthor($author);
 
-            /** @var Project $project Project entity */
-            $project = $this->getRandomReference('projects');
-            $report->setProject($project);
+            if ($i > $reportsWithoutProject) {
+                /** @var Project $project Project entity */
+                $project = $this->getRandomReference('projects');
+                $report->setProject($project);
+            }
 
             /** @var ReportStatus::class $status Report status */
             $status = ReportStatus::getRandomValue();
@@ -84,7 +90,7 @@ class ReportFixtures extends AbstractBaseFixtures implements DependentFixtureInt
             CategoryFixtures::class,
             TagFixtures::class,
             UserFixtures::class,
-            ProjectFixtures::class
+            ProjectFixtures::class,
         ];
     }
 }

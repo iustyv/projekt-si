@@ -1,4 +1,7 @@
 <?php
+/**
+ * Login form authenticator.
+ */
 
 namespace App\Security;
 
@@ -16,6 +19,9 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\SecurityRequestAttributes;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
+/**
+ * Class LoginFormAuthenticator.
+ */
 class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 {
     use TargetPathTrait;
@@ -29,6 +35,11 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
      */
     private const DEFAULT_ROUTE = 'report_index';
 
+    /**
+     * Constructor.
+     *
+     * @param UrlGeneratorInterface $urlGenerator URL generator interface
+     */
     public function __construct(private readonly UrlGeneratorInterface $urlGenerator)
     {
     }
@@ -48,6 +59,13 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
             && $request->isMethod('POST');
     }
 
+    /**
+     * Authenticates a user based on the provided request.
+     *
+     * @param Request $request HTTP Request
+     *
+     * @return Passport Passport object
+     */
     public function authenticate(Request $request): Passport
     {
         $email = $request->getPayload()->getString('email');
@@ -64,6 +82,15 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         );
     }
 
+    /**
+     * Handles actions to perform on authentication success.
+     *
+     * @param Request        $request      HTTP request
+     * @param TokenInterface $token        Security token
+     * @param string         $firewallName Name of the firewall in use
+     *
+     * @return Response|null A redirect response to the target path or default route, or null if no response is needed
+     */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
@@ -73,9 +100,16 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         return new RedirectResponse($this->urlGenerator->generate(self::DEFAULT_ROUTE));
         // For example:
         // return new RedirectResponse($this->urlGenerator->generate('some_route'));
-        //throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
+        // throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
     }
 
+    /**
+     * Generates the login URL.
+     *
+     * @param Request $request HTTP request
+     *
+     * @return string URL for the login route
+     */
     protected function getLoginUrl(Request $request): string
     {
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);

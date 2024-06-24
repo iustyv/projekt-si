@@ -201,6 +201,8 @@ class Report
 
     /**
      * Getter for description.
+     *
+     * @return string|null Description
      */
     public function getDescription(): ?string
     {
@@ -209,6 +211,8 @@ class Report
 
     /**
      * Setter for description.
+     *
+     * @param string|null $description Description
      */
     public function setDescription(?string $description): void
     {
@@ -217,6 +221,8 @@ class Report
 
     /**
      * Getter for category.
+     *
+     * @return Category|null Category
      */
     public function getCategory(): ?Category
     {
@@ -225,6 +231,8 @@ class Report
 
     /**
      * Setter for category.
+     *
+     * @param Category|null $category Category entity
      */
     public function setCategory(?Category $category): void
     {
@@ -265,6 +273,8 @@ class Report
 
     /**
      * Getter for author.
+     *
+     * @return User|null Author
      */
     public function getAuthor(): ?User
     {
@@ -273,6 +283,8 @@ class Report
 
     /**
      * Setter for author.
+     *
+     * @param User|null $author Author
      */
     public function setAuthor(?User $author): void
     {
@@ -281,7 +293,9 @@ class Report
 
     /**
      * Getter for project.
-    */
+     *
+     * @return Project|null Project entity
+     */
     public function getProject(): ?Project
     {
         return $this->project;
@@ -289,7 +303,9 @@ class Report
 
     /**
      * Setter for project.
-    */
+     *
+     * @param Project|null $project Project entity
+     */
     public function setProject(?Project $project): void
     {
         $this->project = $project;
@@ -297,35 +313,59 @@ class Report
 
     /**
      * Getter for status.
+     *
+     * @return ReportStatus Report status
      */
     public function getStatus(): ReportStatus
     {
-        return ($this->status ?? ReportStatus::STATUS_PENDING);
+        return $this->status ?? ReportStatus::STATUS_PENDING;
     }
 
     /**
      * Setter for status.
+     *
+     * @param ReportStatus $status Report status
      */
     public function setStatus(ReportStatus $status): void
     {
         $this->status = $status;
     }
 
+    /**
+     * Getter for attachment.
+     *
+     * @return Attachment|null Attachment
+     */
     public function getAttachment(): ?Attachment
     {
         return $this->attachment;
     }
 
+    /**
+     * Setter for attachment.
+     *
+     * @param Attachment|null $attachment Attachment
+     */
     public function setAttachment(?Attachment $attachment): void
     {
         $this->attachment = $attachment;
     }
 
+    /**
+     * Getter for assigned to.
+     *
+     * @return User|null Assigned to
+     */
     public function getAssignedTo(): ?User
     {
         return $this->assignedTo;
     }
 
+    /**
+     * Setter for assigned to.
+     *
+     * @param User|null $assignedTo Assigned to
+     */
     public function setAssignedTo(?User $assignedTo): void
     {
         $this->assignedTo = $assignedTo;

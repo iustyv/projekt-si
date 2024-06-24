@@ -5,7 +5,6 @@
 
 namespace App\Service;
 
-
 use App\Entity\Category;
 use App\Repository\CategoryRepository;
 use App\Repository\ReportRepository;
@@ -33,18 +32,18 @@ class CategoryService implements CategoryServiceInterface
     /**
      * Constructor.
      *
-     * @param CategoryRepository  $categoryRepository Category repository
-     * @param ReportRepository $reportRepository Report repository
-     * @param PaginatorInterface $paginator Paginator
+     * @param CategoryRepository $categoryRepository Category repository
+     * @param ReportRepository   $reportRepository   Report repository
+     * @param PaginatorInterface $paginator          Paginator
      */
-    public function __construct(private readonly CategoryRepository $categoryRepository,private readonly ReportRepository $reportRepository, private readonly PaginatorInterface $paginator)
+    public function __construct(private readonly CategoryRepository $categoryRepository, private readonly ReportRepository $reportRepository, private readonly PaginatorInterface $paginator)
     {
     }
 
     /**
      * Get paginated list.
      *
-     * @param int|null $page   Page number
+     * @param int|null $page Page number
      *
      * @return PaginationInterface<string, mixed> Paginated list
      */
@@ -61,9 +60,9 @@ class CategoryService implements CategoryServiceInterface
      * Get paginated list of reports.
      *
      * @param Category $category Category entity
-     * @param int|null $page Page number
+     * @param int|null $page     Page number
      *
-     * @return PaginationInterface
+     * @return PaginationInterface Pagination interface
      */
     public function getPaginatedListOfReports(Category $category, ?int $page = 1): PaginationInterface
     {
@@ -78,8 +77,6 @@ class CategoryService implements CategoryServiceInterface
      * Save entity.
      *
      * @param Category $category Category entity
-     *
-     * @return void
      */
     public function save(Category $category): void
     {
@@ -89,9 +86,7 @@ class CategoryService implements CategoryServiceInterface
     /**
      * Delete entity.
      *
-     * @param Category $category
-     *
-     * @return void
+     * @param Category $category Category entity
      */
     public function delete(Category $category): void
     {
@@ -110,7 +105,7 @@ class CategoryService implements CategoryServiceInterface
         try {
             $result = $this->reportRepository->countByCategory($category);
 
-            return !($result > 0);
+            return $result <= 0;
         } catch (NoResultException|NonUniqueResultException) {
             return false;
         }

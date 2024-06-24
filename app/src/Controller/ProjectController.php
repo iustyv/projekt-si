@@ -1,6 +1,6 @@
 <?php
 /**
- * Project Controller.
+ * Project controller.
  */
 
 namespace App\Controller;
@@ -27,9 +27,10 @@ class ProjectController extends AbstractController
      * Constructor.
      *
      * @param ProjectServiceInterface $projectService Project service interface
-     * @param TranslatorInterface $translator Translator interface
+     * @param TranslatorInterface     $translator     Translator interface
+     * @param UserServiceInterface    $userService    User service interface
      */
-    public function __construct(private readonly ProjectServiceInterface $projectService, private readonly TranslatorInterface $translator)
+    public function __construct(private readonly ProjectServiceInterface $projectService, private readonly TranslatorInterface $translator, private readonly UserServiceInterface $userService)
     {
     }
 
@@ -55,13 +56,16 @@ class ProjectController extends AbstractController
      * Show action.
      *
      * @param Project $project Project entity
-     * @param int    $page   Page number
      *
      * @return Response HTTP Response
      */
     #[Route('/{id}', name: 'project_show', requirements: ['id' => '[1-9]\d*'], methods: 'GET')]
-    public function show(Project $project, #[MapQueryParameter] int $page = 1): Response
+    public function show(Project $project): Response
     {
+        if (!$this->isGranted('VIEW', $project)) {
+            return $this->redirectToRoute('project_index');
+        }
+
         return $this->render('project/show.html.twig', ['project' => $project]);
     }
 
@@ -75,14 +79,13 @@ class ProjectController extends AbstractController
     #[Route('/create', name: 'project_create', methods: 'GET|POST')]
     public function create(Request $request): Response
     {
-        if (!$this->isGranted('CREATE_PROJECT')){
+        if (!$this->isGranted('CREATE_PROJECT')) {
             return $this->redirectToRoute('index');
         }
 
         $project = new Project();
         $user = $this->getUser();
         $project->setManager($user);
-        $project->addMember($user);
 
         $form = $this->createForm(
             ProjectType::class,
@@ -93,13 +96,13 @@ class ProjectController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $newMembers = $form->get('members')->getData();
-            $project->addMembers($newMembers);
+            $this->projectService->addMembers($project, $newMembers);
 
-            $this->projectService->save($project);
+            $this->userService->refreshUserToken($user);
 
             $this->addFlash('success', $this->translator->trans('message.created_successfully'));
 
-            return $this->redirectToRoute('project_index');
+            return $this->redirectToRoute('project_show', ['id' => $project->getId()]);
         }
 
         return $this->render('project/create.html.twig', ['form' => $form->createView()]);
@@ -113,10 +116,10 @@ class ProjectController extends AbstractController
      *
      * @return Response HTTP Response
      */
-    #[Route('{id}/members_add', name: 'project_members_add', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
+    #[Route('/{id}/members_add', name: 'project_members_add', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
     public function membersAdd(Request $request, Project $project): Response
     {
-        if (!$this->isGranted('EDIT_PROJECT', $project)){
+        if (!$this->isGranted('EDIT', $project)) {
             return $this->redirectToRoute('project_show', ['id' => $project->getId()]);
         }
 
@@ -126,20 +129,55 @@ class ProjectController extends AbstractController
             [
                 'include_name' => false,
                 'method' => 'PUT',
-                'action' => $this->generateUrl('project_members_add', ['id' => $project->getId()])
+                'action' => $this->generateUrl('project_members_add', ['id' => $project->getId()]),
             ]
         );
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $newMembers = $form->get('members')->getData();
-            $project->addMembers($newMembers);
+            $this->projectService->addMembers($project, $newMembers);
 
+            $this->addFlash('success', $this->translator->trans('message.edited_successfully'));
+
+            return $this->redirectToRoute('project_show', ['id' => $project->getId()]);
+        }
+
+        return $this->render('project/edit.html.twig', ['form' => $form->createView()]);
+    }
+
+    /**
+     * Edit project.
+     *
+     * @param Request $request HTTP Request
+     * @param Project $project Project entity
+     *
+     * @return Response HTTP Response
+     */
+    #[Route('/{id}/edit', name: 'project_edit', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
+    public function edit(Request $request, Project $project): Response
+    {
+        if (!$this->isGranted('EDIT', $project)) {
+            return $this->redirectToRoute('project_show', ['id' => $project->getId()]);
+        }
+
+        $form = $this->createForm(
+            ProjectType::class,
+            $project,
+            [
+                'include_members' => false,
+                'method' => 'PUT',
+                'action' => $this->generateUrl('project_edit', ['id' => $project->getId()]),
+            ]
+        );
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->projectService->save($project);
 
             $this->addFlash('success', $this->translator->trans('message.edited_successfully'));
 
-            return $this->redirectToRoute('project_index');
+            return $this->redirectToRoute('project_show', ['id' => $project->getId()]);
         }
 
         return $this->render('project/edit.html.twig', ['form' => $form->createView()]);

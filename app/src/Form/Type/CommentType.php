@@ -37,7 +37,7 @@ class CommentType extends AbstractType
                 'required' => true,
                 'attr' => [
                     'max_length' => 250,
-                    'rows' => 3
+                    'rows' => 3,
                 ],
             ]
         );

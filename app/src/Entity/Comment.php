@@ -53,7 +53,7 @@ class Comment
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\Type('string')]
     #[Assert\NotBlank]
-    #[Assert\Length(min: 1, max: 255)]
+    #[Assert\Length(min: 3, max: 255)]
     private ?string $content = null;
 
     /**
@@ -76,6 +76,8 @@ class Comment
 
     /**
      * Getter for id.
+     *
+     * @return int|null Id
      */
     public function getId(): ?int
     {
@@ -84,6 +86,8 @@ class Comment
 
     /**
      * Getter for created at.
+     *
+     * @return \DateTimeImmutable|null Created at
      */
     public function getCreatedAt(): ?\DateTimeImmutable
     {
@@ -92,6 +96,8 @@ class Comment
 
     /**
      * Setter for created at.
+     *
+     * @param \DateTimeImmutable $createdAt Created at
      */
     public function setCreatedAt(\DateTimeImmutable $createdAt): void
     {
@@ -100,6 +106,8 @@ class Comment
 
     /**
      * Getter for updated at.
+     *
+     * @return \DateTimeImmutable Updated at
      */
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
@@ -108,6 +116,8 @@ class Comment
 
     /**
      * Setter for updated at.
+     *
+     * @param \DateTimeImmutable $updatedAt Updated at
      */
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): void
     {
@@ -116,6 +126,8 @@ class Comment
 
     /**
      * Getter for content.
+     *
+     * @return string|null Content
      */
     public function getContent(): ?string
     {
@@ -124,6 +136,8 @@ class Comment
 
     /**
      * Setter for content.
+     *
+     * @param string $content Content
      */
     public function setContent(string $content): void
     {
@@ -132,6 +146,8 @@ class Comment
 
     /**
      * Getter for report.
+     *
+     * @return Report|null Report entity
      */
     public function getReport(): ?Report
     {
@@ -140,6 +156,8 @@ class Comment
 
     /**
      * Setter for report.
+     *
+     * @param Report|null $report Report entity
      */
     public function setReport(?Report $report): void
     {
@@ -148,6 +166,8 @@ class Comment
 
     /**
      * Getter for author.
+     *
+     * @return User|null Author
      */
     public function getAuthor(): ?User
     {
@@ -156,6 +176,8 @@ class Comment
 
     /**
      * Setter for author.
+     *
+     * @param User|null $author User entity
      */
     public function setAuthor(?User $author): void
     {

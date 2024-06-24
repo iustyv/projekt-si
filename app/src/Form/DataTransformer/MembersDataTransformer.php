@@ -63,11 +63,17 @@ class MembersDataTransformer implements DataTransformerInterface
 
         foreach ($usernames as $username) {
             $username = trim($username);
-            if ('' === $username) continue;
-            if (!preg_match('/^[a-zA-Z0-9.]+$/', $username)) continue;
+            if ('' === $username) {
+                continue;
+            }
+            if (!preg_match('/^[a-zA-Z0-9.]+$/', $username)) {
+                continue;
+            }
 
             $member = $this->userService->findOneByUsername($username);
-            if (null === $member) continue;
+            if (!$member instanceof User) {
+                continue;
+            }
 
             $members[] = $member;
         }

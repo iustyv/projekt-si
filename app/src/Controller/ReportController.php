@@ -1,19 +1,18 @@
 <?php
 /**
- * Report Controller.
+ * Report controller.
  */
 
 namespace App\Controller;
 
 use App\Dto\ReportListInputFiltersDto;
 use App\Entity\Comment;
-use App\Entity\Enum\ReportStatus;
-use App\Form\Type\CommentType;
-use App\Form\Type\ReportSearchType;
-use App\Resolver\ReportListInputFiltersDtoResolver;
 use App\Entity\Report;
 use App\Entity\User;
+use App\Form\Type\CommentType;
+use App\Form\Type\ReportSearchType;
 use App\Form\Type\ReportType;
+use App\Resolver\ReportListInputFiltersDtoResolver;
 use App\Service\AttachmentServiceInterface;
 use App\Service\CommentServiceInterface;
 use App\Service\ProjectServiceInterface;
@@ -36,9 +35,11 @@ class ReportController extends AbstractController
     /**
      * Constructor.
      *
-     * @param ReportServiceInterface  $reportService  Report service interface
-     * @param CommentServiceInterface $commentService Comment service interface
-     * @param TranslatorInterface $translator Translator interface
+     * @param ReportServiceInterface     $reportService     Report service interface
+     * @param CommentServiceInterface    $commentService    Comment service interface
+     * @param AttachmentServiceInterface $attachmentService Attachment service interface
+     * @param TranslatorInterface        $translator        Translator interface
+     * @param ProjectServiceInterface    $projectService    Project service interface
      */
     public function __construct(private readonly ReportServiceInterface $reportService, private readonly CommentServiceInterface $commentService, private readonly AttachmentServiceInterface $attachmentService, private readonly TranslatorInterface $translator, private readonly ProjectServiceInterface $projectService)
     {
@@ -47,7 +48,9 @@ class ReportController extends AbstractController
     /**
      * Index action.
      *
-     * @param int $page Page
+     * @param Request                   $request HTTP Request
+     * @param ReportListInputFiltersDto $filters Report list input filters
+     * @param int                       $page    Page
      *
      * @return Response HTTP Response
      */
@@ -66,56 +69,37 @@ class ReportController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $search = $form->get('search')->getData();
-
             $filters = new ReportListInputFiltersDto($search);
         }
 
         /** @var User $user */
         $user = $this->getUser();
         $pagination = $this->reportService->getPaginatedList(
+            $user,
             $filters,
-            //$user,
             $page
         );
 
         return $this->render('report/index.html.twig', ['pagination' => $pagination,
             'form' => $form->createView(),
-            'filters' => $filters,
         ]);
-    }
-
-    /**
-     * Show archived reports.
-     *
-     * @param int $page Page
-     *
-     * @return Response HTTP Response
-     */
-    #[Route('/archived', name: 'report_archived', methods: 'GET')]
-    public function show_archived(#[MapQueryString(resolver: ReportListInputFiltersDtoResolver::class)] ReportListInputFiltersDto $filters, #[MapQueryParameter] int $page = 1): Response
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-        $pagination = $this->reportService->getPaginatedListOfArchived(
-            $filters,
-            //$user,
-            $page
-        );
-
-        return $this->render('report/index.html.twig', ['pagination' => $pagination]);
     }
 
     /**
      * Show action.
      *
-     * @param Report $report Report entity
-     * @param int    $page   Page number
+     * @param Report|null $report Report entity
+     * @param int         $page   Page number
      *
      * @return Response HTTP Response
      */
     #[Route('/{id}', name: 'report_show', requirements: ['id' => '[1-9]\d*'], methods: 'GET')]
-    public function show(?Report $report = null, #[MapQueryParameter] int $page = 1): Response
+    public function show(?Report $report, #[MapQueryParameter] int $page = 1): Response
     {
+        if (!$this->isGranted('VIEW', $report)) {
+            return $this->redirectToRoute('index');
+        }
+
         $comments = $this->commentService->getPaginatedList($report, $page);
 
         return $this->render('report/show.html.twig', ['report' => $report, 'comments' => $comments]);
@@ -131,7 +115,7 @@ class ReportController extends AbstractController
     #[Route('/create', name: 'report_create', methods: 'GET|POST')]
     public function create(Request $request): Response
     {
-        if(!$this->isGranted('CREATE_REPORT')) {
+        if (!$this->isGranted('CREATE_REPORT')) {
             return $this->redirectToRoute('index');
         }
 
@@ -146,7 +130,7 @@ class ReportController extends AbstractController
             $report,
             [
                 'projects' => $projects,
-                'action' => $this->generateUrl('report_create')
+                'action' => $this->generateUrl('report_create'),
             ],
         );
         $form->handleRequest($request);
@@ -170,15 +154,15 @@ class ReportController extends AbstractController
     /**
      * Edit action.
      *
-     * @param Request  $request  HTTP request
-     * @param Report $report Report entity
+     * @param Request $request HTTP request
+     * @param Report  $report  Report entity
      *
      * @return Response HTTP response
      */
     #[Route('/{id}/edit', name: 'report_edit', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
     public function edit(Request $request, Report $report): Response
     {
-        if(!$this->isGranted('EDIT_REPORT', $report)) {
+        if (!$this->isGranted('EDIT', $report)) {
             return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
         }
 
@@ -199,17 +183,17 @@ class ReportController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UploadedFile $file */
             $file = $form->get('file')->getData();
+
             if (null !== $file) {
                 $this->attachmentService->update($file, $report);
-            }
-            else if ($form->get('delete_file')->getData()) {
+            } elseif ($form->has('delete_file') && $form->get('delete_file')->getData()) {
                 $this->attachmentService->delete($report);
             }
             $this->reportService->save($report);
 
             $this->addFlash('success', $this->translator->trans('message.edited_successfully'));
 
-            return $this->redirectToRoute('report_index');
+            return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
         }
 
         return $this->render('report/edit.html.twig', ['form' => $form->createView(), 'report' => $report]);
@@ -218,22 +202,29 @@ class ReportController extends AbstractController
     /**
      * Delete action.
      *
-     * @param Request  $request  HTTP request
-     * @param Report $report Report entity
+     * @param Request $request HTTP request
+     * @param Report  $report  Report entity
      *
      * @return Response HTTP response
      */
     #[Route('/{id}/delete', name: 'report_delete', requirements: ['id' => '[1-9]\d*'], methods: 'GET|DELETE')]
     public function delete(Request $request, Report $report): Response
     {
-        if(!$this->isGranted('DELETE_REPORT', $report)) {
+        if (!$this->isGranted('DELETE', $report)) {
             return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
         }
 
-        $form = $this->createForm(ReportType::class, $report, [
-            'method' => 'DELETE',
-            'action' => $this->generateUrl('report_delete', ['id' => $report->getId()]),
-        ]);
+        $projects = $this->projectService->getUserProjects($report->getAuthor());
+
+        $form = $this->createForm(
+            ReportType::class,
+            $report,
+            [
+                'projects' => $projects,
+                'method' => 'DELETE',
+                'action' => $this->generateUrl('report_delete', ['id' => $report->getId()]),
+            ]
+        );
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -244,28 +235,56 @@ class ReportController extends AbstractController
             return $this->redirectToRoute('report_index');
         }
 
-        return $this->render('report/delete.html.twig', ['form' => $form->createView(), 'report' => $report,]);
+        return $this->render('report/delete.html.twig', ['form' => $form->createView(), 'report' => $report]);
     }
 
-    #[Route('/{id}/toggle_archive', name: 'report_toggle_archive', requirements: ['id' => '[1-9]\d*'], methods: 'GET|DELETE')]
-    public function toggle_archive(Request $request, Report $report): Response
+    /**
+     * Toggle report archive.
+     *
+     * @param Request $request HTTP Request
+     * @param Report  $report  Report entity
+     *
+     * @return Response HTTP Response
+     */
+    #[Route('/{id}/toggle_archive', name: 'report_toggle_archive', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
+    public function toggleArchive(Request $request, Report $report): Response
     {
-        if(!$this->isGranted('TOGGLE_ARCHIVE', $report)) {
+        if (!$this->isGranted('TOGGLE_ARCHIVE', $report)) {
             return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
         }
 
-        $this->reportService->toggle_archive($report);
+        $projects = $this->projectService->getUserProjects($report->getAuthor());
 
-        if ($report->getStatus() === ReportStatus::STATUS_ARCHIVED) {
-            $this->addFlash('success', $this->translator->trans('message.archived_successfully'));
-        }
-        else {
-            $this->addFlash('success', $this->translator->trans('message.unarchived_successfully'));
+        $form = $this->createForm(
+            ReportType::class,
+            $report,
+            [
+                'projects' => $projects,
+                'method' => 'PUT',
+                'action' => $this->generateUrl('report_toggle_archive', ['id' => $report->getId()]),
+            ]
+        );
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->reportService->toggleArchive($report);
+
+            $this->addFlash('success', $this->translator->trans('message.moved_successfully'));
+
+            return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
         }
 
-        return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
+        return $this->render('report/archive.html.twig', ['form' => $form->createView(), 'report' => $report]);
     }
 
+    /**
+     * Comment.
+     *
+     * @param Request $request HTTP Request
+     * @param Report  $report  Report entity
+     *
+     * @return Response HTTP Response
+     */
     #[Route('/{id}/comment', name: 'report_comment', requirements: ['id' => '[1-9]\d*'], methods: 'GET|POST')]
     public function comment(Request $request, Report $report): Response
     {
@@ -289,11 +308,13 @@ class ReportController extends AbstractController
             return $this->redirectToRoute('report_show', ['id' => $report->getId()]);
         }
 
-        return $this->render('report/show.html.twig',
+        return $this->render(
+            'report/show.html.twig',
             [
                 'form' => $form->createView(),
                 'report' => $report,
-                'comments'=> $this->commentService->getPaginatedList($report)
-            ]);
+                'comments' => $this->commentService->getPaginatedList($report),
+            ]
+        );
     }
 }

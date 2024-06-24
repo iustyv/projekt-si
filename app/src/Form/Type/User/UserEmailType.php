@@ -1,7 +1,7 @@
 <?php
 
 /**
- * User type.
+ * User email type.
  */
 
 namespace App\Form\Type\User;
@@ -13,13 +13,18 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class ReportType.
+ * Class UserEmailType.
  */
 class UserEmailType extends AbstractType
 {
+    /**
+     * Constructor.
+     *
+     * @param Security $security Security
+     */
     public function __construct(private readonly Security $security)
     {
     }
@@ -42,11 +47,11 @@ class UserEmailType extends AbstractType
             TextType::class,
             [
                 'label' => 'label.email',
-                'required' => true
+                'required' => true,
             ]
         );
 
-        if(!$this->security->isGranted('ROLE_ADMIN')) {
+        if (!$this->security->isGranted('ROLE_ADMIN')) {
             $builder->add(
                 'password',
                 PasswordType::class,
@@ -54,6 +59,9 @@ class UserEmailType extends AbstractType
                     'mapped' => false,
                     'label' => 'label.authenticate_password',
                     'required' => true,
+                    'constraints' => [
+                        new Assert\NotBlank(),
+                    ],
                 ]
             );
         }

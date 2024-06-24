@@ -24,7 +24,7 @@ class TagController extends AbstractController
     /**
      * Constructor.
      *
-     * @param TagServiceInterface  $tagService  Tag service interface
+     * @param TagServiceInterface $tagService Tag service interface
      * @param TranslatorInterface $translator Translator interface
      */
     public function __construct(private readonly TagServiceInterface $tagService, private readonly TranslatorInterface $translator)
@@ -50,12 +50,11 @@ class TagController extends AbstractController
      * Show action.
      *
      * @param Tag $tag Tag entity
-     * @param int    $page   Page number
      *
      * @return Response HTTP Response
      */
     #[Route('/{id}', name: 'tag_show', requirements: ['id' => '[1-9]\d*'], methods: 'GET')]
-    public function show(Tag $tag, #[MapQueryParameter] int $page = 1): Response
+    public function show(Tag $tag): Response
     {
         return $this->render('tag/show.html.twig', ['tag' => $tag]);
     }
@@ -70,10 +69,8 @@ class TagController extends AbstractController
     #[Route('/create', name: 'tag_create', methods: 'GET|POST')]
     public function create(Request $request): Response
     {
-        $user = $this->getUser();
-        if(null === $user)
-        {
-            return $this->redirectToRoute('app_login');
+        if (!$this->isGranted('CREATE_REPORT')) {
+            return $this->redirectToRoute('tag_index');
         }
 
         $tag = new Tag();
@@ -94,16 +91,15 @@ class TagController extends AbstractController
     /**
      * Edit action.
      *
-     * @param Request  $request  HTTP request
-     * @param Tag $tag Tag entity
+     * @param Request $request HTTP request
+     * @param Tag     $tag     Tag entity
      *
      * @return Response HTTP response
      */
     #[Route('/{id}/edit', name: 'tag_edit', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
     public function edit(Request $request, Tag $tag): Response
     {
-        if(!$this->isGranted('ROLE_ADMIN'))
-        {
+        if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('tag_show', ['id' => $tag->getId()]);
         }
 
@@ -131,16 +127,15 @@ class TagController extends AbstractController
     /**
      * Delete action.
      *
-     * @param Request  $request  HTTP request
-     * @param Tag $tag Tag entity
+     * @param Request $request HTTP request
+     * @param Tag     $tag     Tag entity
      *
      * @return Response HTTP response
      */
     #[Route('/{id}/delete', name: 'tag_delete', requirements: ['id' => '[1-9]\d*'], methods: 'GET|DELETE')]
     public function delete(Request $request, Tag $tag): Response
     {
-        if(!$this->isGranted('ROLE_ADMIN'))
-        {
+        if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('tag_show', ['id' => $tag->getId()]);
         }
 
@@ -158,6 +153,6 @@ class TagController extends AbstractController
             return $this->redirectToRoute('tag_index');
         }
 
-        return $this->render('tag/delete.html.twig', ['form' => $form->createView(), 'tag' => $tag,]);
+        return $this->render('tag/delete.html.twig', ['form' => $form->createView(), 'tag' => $tag]);
     }
 }

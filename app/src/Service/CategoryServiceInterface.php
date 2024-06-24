@@ -16,7 +16,7 @@ interface CategoryServiceInterface
     /**
      * Get paginated list.
      *
-     * @param int    $page   Page number
+     * @param int $page Page number
      *
      * @return PaginationInterface<string, mixed> Paginated list
      */
@@ -26,9 +26,7 @@ interface CategoryServiceInterface
      * Get paginated list of reports.
      *
      * @param Category $category Category entity
-     * @param int|null $page Page number
-     *
-     * @return PaginationInterface
+     * @param int|null $page     Page number
      */
     public function getPaginatedListOfReports(Category $category, ?int $page = 1): PaginationInterface;
 
@@ -36,8 +34,6 @@ interface CategoryServiceInterface
      * Save entity.
      *
      * @param Category $category Category entity
-     *
-     * @return void
      */
     public function save(Category $category): void;
 
@@ -45,8 +41,6 @@ interface CategoryServiceInterface
      * Delete entity.
      *
      * @param Category $category Category entity
-     *
-     * @return void
      */
     public function delete(Category $category): void;
 

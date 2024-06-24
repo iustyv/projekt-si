@@ -1,13 +1,19 @@
 <?php
+/**
+ * User service interface.
+ */
 
 namespace App\Service;
 
 use App\Entity\User;
 use Knp\Component\Pager\Pagination\PaginationInterface;
+use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Interface UserServiceInterface.
+ */
 interface UserServiceInterface
 {
-
     /**
      * Get paginated list.
      *
@@ -45,9 +51,10 @@ interface UserServiceInterface
     /**
      * Delete entity.
      *
-     * @param User $user User entity
+     * @param User    $user    User entity
+     * @param Request $request HTTP Request
      */
-    public function delete(User $user): void;
+    public function delete(User $user, Request $request): void;
 
     /**
      * Checks if admin can be deleted.
@@ -68,13 +75,29 @@ interface UserServiceInterface
     /**
      * Find user by username.
      *
-     * @param string $username
-     *
-     * @return User|null
+     * @param string $username Username
      */
     public function findOneByUsername(string $username): ?User;
 
+    /**
+     * Add role.
+     *
+     * @param User   $user User entity
+     * @param string $role Role
+     */
     public function addRole(User $user, string $role): void;
 
+    /**
+     * Toggle block.
+     *
+     * @param User $user user entity
+     */
     public function toggleBlock(User $user): void;
+
+    /**
+     * Refresh user token.
+     *
+     * @param User $user user entity
+     */
+    public function refreshUserToken(User $user): void;
 }

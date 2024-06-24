@@ -8,7 +8,6 @@ namespace App\DataFixtures;
 use App\Entity\Enum\UserRole;
 use App\Entity\Project;
 use App\Entity\User;
-use App\Service\UserServiceInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
 /**
@@ -21,7 +20,7 @@ class ProjectFixtures extends AbstractBaseFixtures implements DependentFixtureIn
      */
     public function loadData(): void
     {
-        if (null === $this->manager || null === $this->faker) {
+        if (!$this->manager instanceof \Doctrine\Persistence\ObjectManager || !$this->faker instanceof \Faker\Generator) {
             return;
         }
 
@@ -45,7 +44,7 @@ class ProjectFixtures extends AbstractBaseFixtures implements DependentFixtureIn
             $project->addMember($manager);
 
             $tagNum = $this->faker->numberBetween(1, 10);
-            for($j = 0; $j < $tagNum; ++$j) {
+            for ($j = 0; $j < $tagNum; ++$j) {
                 /** @var User $member User entity */
                 $member = $this->getRandomReference('users');
                 $project->addMember($member);

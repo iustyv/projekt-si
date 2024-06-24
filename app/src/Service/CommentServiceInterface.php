@@ -29,19 +29,20 @@ interface CommentServiceInterface
      * Save entity.
      *
      * @param Comment $comment Comment entity
-     * @param Report  $report  Report entity
-     *
      */
     public function save(Comment $comment): void;
 
+    /**
+     * Delete entity.
+     *
+     * @param Comment $comment Comment entity
+     */
     public function delete(Comment $comment): void;
 
     /**
      * Delete comments by report.
      *
      * @param Report $report Report entity
-     *
-     * @return void
      */
     public function deleteByReport(Report $report): void;
 
@@ -49,8 +50,6 @@ interface CommentServiceInterface
      * Delete comments by author.
      *
      * @param User $author User entity
-     *
-     * @return void
      */
     public function deleteByAuthor(User $author): void;
 }

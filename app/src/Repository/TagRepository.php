@@ -8,6 +8,8 @@ namespace App\Repository;
 use App\Entity\Tag;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -18,7 +20,6 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class TagRepository extends ServiceEntityRepository
 {
-
     /**
      * Constructor.
      *
@@ -42,11 +43,11 @@ class TagRepository extends ServiceEntityRepository
     /**
      * Find tag by title.
      *
-     * @param string $title
+     * @param string $title Title
      *
-     * @return Tag|null
+     * @return Tag|null Tag entity
      *
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function findOneByTitle(string $title): ?Tag
     {
@@ -60,11 +61,11 @@ class TagRepository extends ServiceEntityRepository
     /**
      * Find tag by id.
      *
-     * @param int $id
+     * @param int $id Id
      *
-     * @return Tag|null
+     * @return Tag|null Tag entity
      *
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function findOneById(int $id): ?Tag
     {
@@ -79,6 +80,8 @@ class TagRepository extends ServiceEntityRepository
      * Save entity.
      *
      * @param Tag $tag Tag entity
+     *
+     * @throws ORMException
      */
     public function save(Tag $tag): void
     {
@@ -91,6 +94,8 @@ class TagRepository extends ServiceEntityRepository
      * Delete entity.
      *
      * @param Tag $tag Tag entity
+     *
+     * @throws ORMException
      */
     public function delete(Tag $tag): void
     {

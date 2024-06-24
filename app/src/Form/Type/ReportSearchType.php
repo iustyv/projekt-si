@@ -1,6 +1,6 @@
 <?php
 /**
- * ReportSearch type.
+ * Report search type.
  */
 
 namespace App\Form\Type;
@@ -16,10 +16,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ReportSearchType extends AbstractType
 {
-    public function __construct()
-    {
-    }
-
     /**
      * Builds the form.
      *
@@ -39,11 +35,12 @@ class ReportSearchType extends AbstractType
             [
                 'label' => false,
                 'required' => false,
-                'attr' => ['placeholder' => 'label.search'],
+                'attr' => ['placeholder' => 'label.type_query'],
                 'constraints' => [
                     new Assert\Length(['max' => 64]),
-                ]
-            ]);
+                ],
+            ]
+        );
     }
 
     /**

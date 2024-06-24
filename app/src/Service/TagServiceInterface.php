@@ -1,16 +1,22 @@
 <?php
+/**
+ * Tag service interface.
+ */
 
 namespace App\Service;
 
 use App\Entity\Tag;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 
+/**
+ * Interface TagServiceInterface.
+ */
 interface TagServiceInterface
 {
     /**
      * Get paginated list.
      *
-     * @param int|null $page   Page number
+     * @param int|null $page Page number
      *
      * @return PaginationInterface<string, mixed> Paginated list
      */
@@ -35,7 +41,7 @@ interface TagServiceInterface
     /**
      * Delete entity.
      *
-     * @param Tag $tag
+     * @param Tag $tag Tag entity
      */
     public function delete(Tag $tag): void;
 }

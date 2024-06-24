@@ -13,7 +13,6 @@ use App\Entity\User;
 use App\Repository\ReportRepository;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * Class ReportService.
@@ -34,8 +33,12 @@ class ReportService implements ReportServiceInterface
     /**
      * Constructor.
      *
-     * @param ReportRepository   $reportRepository Report repository
-     * @param PaginatorInterface $paginator        Paginator
+     * @param ReportRepository         $reportRepository Report repository
+     * @param PaginatorInterface       $paginator        Paginator interface
+     * @param CategoryServiceInterface $categoryService  Category service interface
+     * @param TagServiceInterface      $tagService       Tag service interface
+     * @param ProjectServiceInterface  $projectService   Project service interface
+     * @param CommentServiceInterface  $commentService   Comment service interface
      */
     public function __construct(private readonly ReportRepository $reportRepository, private readonly PaginatorInterface $paginator, private readonly CategoryServiceInterface $categoryService, private readonly TagServiceInterface $tagService, private readonly ProjectServiceInterface $projectService, private readonly CommentServiceInterface $commentService)
     {
@@ -44,7 +47,9 @@ class ReportService implements ReportServiceInterface
     /**
      * Get paginated list.
      *
-     * @param int|null $page Page number
+     * @param User|null                 $user    User entity
+     * @param ReportListInputFiltersDto $filters Raw filters from request
+     * @param int|null                  $page    Page number
      *
      * @return PaginationInterface<string, mixed> Paginated list
      */
@@ -73,7 +78,7 @@ class ReportService implements ReportServiceInterface
     /**
      * Delete entity.
      *
-     * @param Report $report
+     * @param Report $report Report entity
      */
     public function delete(Report $report): void
     {
@@ -81,6 +86,11 @@ class ReportService implements ReportServiceInterface
         $this->reportRepository->delete($report);
     }
 
+    /**
+     * Delete reports by one user.
+     *
+     * @param User $user User entity
+     */
     public function deleteByAuthor(User $user): void
     {
         $reports = $this->reportRepository->findBy(['author' => $user]);
@@ -92,11 +102,11 @@ class ReportService implements ReportServiceInterface
     /**
      * Archive report.
      *
-     * @param Report $report
+     * @param Report $report Report entity
      */
-    public function toggle_archive(Report $report): void
+    public function toggleArchive(Report $report): void
     {
-        $status = $report->getStatus() === ReportStatus::STATUS_ARCHIVED ? ReportStatus::STATUS_COMPLETED : ReportStatus::STATUS_ARCHIVED;
+        $status = ReportStatus::STATUS_ARCHIVED === $report->getStatus() ? ReportStatus::STATUS_COMPLETED : ReportStatus::STATUS_ARCHIVED;
         $report->setStatus($status);
         $this->save($report);
     }

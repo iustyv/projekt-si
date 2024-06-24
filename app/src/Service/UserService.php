@@ -9,13 +9,15 @@ use App\Entity\Enum\UserRole;
 use App\Entity\User;
 use App\Repository\ProjectRepository;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 /**
  * Class UserService.
@@ -25,9 +27,16 @@ class UserService implements UserServiceInterface
     /**
      * Constructor.
      *
-     * @param UserRepository $userRepository User repository
+     * @param UserRepository          $userRepository    User repository
+     * @param PaginatorInterface      $paginator         Paginatory interface
+     * @param Security                $security          Security
+     * @param ReportServiceInterface  $reportService     Report service interface
+     * @param ProjectRepository       $projectRepository Project repository
+     * @param CommentServiceInterface $commentService    Comment service interface
+     * @param TokenStorageInterface   $tokenStorage      Token storage interface
+     * @param UserProviderInterface   $userProvider      User provider interface
      */
-    public function __construct(private readonly UserRepository $userRepository, private readonly PaginatorInterface $paginator, private readonly Security $security, private readonly ReportServiceInterface $reportService, private readonly ProjectRepository $projectRepository, private readonly CommentServiceInterface $commentService)
+    public function __construct(private readonly UserRepository $userRepository, private readonly PaginatorInterface $paginator, private readonly Security $security, private readonly ReportServiceInterface $reportService, private readonly ProjectRepository $projectRepository, private readonly CommentServiceInterface $commentService, private readonly TokenStorageInterface $tokenStorage, private readonly UserProviderInterface $userProvider)
     {
     }
 
@@ -76,7 +85,7 @@ class UserService implements UserServiceInterface
         try {
             $result = $this->projectRepository->countByManager($user);
 
-            return !($result > 0);
+            return $result <= 0;
         } catch (NoResultException|NonUniqueResultException) {
             return false;
         }
@@ -91,16 +100,22 @@ class UserService implements UserServiceInterface
      */
     public function isSignedIn(User $user): bool
     {
-        return ($user->getId() === $this->security->getUser()->getId());
+        return $user->getId() === $this->security->getUser()->getId();
     }
 
     /**
      * Delete entity.
      *
-     * @param User $user User entity
+     * @param User    $user    User entity
+     * @param Request $request HTTP Response
      */
-    public function delete(User $user): void
+    public function delete(User $user, Request $request): void
     {
+        if ($this->isSignedIn($user)) {
+            $this->tokenStorage->setToken(null);
+            $request->getSession()->invalidate();
+        }
+
         $this->commentService->deleteByAuthor($user);
         $this->reportService->deleteByAuthor($user);
         $this->userRepository->delete($user);
@@ -122,25 +137,55 @@ class UserService implements UserServiceInterface
      *
      * @param User $user User entity
      *
-     * @returns bool result
+     * @return bool result
      */
     public function adminCanBeDeleted(User $user): bool
     {
-        return ($user !== $this->security->getUser());
+        return $user !== $this->security->getUser();
     }
 
+    /**
+     * Find user by username.
+     *
+     * @param string $username Username
+     *
+     * @return User|null User entity
+     */
     public function findOneByUsername(string $username): ?User
     {
         return $this->userRepository->findOneByUsername($username);
     }
 
+    /**
+     * Add role.
+     *
+     * @param User   $user User entity
+     * @param string $role Role
+     */
     public function addRole(User $user, string $role): void
     {
         $user->addRole($role);
     }
 
+    /**
+     * Toggle block.
+     *
+     * @param User $user user entity
+     */
     public function toggleBlock(User $user): void
     {
         $user->setIsBlocked(!$user->isBlocked());
+    }
+
+    /**
+     * Refresh user token.
+     *
+     * @param User $user user entity
+     */
+    public function refreshUserToken(User $user): void
+    {
+        $this->userProvider->refreshUser($user);
+        $token = new UsernamePasswordToken($user, 'main', $user->getRoles());
+        $this->tokenStorage->setToken($token);
     }
 }

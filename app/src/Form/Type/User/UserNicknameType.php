@@ -1,7 +1,7 @@
 <?php
 
 /**
- * User type.
+ * User nickname type.
  */
 
 namespace App\Form\Type\User;
@@ -14,12 +14,19 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class ReportType.
+ * Class UserNicknameType.
  */
 class UserNicknameType extends AbstractType
 {
+    /**
+     * Constructor.
+     *
+     * @param TranslatorInterface $translator Translator interface
+     * @param Security            $security   Security
+     */
     public function __construct(private readonly TranslatorInterface $translator, private readonly Security $security)
     {
     }
@@ -38,15 +45,15 @@ class UserNicknameType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add(
-                'nickname',
-                TextType::class,
-                [
-                    'label' => 'label.nickname',
-                    'required' => true
-                ]
-            );
+            'nickname',
+            TextType::class,
+            [
+                'label' => 'label.nickname',
+                'required' => true,
+            ]
+        );
 
-        if(!$this->security->isGranted('ROLE_ADMIN')) {
+        if (!$this->security->isGranted('ROLE_ADMIN')) {
             $builder->add(
                 'password',
                 PasswordType::class,
@@ -54,6 +61,9 @@ class UserNicknameType extends AbstractType
                     'mapped' => false,
                     'label' => 'label.authenticate_password',
                     'required' => true,
+                    'constraints' => [
+                        new Assert\NotBlank(),
+                    ],
                 ]
             );
         }

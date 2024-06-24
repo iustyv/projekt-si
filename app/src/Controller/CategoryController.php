@@ -1,6 +1,6 @@
 <?php
 /**
- * Category Controller.
+ * Category controller.
  */
 
 namespace App\Controller;
@@ -24,7 +24,8 @@ class CategoryController extends AbstractController
     /**
      * Constructor.
      *
-     * @param CategoryServiceInterface  $categoryService  Category service interface
+     * @param CategoryServiceInterface $categoryService Category service interface
+     * @param TranslatorInterface      $translator      Translator interface
      */
     public function __construct(private readonly CategoryServiceInterface $categoryService, private readonly TranslatorInterface $translator)
     {
@@ -48,12 +49,12 @@ class CategoryController extends AbstractController
     /**
      * Show action.
      *
-     * @param Category $category Category entity
+     * @param Category|null $category Category entity
      *
      * @return Response HTTP Response
      */
     #[Route('/{id}', name: 'category_show', requirements: ['id' => '[1-9]\d*'], methods: 'GET')]
-    public function show(Category $category): Response
+    public function show(?Category $category): Response
     {
         return $this->render('category/show.html.twig', ['category' => $category]);
     }
@@ -68,10 +69,8 @@ class CategoryController extends AbstractController
     #[Route('/create', name: 'category_create', methods: 'GET|POST')]
     public function create(Request $request): Response
     {
-        $user = $this->getUser();
-        if(null === $user)
-        {
-            return $this->redirectToRoute('app_login');
+        if (!$this->isGranted('CREATE_REPORT')) {
+            return $this->redirectToRoute('category_index');
         }
 
         $category = new Category();
@@ -100,8 +99,7 @@ class CategoryController extends AbstractController
     #[Route('/{id}/edit', name: 'category_edit', requirements: ['id' => '[1-9]\d*'], methods: 'GET|PUT')]
     public function edit(Request $request, Category $category): Response
     {
-        if(!$this->isGranted('ROLE_ADMIN'))
-        {
+        if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('category_show', ['id' => $category->getId()]);
         }
 
@@ -137,18 +135,16 @@ class CategoryController extends AbstractController
     #[Route('/{id}/delete', name: 'category_delete', requirements: ['id' => '[1-9]\d*'], methods: 'GET|DELETE')]
     public function delete(Request $request, Category $category): Response
     {
-        if(!$this->isGranted('ROLE_ADMIN'))
-        {
+        if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('category_show', ['id' => $category->getId()]);
         }
 
-        if(!$this->categoryService->canBeDeleted($category)) {
+        if (!$this->categoryService->canBeDeleted($category)) {
             $this->addFlash(
                 'warning',
                 $this->translator->trans('message.category_contains_tasks')
             );
 
-            //return $this->redirectToRoute('category_index');
             return $this->redirectToRoute('category_show', ['id' => $category->getId()]);
         }
 
@@ -166,6 +162,6 @@ class CategoryController extends AbstractController
             return $this->redirectToRoute('category_index');
         }
 
-        return $this->render('category/delete.html.twig', ['form' => $form->createView(), 'category' => $category,]);
+        return $this->render('category/delete.html.twig', ['form' => $form->createView(), 'category' => $category]);
     }
 }

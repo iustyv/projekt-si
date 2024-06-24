@@ -6,19 +6,25 @@
 namespace App\Form\Type;
 
 use App\Entity\Tag;
-use App\Repository\CategoryRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class TagType.
  */
 class TagType extends AbstractType
 {
+    /**
+     * Constructor.
+     *
+     * @param TranslatorInterface $translator Translator interface
+     */
     public function __construct(private readonly TranslatorInterface $translator)
     {
     }
@@ -42,8 +48,18 @@ class TagType extends AbstractType
             [
                 'label' => 'label.title',
                 'required' => true,
-                'attr' => ['max_length' => 64]
-            ]);
+                'attr' => ['max_length' => 64],
+            ]
+        );
+
+        $builder->get('title')->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
+            $titleFormField = $event->getForm();
+            $titleFieldValue = $event->getData();
+
+            if (!empty($titleFieldValue) && !preg_match_all('/^[a-zA-Z0-9]+$/', $titleFieldValue)) {
+                $titleFormField->addError(new FormError($this->translator->trans('message.field_alphanum')));
+            }
+        });
     }
 
     /**

@@ -19,10 +19,10 @@ class AttachmentService implements AttachmentServiceInterface
     /**
      * Constructor.
      *
-     * @param string $targetDirectory Target directory
-     * @param AttachmentRepository           $attachmentRepository  Attachment repository
-     * @param FileUploadServiceInterface $fileUploadService File upload service
-     * @param Filesystem $filesystem Filesystem
+     * @param string                     $targetDirectory      Target directory
+     * @param AttachmentRepository       $attachmentRepository Attachment repository
+     * @param FileUploadServiceInterface $fileUploadService    File upload service
+     * @param Filesystem                 $filesystem           Filesystem
      */
     public function __construct(private readonly string $targetDirectory, private readonly AttachmentRepository $attachmentRepository, private readonly FileUploadServiceInterface $fileUploadService, private readonly Filesystem $filesystem)
     {
@@ -31,21 +31,14 @@ class AttachmentService implements AttachmentServiceInterface
     /**
      * Create attachment.
      *
-     * @param UploadedFile  $uploadedFile Uploaded file
-     * @param Report $report         Report entity
-     *
-     * @return void
+     * @param UploadedFile $uploadedFile Uploaded file
+     * @param Report       $report       Report entity
      */
     public function create(UploadedFile $uploadedFile, Report $report): void
     {
         $attachmentFilename = $this->fileUploadService->upload($uploadedFile);
 
-        if ($report->getAttachment() === null) {
-            $attachment = new Attachment();
-        }
-        else {
-            $attachment = $report->getAttachment();
-        }
+        $attachment = $report->getAttachment() ?? new Attachment();
 
         $attachment->setFilename($attachmentFilename);
         $report->setAttachment($attachment);
@@ -57,14 +50,11 @@ class AttachmentService implements AttachmentServiceInterface
      * Update attachment.
      *
      * @param UploadedFile $uploadedFile Uploaded file
-     * @param Report $report Report entity
-     *
-     * @return void
+     * @param Report       $report       Report entity
      */
     public function update(UploadedFile $uploadedFile, Report $report): void
     {
-        if ($report->getAttachment() !== null)
-        {
+        if ($report->getAttachment() instanceof Attachment) {
             $filename = $report->getAttachment()->getFilename();
             $this->filesystem->remove(
                 $this->targetDirectory.'/'.$filename
@@ -77,19 +67,18 @@ class AttachmentService implements AttachmentServiceInterface
      * Delete attachment.
      *
      * @param Report $report Report entity
-     *
-     * @return void
      */
     public function delete(Report $report): void
     {
         $attachment = $report->getAttachment();
-        if ($attachment === null) return;
+        if (!$attachment instanceof Attachment) {
+            return;
+        }
         $filename = $attachment->getFilename();
         $this->filesystem->remove(
             $this->targetDirectory.'/'.$filename
         );
         $report->setAttachment(null);
         $this->attachmentRepository->delete($attachment);
-
     }
 }

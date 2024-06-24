@@ -1,10 +1,14 @@
 <?php
+/**
+ * User entity.
+ */
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
 use App\Entity\Enum\UserRole;
+use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -14,13 +18,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'users')]
+#[UniqueEntity('email')]
+#[UniqueEntity('nickname')]
 #[ORM\UniqueConstraint(name: 'email_idx', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * Primary key.
-     *
-     * @var int|null
      */
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -29,12 +33,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * Email.
-     *
-     * @var string|null
      */
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     #[Assert\NotBlank]
     #[Assert\Email]
+    #[Assert\Length(max: 180)]
     private ?string $email = null;
 
     #[ORM\Column(type: 'string', length: 40, unique: true)]
@@ -54,17 +57,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * Password.
-     *
-     * @var string|null
      */
     #[ORM\Column(type: 'string')]
     #[Assert\NotBlank]
+    #[Assert\Type('string')]
+    #[Assert\Length(min: 8, max: 64)]
     private ?string $password = null;
 
     /**
      * IsBlocked.
-     *
-     * @var boolean
      */
     #[ORM\Column(type: 'boolean')]
     private bool $isBlocked = false;
@@ -167,13 +168,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->roles = $roles;
     }
 
+    /**
+     * Add role.
+     *
+     * @param string $role Role
+     */
     public function addRole(string $role): void
     {
-        if (!in_array($role, $this->roles, true)){
+        if (!in_array($role, $this->roles, true)) {
             $this->roles[] = $role;
         }
     }
 
+    /**
+     * Checks if user has a role.
+     *
+     * @param string $role Role
+     *
+     * @return bool Result
+     */
     public function hasRole(string $role): bool
     {
         return in_array($role, $this->roles, true);
@@ -204,7 +217,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * Getter for isBlocked.
      *
-     * @return bool
+     * @return bool Result
      */
     public function isBlocked(): bool
     {
@@ -214,7 +227,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * Setter for isBlocked.
      *
-     * @param bool $isBlocked
+     * @param bool $isBlocked Value to set isBlocked to
      */
     public function setIsBlocked(bool $isBlocked): void
     {
