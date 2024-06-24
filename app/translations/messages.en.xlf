@@ -54,6 +54,14 @@
         <source>label.tags</source>
         <target>Tags</target>
       </trans-unit>
+      <trans-unit id="label.author">
+        <source>label.author</source>
+        <target>Author</target>
+      </trans-unit>
+      <trans-unit id="label.users">
+        <source>label.users</source>
+        <target>Users</target>
+      </trans-unit>
       <trans-unit id="message.empty_list">
         <source>message.empty_list</source>
         <target>List is empty.</target>
@@ -62,17 +70,345 @@
         <source>message.report_not_found</source>
         <target>Report not found.</target>
       </trans-unit>
+      <trans-unit id="message.field_alphanum">
+        <source>message.field_alphanum</source>
+        <target>Tag must consist of alphanumeric characters.</target>
+      </trans-unit>
+      <trans-unit id="message.fill_out_required">
+        <source>message.fill_out_required</source>
+        <target>Fields marked with * are required.</target>
+      </trans-unit>
+      <trans-unit id="message.tag_invalid_format">
+        <source>message.tag_invalid_format</source>
+        <target>Tags should consist of alphanumeric characters and be divided by a comma.</target>
+      </trans-unit>
+      <trans-unit id="message.created_successfully">
+        <source>message.created_successfully</source>
+        <target>Created successfully.</target>
+      </trans-unit>
+      <trans-unit id="message.edited_successfully">
+        <source>message.edited_successfully</source>
+        <target>Edited successfully.</target>
+      </trans-unit>
+      <trans-unit id="message.deleted_successfully">
+        <source>message.deleted_successfully</source>
+        <target>Deleted successfully.</target>
+      </trans-unit>
+      <trans-unit id="message.archived_successfully">
+        <source>message.archived_successfully</source>
+        <target>Archived successfully.</target>
+      </trans-unit>
+      <trans-unit id="message.unarchived_successfully">
+        <source>message.unarchived_successfully</source>
+        <target>Restored from archive successfully.</target>
+      </trans-unit>
+      <trans-unit id="message.cannot_remove_admin">
+        <source>message.cannot_remove_admin</source>
+        <target>Admin cannot be removed.</target>
+      </trans-unit>
+      <trans-unit id="message.members_invalid_format">
+        <source>message.members_invalid_format</source>
+        <target>Members should consist of alphanumeric characters and be divided be a comma.</target>
+      </trans-unit>
+      <trans-unit id="message.category_contains_tasks">
+        <source>message.category_contains_tasks</source>
+        <target>Category contains tasks.</target>
+      </trans-unit>
+      <trans-unit id="message.project_not_found">
+        <source>message.project_not_found</source>
+        <target>Project not found.</target>
+      </trans-unit>
+      <trans-unit id="message.tag_not_found">
+        <source>message.tag_not_found</source>
+        <target>Tag not found.</target>
+      </trans-unit>
+      <trans-unit id="message.category_not_found">
+        <source>message.category_not_found</source>
+        <target>Category not found.</target>
+      </trans-unit>
+      <trans-unit id="message.user_manages_projects">
+        <source>message.user_manages_projects</source>
+        <target>User is a project manager.</target>
+      </trans-unit>
+      <trans-unit id="message.cannot_assign_on_empty_project">
+        <source>message.cannot_assign_on_empty_project</source>
+        <target>In order to assign a solver, you have to assign report to a project.</target>
+      </trans-unit>
+      <trans-unit id="message.user_is_not_member">
+        <source>message.user_is_not_member</source>
+        <target>User is not a member of this project.</target>
+      </trans-unit>
+      <trans-unit id="message.invalid_password">
+        <source>message.invalid_password</source>
+        <target>Invalid password.</target>
+      </trans-unit>
+      <trans-unit id="message.error_password">
+        <source>message.error_password</source>
+        <target>Incorrect current password.</target>
+      </trans-unit>
+      <trans-unit id="message.changed_successfully">
+        <source>message.changed_successfully</source>
+        <target>Changed successfully.</target>
+      </trans-unit>
+      <trans-unit id="message.user_deleted_successfully">
+        <source>message.user_deleted_successfully</source>
+        <target>User has been deleted successfully.</target>
+      </trans-unit>
+      <trans-unit id="message.no_comments">
+        <source>message.no_comments</source>
+        <target>No comments.</target>
+      </trans-unit>
+      <trans-unit id="message.record_not_found">
+        <source>message.record_not_found</source>
+        <target>Record not found.</target>
+      </trans-unit>
+      <trans-unit id="message.assigned_to_invalid_format">
+        <source>message.assigned_to_invalid_format</source>
+        <target>Field cannot contain any special characters.</target>
+      </trans-unit>
+      <trans-unit id="message.form_error">
+        <source>message.form_error</source>
+        <target>Form error.</target>
+      </trans-unit>
+      <trans-unit id="message.moved_successfully">
+        <source>message.moved_successfully</source>
+        <target>Moved successfully.</target>
+      </trans-unit>
+      <trans-unit id="message.user_does_not_exist">
+        <source>message.user_does_not_exist</source>
+        <target>User does not exist.</target>
+      </trans-unit>
+      <trans-unit id="label.my_accout">
+        <source>label.my_account</source>
+        <target>My account</target>
+      </trans-unit>
+      <trans-unit id="label.nickname">
+        <source>label.nickname</source>
+        <target>Username</target>
+      </trans-unit>
+      <trans-unit id="label.email">
+        <source>label.email</source>
+        <target>Email</target>
+      </trans-unit>
+      <trans-unit id="label.edit_nick">
+        <source>label.edit_nick</source>
+        <target>Change username</target>
+      </trans-unit>
+      <trans-unit id="label.edit_pass">
+        <source>label.edit_pass</source>
+        <target>Change password</target>
+      </trans-unit>
+      <trans-unit id="label.new_password">
+        <source>label.new_password</source>
+        <target>New password</target>
+      </trans-unit>
+      <trans-unit id="label.repeat_password">
+        <source>label.repeat_password</source>
+        <target>Repeat password</target>
+      </trans-unit>
+      <trans-unit id="label.authenticate_password">
+        <source>label.authenticate_password</source>
+        <target>Current password</target>
+      </trans-unit>
+      <trans-unit id="label.project">
+        <source>label.project</source>
+        <target>Project</target>
+      </trans-unit>
+      <trans-unit id="label.projects">
+        <source>label.projects</source>
+        <target>Projects</target>
+      </trans-unit>
+      <trans-unit id="label.status">
+        <source>label.status</source>
+        <target>Status</target>
+      </trans-unit>
+      <trans-unit id="label.pending">
+        <source>label.pending</source>
+        <target>Pending</target>
+      </trans-unit>
+      <trans-unit id="label.in_progress">
+        <source>label.in_progress</source>
+        <target>In progress</target>
+      </trans-unit>
+      <trans-unit id="label.completed">
+        <source>label.completed</source>
+        <target>Completed</target>
+      </trans-unit>
+      <trans-unit id="label.manage_account %username%">
+        <source>label.manage_account %username%</source>
+        <target>Manage %username%'s account </target>
+      </trans-unit>
+      <trans-unit id="label.account %username%">
+        <source>label.account %username%</source>
+        <target>%username%'s account</target>
+      </trans-unit>
+      <trans-unit id="label.archived">
+        <source>label.archived</source>
+        <target>Archived</target>
+      </trans-unit>
+      <trans-unit id="label.manage_account">
+        <source>label.manage_account</source>
+        <target>Manage account</target>
+      </trans-unit>
+      <trans-unit id="label.project_manager">
+        <source>label.project_manager</source>
+        <target>Project manager</target>
+      </trans-unit>
+      <trans-unit id="label.member">
+        <source>label.member</source>
+        <target>Member</target>
+      </trans-unit>
+      <trans-unit id="label.attachment">
+        <source>label.attachment</source>
+        <target>Attachment</target>
+      </trans-unit>
+      <trans-unit id="label.assigned_to">
+        <source>label.assigned_to</source>
+        <target>Solver</target>
+      </trans-unit>
+      <trans-unit id="label.choose_assigned_to">
+        <source>label.choose_assigned_to</source>
+        <target>Solver username</target>
+      </trans-unit>
+      <trans-unit id="label.choose_project">
+        <source>label.choose_project</source>
+        <target>Choose project</target>
+      </trans-unit>
+      <trans-unit id="label.choose_category">
+        <source>label.choose_category</source>
+        <target>Choose category</target>
+      </trans-unit>
+      <trans-unit id="label.remember_me">
+        <source>label.remember_me</source>
+        <target>Remember me</target>
+      </trans-unit>
+      <trans-unit id="label.password">
+        <source>label.password</source>
+        <target>Password</target>
+      </trans-unit>
+      <trans-unit id="label.dont_have_an_account">
+        <source>label.dont_have_an_account</source>
+        <target>Don't have an account?</target>
+      </trans-unit>
+      <trans-unit id="label.assigned_to_my_projects">
+        <source>label.assigned_to_my_projects</source>
+        <target>Assigned to my projects</target>
+      </trans-unit>
+      <trans-unit id="label.unassigned">
+        <source>label.unassigned</source>
+        <target>Unassigned</target>
+      </trans-unit>
+      <trans-unit id="label.assigned_to_other_projects">
+        <source>label.assigned_to_other_projects</source>
+        <target>Assigned to other projects</target>
+      </trans-unit>
+      <trans-unit id="label.type_query">
+        <source>label.type_query</source>
+        <target>Enter search term</target>
+      </trans-unit>
+      <trans-unit id="label.details">
+        <source>label.details</source>
+        <target>Details</target>
+      </trans-unit>
+      <trans-unit id="label.category_name">
+        <source>label.category_name</source>
+        <target>Name</target>
+      </trans-unit>
+      <trans-unit id="label.members">
+        <source>label.members</source>
+        <target>Members</target>
+      </trans-unit>
+      <trans-unit id="label.project_name">
+        <source>label.project_name</source>
+        <target>Project name</target>
+      </trans-unit>
       <trans-unit id="title.report_list">
         <source>title.report_list</source>
         <target>Report list</target>
       </trans-unit>
       <trans-unit id="title.report_view">
         <source>title.report_view</source>
-        <target>Report view #%id%</target>
+        <target>Report #%id%</target>
+      </trans-unit>
+      <trans-unit id="title.category_create">
+        <source>title.category_create</source>
+        <target>Create category</target>
+      </trans-unit>
+      <trans-unit id="title.category_edit">
+        <source>title.category_edit</source>
+        <target>Edit category</target>
+      </trans-unit>
+      <trans-unit id="title.tag_create">
+        <source>title.tag_create</source>
+        <target>Create tag</target>
+      </trans-unit>
+      <trans-unit id="title.tag_edit">
+        <source>title.tag_edit</source>
+        <target>Edit tag</target>
+      </trans-unit>
+      <trans-unit id="title.tag_delete">
+        <source>title.tag_delete</source>
+        <target>Delete tag</target>
+      </trans-unit>
+      <trans-unit id="title.report_edit">
+        <source>title.report_edit</source>
+        <target>Edit report</target>
+      </trans-unit>
+      <trans-unit id="title.report_create">
+        <source>title.report_create</source>
+        <target>Create report</target>
+      </trans-unit>
+      <trans-unit id="title.report_delete">
+        <source>title.report_delete</source>
+        <target>Delete report</target>
+      </trans-unit>
+      <trans-unit id="title.category_delete">
+        <source>title.category_delete</source>
+        <target>Delete category</target>
+      </trans-unit>
+      <trans-unit id="title.user_create">
+        <source>title.user_create</source>
+        <target>Create user</target>
+      </trans-unit>
+      <trans-unit id="title.archive">
+        <source>title.archive</source>
+        <target>Archive</target>
+      </trans-unit>
+      <trans-unit id="title.project">
+        <source>title.project</source>
+        <target>Project</target>
+      </trans-unit>
+      <trans-unit id="title.project_view">
+        <source>title.project_view</source>
+        <target>Project #%id%</target>
+      </trans-unit>
+      <trans-unit id="title.category_view">
+        <source>title.category_view</source>
+        <target>Category #%id%</target>
+      </trans-unit>
+      <trans-unit id="title.tag_view">
+        <source>title.tag_view</source>
+        <target>Tag #%id%</target>
+      </trans-unit>
+      <trans-unit id="title.user_view">
+        <source>title.user_view</source>
+        <target>User #%id%</target>
+      </trans-unit>
+      <trans-unit id="title.edit_project">
+        <source>title.edit_project</source>
+        <target>Edit project</target>
       </trans-unit>
       <trans-unit id="action.view">
         <source>action.view</source>
         <target>View</target>
+      </trans-unit>
+      <trans-unit id="action.edit_name">
+        <source>action.edit_name</source>
+        <target>Edit name</target>
+      </trans-unit>
+      <trans-unit id="action.edit_project_manager">
+        <source>action.edit_project_manager</source>
+        <target>Change project manager</target>
       </trans-unit>
       <trans-unit id="action.create">
         <source>action.create</source>
@@ -81,6 +417,10 @@
       <trans-unit id="action.edit">
         <source>action.edit</source>
         <target>Edit</target>
+      </trans-unit>
+      <trans-unit id="action.edit_pass">
+        <source>action.edit_pass</source>
+        <target>Change password</target>
       </trans-unit>
       <trans-unit id="action.delete">
         <source>action.delete</source>
@@ -97,6 +437,126 @@
       <trans-unit id="action.back_to_list">
         <source>action.back_to_list</source>
         <target>Back to list</target>
+      </trans-unit>
+      <trans-unit id="action.logout">
+        <source>action.logout</source>
+        <target>Sign out</target>
+      </trans-unit>
+      <trans-unit id="action.login">
+        <source>action.login</source>
+        <target>Sign in</target>
+      </trans-unit>
+      <trans-unit id="action.category_report_list">
+        <source>action.category_report_list</source>
+        <target>Reports from this category</target>
+      </trans-unit>
+      <trans-unit id="action.tag_report_list">
+        <source>action.tag_report_list</source>
+        <target>Reports with this tag</target>
+      </trans-unit>
+      <trans-unit id="action.save">
+        <source>action.save</source>
+        <target>Save</target>
+      </trans-unit>
+      <trans-unit id="action.make_admin">
+        <source>action.make_admin</source>
+        <target>Set admin</target>
+      </trans-unit>
+      <trans-unit id="action.set_admin">
+        <source>action.set_admin</source>
+        <target>Set admin</target>
+      </trans-unit>
+      <trans-unit id="action.remove_admin">
+        <source>action.remove_admin</source>
+        <target>Remove admin</target>
+      </trans-unit>
+      <trans-unit id="action.block">
+        <source>action.block</source>
+        <target>Block</target>
+      </trans-unit>
+      <trans-unit id="action.unblock">
+        <source>action.unblock</source>
+        <target>Unblock</target>
+      </trans-unit>
+      <trans-unit id="action.toggle_block">
+        <source>action.toggle_block</source>
+        <target>Toggle block</target>
+      </trans-unit>
+      <trans-unit id="action.clear_filters">
+        <source>action.clear_filters</source>
+        <target>Clear filters</target>
+      </trans-unit>
+      <trans-unit id="action.archive">
+        <source>action.archive</source>
+        <target>Archive</target>
+      </trans-unit>
+      <trans-unit id="action.unarchive">
+        <source>action.unarchive</source>
+        <target>Restore from archive</target>
+      </trans-unit>
+      <trans-unit id="action.show_active">
+        <source>action.show_active</source>
+        <target>Show active</target>
+      </trans-unit>
+      <trans-unit id="action.show_archived">
+        <source>action.show_archived</source>
+        <target>Show archived</target>
+      </trans-unit>
+      <trans-unit id="action.create_user">
+        <source>action.create_user</source>
+        <target>Create user</target>
+      </trans-unit>
+      <trans-unit id="action.sign_up">
+        <source>action.sign_up</source>
+        <target>Sign up</target>
+      </trans-unit>
+      <trans-unit id="action.sign_in">
+        <source>action.sign_in</source>
+        <target>Sign in</target>
+      </trans-unit>
+      <trans-unit id="action.add_members">
+        <source>action.add_members</source>
+        <target>Add members</target>
+      </trans-unit>
+      <trans-unit id="action.search">
+        <source>action.search</source>
+        <target>Search</target>
+      </trans-unit>
+      <trans-unit id="action.change">
+        <source>action.change</source>
+        <target>Change</target>
+      </trans-unit>
+      <trans-unit id="action.edit_nick">
+        <source>action.edit_nick</source>
+        <target>Change username</target>
+      </trans-unit>
+      <trans-unit id="action.edit_email">
+        <source>action.edit_email</source>
+        <target>Change email</target>
+      </trans-unit>
+      <trans-unit id="action.delete_user">
+        <source>action.delete_user</source>
+        <target>Delete account</target>
+      </trans-unit>
+      <trans-unit id="action.filter_by_projects">
+        <source>action.filter_by_projects</source>
+        <target>Filter by projects</target>
+      </trans-unit>
+      <trans-unit id="action.order_by">
+        <source>action.order_by</source>
+        <target>Order by</target>
+      </trans-unit>
+      <trans-unit id="action.reports_from_project">
+        <source>action.reports_from_project</source>
+        <target>Reports from project</target>
+      </trans-unit>
+      <trans-unit id="action.delete_file">
+        <source>action.delete_file</source>
+        <target>Delete file</target>
+      </trans-unit>
+      <trans-unit id="action.move">
+        <source>action.move</source>
+        <target>Move</target>
       </trans-unit>
       <trans-unit id="message.tag_invalid_characters">
         <source>message.tag_invalid_characters</source>

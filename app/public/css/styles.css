@@ -1,9 +1,28 @@
 .knp-th a {
     text-decoration: none;
+    color: white;
 }
 
 .col-gap10 {
     column-gap: 10px;
+}
+
+.col-gap100 {
+    column-gap: 100px;
+}
+.w-15 {
+    width: 15%;
+}
+
+.w-25 {
+    width: 25%;
+}
+.w-70 {
+    width:70%;
+}
+
+.pr-3 {
+    padding: 0 1rem 0 0;
 }
 
 .width-fit {
@@ -25,4 +44,10 @@ textarea {
 
 .required::after {
     content: " *";
+}
+
+.attachment img {
+    max-height: 400px;
+    width: auto;
+    object-fit: cover;
 }
